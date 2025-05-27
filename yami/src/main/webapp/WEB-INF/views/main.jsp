@@ -11,7 +11,7 @@ pageEncoding="UTF-8"%>
     <%@include file="/WEB-INF/views/common/header.jsp"%>
 	
 	<hr>
-	<h3>이메일 실험하기</h3>
+	<h3>5/27이메일 실험하기</h3>
 	<br>
     <form action="${root}/sendEmail" method="post">
       이메일 : <input type="email" name="toAddress" required/> <br />
