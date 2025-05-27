@@ -16,8 +16,20 @@
             <div class="card-body text-center p-5">
                 <h2 class="card-title mb-4">이메일 재발송 요청</h2>
                 <div class="alert alert-info">
-                    <strong>${sessionScope.resendEmailUser.userName}</strong>님,<br>
-                    접속하신 링크는 만료되었습니다.<br>
+                    <strong>${sessionScope.resendEmailUser.userName}</strong>님,
+                    <br>
+                    
+                    <c:choose>
+                    	<c:when test="${sessionScope.resendEmailUser.status == 'U'}">
+                    		<%-- 이메일 인증 전에 로그인을 시도할 경우 --%>
+                    		이메일 인증이 완료되지 않았습니다. <br>
+                    	</c:when>
+                    	
+                    	<c:when test="${not empty sessionScope.resendEmailUser}">
+                    		<%-- 만료된 이메일 링크를 클릭했을 경우 --%>
+		                    접속하신 링크는 만료되었습니다. <br>
+                    	</c:when>
+                    </c:choose>
                     <span class="text-primary">${sessionScope.resendEmailUser.userId}</span>로 다시 이메일을 보내시겠습니까?
                 </div>
                 
@@ -50,7 +62,7 @@
                             	<input list="domain" name="domain" id="domainList" class="form-select" placeholder="도메인">
 								<datalist id="domain">
 									<option value="naver.com">naver.com</option>
-									<option value="goole.com">google.com</option>
+									<option value="gmail.com">gmail.com</option>
 								</datalist>
                             </div>
                         </div>
@@ -69,15 +81,31 @@
         // 이메일 재발송 처리
         document.getElementById('resendEmail').addEventListener('click', function() {
         	if(confirm("진짜??")){
+    			let resendEmail = document.getElementById("resendEmail");
+    		    let $btn = $('#resendEmail');
+    		    let $btn2 = $('#userIdFix');
+    		    
+    		    
+    		    resendEmail.classList.remove("btn-secondary");
+    		    resendEmail.classList.add("btn-primary");
+				
+				$btn.prop('disabled', true)
+	               .html(`<span class="spinner-border spinner-border-sm" role="status"></span> 처리 중...`);
+				$btn2.prop('disabled', true)
+	               .html(`<span class="spinner-border spinner-border-sm" role="status"></span> 처리 중...`);
+        		
 	        	location.href = '${root}/resendEmail';
         	}
         });
+        
 
 		//검증이 true여야 sumbmit버튼 활성화됨
 		let idPass = false;
 		
 		//아이디 검증
 		document.getElementById("userId").addEventListener('input', function(){
+			idPass = false;
+			toggleSubmit();
 			idConfirm();
 		});
 		
@@ -176,15 +204,22 @@
             }
             const newEmail = userId + '@' + domain;
             
-			
-            
             alert('이메일이 "' + newEmail + '"로 변경 요청되었습니다.');
             
             // 모달 닫기
             const modal = bootstrap.Modal.getInstance(document.getElementById('emailModal'));
             modal.hide();
             
-            location.href("${root}/updateEmail?userId="+userId+"&domain"+domain);
+		    let $btn = $('#resendEmail');
+		    let $btn2 = $('#userIdFix');
+			
+			$btn.prop('disabled', true)
+               .html(`<span class="spinner-border spinner-border-sm" role="status"></span> 처리 중...`);
+			$btn2.prop('disabled', true)
+               .html(`<span class="spinner-border spinner-border-sm" role="status"></span> 처리 중...`);
+
+            
+            location.href = "${root}/updateEmail?userId="+userId+"&domain="+domain;
         });
     </script>
 </body>

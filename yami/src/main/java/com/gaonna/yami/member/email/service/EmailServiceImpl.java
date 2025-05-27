@@ -34,6 +34,7 @@ public class EmailServiceImpl implements EmailService{
 	//이메일 양식 저장소 연결
 	private Properties prop = new Properties();
 	private String insertMeContent;
+	private String updateIdContent;
 	public EmailServiceImpl() {
 		try {
 			//제목 저장소 연결
@@ -47,6 +48,10 @@ public class EmailServiceImpl implements EmailService{
 			//회원가입
 			ClassPathResource insertMe = new ClassPathResource("emailTemplates/insertMeContent.html");
 			insertMeContent = new String(Files.readAllBytes(insertMe.getFile().toPath()), StandardCharsets.UTF_8);
+			
+			//회원가입
+			ClassPathResource updateId = new ClassPathResource("emailTemplates/updateIdContent.html");
+			updateIdContent = new String(Files.readAllBytes(updateId.getFile().toPath()), StandardCharsets.UTF_8);
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -85,7 +90,7 @@ public class EmailServiceImpl implements EmailService{
     	String userId = m.getUserId();
     	
     	//토큰 데이터 저장
-    	int result = insertMemberToken(mt);
+    	int result = insertToken(mt);
     	
     	//데이터 저장 성공 및 추출 성공하면 메일 송신
     	if(result>0 && mt.getTokenNo()>0) {
@@ -96,8 +101,8 @@ public class EmailServiceImpl implements EmailService{
     }
 
 	@Override
-	public int insertMemberToken(MemberToken memberToken) {
-		return dao.insertMemberToken(sqlSession,memberToken);
+	public int insertToken(MemberToken memberToken) {
+		return dao.insertToken(sqlSession,memberToken);
 	}
 	
 
@@ -133,5 +138,39 @@ public class EmailServiceImpl implements EmailService{
 	@Override
 	public Member resendEmail(MemberToken mt) {
 		return dao.resendEmail(sqlSession,mt);
+	}
+	
+	//마이페이지 아이디 변경
+	@Override
+	public int updateEmailToken(Member m, String token) {
+		try {
+	    	MemberToken mt = new MemberToken(m.getUserNo(),token);
+	    	
+	    	//토큰 데이터 저장
+	    	int result = insertToken(mt);
+	    	
+	    	//데이터 저장 성공 및 추출 실패하면 메일 안 보내기
+	    	if(result==0 || mt.getTokenNo()==0) {
+	    		return result;
+	    	}
+	    	
+	    	MimeMessage mimeMessage = mailSender.createMimeMessage();
+	    	MimeMessageHelper message = new MimeMessageHelper(mimeMessage, true, "UTF-8");
+	    	
+	        message.setTo(m.getUserId());
+	        message.setSubject(prop.getProperty("updateIdSubject"));
+
+	        String content = updateIdContent
+	        	    .replace("{{TOKEN_NO}}", String.valueOf(mt.getTokenNo()))
+	        	    .replace("{{TOKEN}}", mt.getToken());
+	        
+			message.setText(content, true);
+			mailSender.send(mimeMessage);
+			
+			return 1; //정상 작동
+		}catch (Exception e) {
+			e.printStackTrace();
+			return 0;
+		}
 	}
 }

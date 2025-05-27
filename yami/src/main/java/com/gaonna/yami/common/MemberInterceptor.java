@@ -19,7 +19,7 @@ public class MemberInterceptor implements HandlerInterceptor{
 		//로그인이 되어 있지 않으면 넌 모찌나간다
 		HttpSession session = request.getSession();
 		if(session.getAttribute("loginUser") == null) {
-			session.setAttribute("alerMsg", "로그인을 해 주세요.");
+			session.setAttribute("alertMsg", "로그인을 해 주세요.");
 			response.sendRedirect(request.getContextPath());
 			return false;
 		}

@@ -10,7 +10,7 @@
 		<result column="USER_ID" property="userId"/>
 		<result column="USER_PWD" property="userPwd"/>
 		<result column="USER_NAME" property="userName"/>
-		<result column="USER_ROLE" property="userRole"/>
+		<result column="ROLE_TYPE" property="roleType"/>
 	</resultMap>
 	
 	<insert id="insertMember" parameterType="Member">
@@ -21,6 +21,7 @@
 	    VALUES (#{userNo}, #{userId}, #{userPwd}, #{userName}, #{phone})
 	</insert>
 	
+	<!-- 이메일 인증할 때 기준으로 가입일이 저장되도록 함 -->
 	<update id="confirmEmailInsert">
 		update member
 		set STATUS = 'Y',
@@ -49,21 +50,49 @@
 	        m.USER_PWD,
 	        m.USER_NAME,
 	        m.PHONE,
-	        m.USER_LOCATION,
+	        m.point,
 	        m.ENROLLDATE,
 	        m.MODIFYDATE,
+	        m.STATUS,
 	        case 
 	            when exists (
-	                select 1 
-	                from ROLE r 
+	                select 1
+	                from ROLE r
 	                where r.USER_NO = m.USER_NO
-	            ) then 'Y' 
-	            else 'N' 
-	        end as USER_ROLE
+	            ) then 'Y'
+	            else 'N'
+	        end as ROLE_TYPE
 	    from MEMBER m
-	    where m.STATUS = 'Y'
-	    and m.USER_ID = #{userId}
+	    where m.USER_ID = #{userId}
 	</select>
+	
+	<select id="selectRoleType" parameterType="_int" resultType="string">
+		select role_type
+		from role
+		where user_no = #{userNo}
+	</select>
+	
+	<update id="updateId">
+		update member
+		set user_id = #{userId},
+			status = 'U',
+			MODIFYDATE = SYSDATE
+		where user_no = #{userNo}
+	</update>
+	
+	<update id="updateName">
+		update member
+		set user_name = #{userName},
+			MODIFYDATE = SYSDATE
+		where user_no = #{userNo}
+	</update>
+	
+	<update id="updatePhone">
+		update member
+		set phone = #{phone},
+			MODIFYDATE = SYSDATE
+		where user_no = #{userNo}
+	</update>
 
 
 </mapper>

@@ -19,6 +19,12 @@ START WITH 1
 INCREMENT BY 1
 NOCACHE;
 
+--위치번호 시퀀스
+CREATE SEQUENCE seq_location
+START WITH 1
+INCREMENT BY 1
+NOCACHE;
+
 --member테이블
 CREATE TABLE member (
     user_no    NUMBER,
@@ -26,7 +32,7 @@ CREATE TABLE member (
     user_pwd   VARCHAR2(100),
     user_name  VARCHAR2(50),
     phone      VARCHAR2(20),
-    user_location   VARCHAR2(50),
+    point      NUMBER,
     enrolldate DATE,
     modifydate DATE          DEFAULT SYSDATE,
     status     VARCHAR2(1)   DEFAULT 'U',
@@ -44,23 +50,61 @@ COMMENT ON COLUMN member.user_id IS '아이디';
 COMMENT ON COLUMN member.user_pwd IS '비밀번호';
 COMMENT ON COLUMN member.user_name IS '이름';
 COMMENT ON COLUMN member.phone IS '전화번호';
-COMMENT ON COLUMN member.user_location IS '사용자 위치';
+COMMENT ON COLUMN member.point IS '포인트';
 COMMENT ON COLUMN member.enrolldate IS '가입일';
 COMMENT ON COLUMN member.modifydate IS '수정일';
 COMMENT ON COLUMN member.status IS '회원 상태 (Y:정상, N:탈퇴, E:휴면, U:이메일 미인증)';
 
+--위치
+CREATE TABLE LOCATION (
+    LOCATION_NO NUMBER,
+    LATITUDE NUMBER,
+    LONGITUDE NUMBER,
+    TIMESTAMP NUMBER,
+    NAVER_CODE VARCHAR2(20),
+    AREA1 VARCHAR2(30),
+    AREA2 VARCHAR2(50),
+    AREA3 VARCHAR2(50),
+    BUILDING_CODE VARCHAR2(30),
+    ZIP_CODE VARCHAR2(10),
+    ROAD_CODE VARCHAR2(20),
 
+    CONSTRAINT LOCATION_NO_PK PRIMARY KEY (LOCATION_NO)
+);
+COMMENT ON TABLE LOCATION IS '위치';
+COMMENT ON COLUMN LOCATION.LOCATION_NO IS '위치 식별번호';
+COMMENT ON COLUMN LOCATION.LATITUDE IS '위도';
+COMMENT ON COLUMN LOCATION.LONGITUDE IS '경도';
+COMMENT ON COLUMN LOCATION.TIMESTAMP IS '측정 시각';
+COMMENT ON COLUMN LOCATION.NAVER_CODE IS '네이버 코드';
+COMMENT ON COLUMN LOCATION.AREA1 IS '시/도';
+COMMENT ON COLUMN LOCATION.AREA2 IS '시/군/구';
+COMMENT ON COLUMN LOCATION.AREA3 IS '읍/면/동';
+COMMENT ON COLUMN LOCATION.BUILDING_CODE IS '빌딩번호';
+COMMENT ON COLUMN LOCATION.ZIP_CODE IS '우편번호';
+COMMENT ON COLUMN LOCATION.ROAD_CODE IS '도로코드';
+
+--member-location조인 테이블
+CREATE TABLE MEMBER_LOCATION (
+    USER_NO NUMBER,
+    LOCATION_NO NUMBER,
+    CONSTRAINT MEMBER_LOCATION_USER_NO_fk FOREIGN KEY (USER_NO) REFERENCES member(USER_NO) ON DELETE CASCADE,
+    CONSTRAINT MEMBER_LOCATION_LOCATION_NO_fk FOREIGN KEY (LOCATION_NO) REFERENCES LOCATION(LOCATION_NO) ON DELETE CASCADE
+);
+COMMENT ON TABLE MEMBER_LOCATION IS '위치';
+COMMENT ON COLUMN MEMBER_LOCATION.USER_NO IS '위치 식별번호';
+COMMENT ON COLUMN MEMBER_LOCATION.LOCATION_NO IS '위도';
 
 --이메일 인증용 토큰 저장소
 CREATE TABLE token (
+    token_no        NUMBER,
     user_no         NUMBER,
-    token_no        NUMBER CONSTRAINT token_no_nn NOT NULL,
     token           VARCHAR2(50) CONSTRAINT token_nn NOT NULL,
-    generated_time  DATE DEFAULT SYSDATE CONSTRAINT generated_time_nn NOT NULL,
-    token_status    VARCHAR2(1)   DEFAULT 'Y' CHECK (token_status IN ('Y', 'N')),
+    generated_time  DATE DEFAULT SYSDATE CONSTRAINT token_generated_time_nn NOT NULL,
+    token_status    VARCHAR2(1) DEFAULT 'Y' CONSTRAINT token_status_check CHECK (token_status IN ('Y', 'N')),
     
     CONSTRAINT token_no_pk PRIMARY KEY (token_no),
-    CONSTRAINT user_no_fk FOREIGN KEY (user_no) REFERENCES member(user_no)
+    CONSTRAINT token_user_no_fk FOREIGN KEY (user_no) REFERENCES member(user_no) ON DELETE CASCADE
 );
 COMMENT ON TABLE token IS '토큰';
 COMMENT ON COLUMN token.user_no IS '회원 식별번호';
@@ -109,18 +153,21 @@ END;
 --관리자 권한
 CREATE TABLE role (
     user_no      NUMBER,
-    super_admin  CHAR(1) DEFAULT 'N' CONSTRAINT super_admin_ck CHECK (super_admin IN ('Y', 'N')),
-    admin        CHAR(1) DEFAULT 'N' CONSTRAINT admin_ck CHECK (admin IN ('Y', 'N')),
-    viewer       CHAR(1) DEFAULT 'N' CONSTRAINT viewer_ck CHECK (viewer IN ('Y', 'N')),
-    
-    CONSTRAINT role_pk PRIMARY KEY (user_no),
-    CONSTRAINT role_user_no_fk FOREIGN KEY (user_no) REFERENCES member(user_no)
+    role_type    VARCHAR2(20) 
+        CONSTRAINT role_type_check CHECK (role_type IN ('superAdmin', 'admin', 'viewer')),
+    /*
+        role_type에 들어갈 데이터
+        최고 관리자 superAdmin
+        그냥 관리자 admin
+        뷰어(읽기만 가능) viewer
+    */
+
+    CONSTRAINT role_user_no_uk UNIQUE (user_no),
+    CONSTRAINT role_user_no_fk FOREIGN KEY (user_no) REFERENCES member(user_no) ON DELETE CASCADE
 );
 COMMENT ON TABLE role IS '관리자 권한';
 COMMENT ON COLUMN role.user_no IS '회원 식별번호';
-COMMENT ON COLUMN role.super_admin IS '최고 관리자';
-COMMENT ON COLUMN role.admin IS '일반 관리자';
-COMMENT ON COLUMN role.viewer IS '뷰어(읽기 권한 관리자)';
+COMMENT ON COLUMN role.role_type IS '권한 유형';
 
 -----------------------------------------------------
 --                      DML                        --
@@ -130,26 +177,26 @@ COMMENT ON COLUMN role.viewer IS '뷰어(읽기 권한 관리자)';
 
 --최고 관리자
 insert all
-into member(user_no, user_id, user_pwd, user_name, status)
-values(0, 'superAdmin@yami', '$2a$10$tOfmGQsO.Z7P1YhUZCKzrOosri/uhPci8hfqCN6jrHZcgxRgYjqyi', '최고 관리자', 'Y')
-into role(user_no, super_admin)
-values(0, 'Y')
+into member(user_no, user_id, user_pwd, user_name, status, enrolldate)
+values(0, 'superAdmin@yami', '$2a$10$tOfmGQsO.Z7P1YhUZCKzrOosri/uhPci8hfqCN6jrHZcgxRgYjqyi', '최고 관리자', 'Y', SYSDATE)
+into role(user_no, role_type)
+values(0, 'superAdmin')
 select * from dual;
 
 --일반 관리자
 insert all
-into member(user_no, user_id, user_pwd, user_name, status)
-values(-1, 'admin@yami', '$2a$10$tOfmGQsO.Z7P1YhUZCKzrOosri/uhPci8hfqCN6jrHZcgxRgYjqyi', '일반 관리자', 'Y')
-into role(user_no, admin)
-values(-1, 'Y')
+into member(user_no, user_id, user_pwd, user_name, status, enrolldate)
+values(-1, 'admin@yami', '$2a$10$tOfmGQsO.Z7P1YhUZCKzrOosri/uhPci8hfqCN6jrHZcgxRgYjqyi', '일반 관리자', 'Y', SYSDATE)
+into role(user_no, role_type)
+values(-1, 'admin')
 select * from dual;
 
 --뷰어
 insert all
-into member(user_no, user_id, user_pwd, user_name, status)
-values(-2, 'viewer@yami', '$2a$10$tOfmGQsO.Z7P1YhUZCKzrOosri/uhPci8hfqCN6jrHZcgxRgYjqyi', '뷰어', 'Y')
-into role(user_no, viewer)
-values(-2, 'Y')
+into member(user_no, user_id, user_pwd, user_name, status, enrolldate)
+values(-2, 'viewer@yami', '$2a$10$tOfmGQsO.Z7P1YhUZCKzrOosri/uhPci8hfqCN6jrHZcgxRgYjqyi', '뷰어', 'Y', SYSDATE)
+into role(user_no, role_type)
+values(-2, 'viewer')
 select * from dual;
 
 --만료된 토큰 체험

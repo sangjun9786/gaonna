@@ -59,12 +59,29 @@ public class MemberServiceImpl implements MemberService{
 			return null;
 		}
 		
+		if(m.getRoleType().equals("Y")) {
+			//권한 있으면 조회해서 넣어주기
+			m.setRoleType(dao.selectRoleType(sqlSession,m.getUserNo()));
+		}
+		System.out.println(m);
 		//비밀번호 검증
 		if(bcrypt.matches(userPwd,m.getUserPwd())) {
 			return m;
 		}else {
 			return null;
 		}
-		
+	}
+	
+	@Override
+	public int updateId(Member m) {
+		return dao.updateId(sqlSession,m);
+	}
+	@Override
+	public int updateName(Member m) {
+		return dao.updateName(sqlSession,m);
+	}
+	@Override
+	public int updatePhone(Member m) {
+		return dao.updatePhone(sqlSession,m);
 	}
 }

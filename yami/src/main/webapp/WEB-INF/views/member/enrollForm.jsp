@@ -69,8 +69,19 @@
 							
 							<!-- 전화번호 -->
 							<div class="mb-4">
-								<label for="phone" class="form-label">전화번호</label>
-								<input name="phone" id="phone" class="form-control" placeholder="전화번호">
+							    <label for="phone" class="form-label">전화번호</label>
+							    <div class="input-group">
+							        <input type="text" class="form-control phone-part" id="phone1" 
+							               maxlength="3" placeholder="010" required>
+							        <span class="input-group-text">-</span>
+							        <input type="text" class="form-control phone-part" id="phone2" 
+							               maxlength="4" placeholder="1234" required>
+							        <span class="input-group-text">-</span>
+							        <input type="text" class="form-control phone-part" id="phone3" 
+							               maxlength="4" placeholder="5678" required>
+							        <input type="hidden" id="phone" name="phone">
+							    </div>
+							    <div id="checkPhoneResult" class="invalid-feedback"></div>
 							</div>
 							
 							<!-- 최종 결과 메시지 -->
@@ -97,7 +108,8 @@
 		let idPass = false;
 		let pwdPass = false;
 		let namePass = false;
-		let phonePass = false;
+		//phone은 필수가 아니라서 ture가 초기값
+		let phonePass = true;
 		
 		//아이디 검증
 		document.getElementById("userId").addEventListener('input', function(){
@@ -219,7 +231,7 @@
 		//닉네임 검증
 		document.getElementById('userName').addEventListener('input', function() {
 			let checkNameResult = document.getElementById("checkNameResult")
-		    if(this.value.length > 30){
+		    if(this.value.length > 10){
 		    	checkNameResult.innerHTML = "이름이 너무 길어요";
 		    	checkNameResult.className = "invalid-feedback d-block";
 		    	namePass = false;
@@ -235,6 +247,42 @@
 			toggleSubmit();
 		});
 		
+		//전화번호 검증 - 숫자제한 및 자동넘어가기
+		document.querySelectorAll('.phone-part').forEach((input, idx) => {
+		    input.addEventListener('input', function() {
+		        this.value = this.value.replace(/[^0-9]/g, '');
+		        if (this.value.length === this.maxLength) {
+		        	let next = this.parentElement.querySelectorAll('.phone-part')[idx + 1];
+		            if (next) next.focus();
+		        }
+		        validatePhone();
+		    });
+		});
+		
+		//전화번호 검증 - 숫자 개수 검사
+		function validatePhone() {
+			let phone1 = document.getElementById('phone1').value;
+			let phone2 = document.getElementById('phone2').value;
+			let phone3 = document.getElementById('phone3').value;
+			let checkPhoneResult = document.getElementById("checkPhoneResult");
+		
+			if(phone1=="" && phone2=="" && phone3==""){
+				checkPhoneResult.textContent = "";
+		        checkPhoneResult.classList.remove('d-block');
+		        phonePass = true;
+		        toggleSubmit();
+			}else if (!/^\d{3}$/.test(phone1) || !/^\d{3,4}$/.test(phone2) || !/^\d{4}$/.test(phone3)) {
+		        checkPhoneResult.textContent = "올바른 형식으로 입력해주세요 (예: 010-1234-5678)";
+		        checkPhoneResult.classList.add('d-block');
+		        phonePass = false;
+		    } else {
+		        checkPhoneResult.textContent = "";
+		        checkPhoneResult.classList.remove('d-block');
+		        phonePass = true;
+		    }
+		    toggleSubmit();
+		}
+		
 		//리셋 버튼과 확인을 누르면 리셋됨
 		document.getElementById("insertReset").addEventListener('click', function(){
 			if(confirm("진짜?")){
@@ -242,6 +290,7 @@
 				idPass = false;
 				pwdPass = false;
 				namePass = false;
+				phonePass = true;
 				
 				document.getElementById('checkIdResult').className = "form-text text-muted mt-1";
 				document.getElementById('checkIdResult').textContent = "아이디를 입력해주세요.";
@@ -249,6 +298,8 @@
 				document.getElementById('checkPwdResult').textContent = "비밀번호를 입력해주세요.";
 				document.getElementById('checkNameResult').className = "form-text text-muted mt-1";
 				document.getElementById('checkNameResult').textContent = "이름을 입력해주세요.";
+				document.getElementById('checkPhoneResult').className = "form-text text-muted mt-1";
+				document.getElementById('checkPhoneResult').textContent = "번호를 입력해주세요.";
 				document.getElementById("finalResult").className = "alert alert-light text-center mb-4";
 				document.getElementById("finalResult").innerHTML = "모든 필수 항목을 입력하세요";
 				toggleSubmit();
@@ -256,14 +307,18 @@
 		});
 		
 		
-		//가입하기 버튼 누르면 로딩표시
+		//가입하기 버튼 누르면 로딩표시 및 전화번호 합치기
 		$(document).ready(function() {
 		    $('#insertForm').submit(function(e) {
 		        e.preventDefault();
-		        
 		        if ($(this).data('submitting')) return;
-		        
 		        $(this).data('submitting', true);
+		        
+		        let phone = document.getElementById('phone1').value+"-"
+	       			+document.getElementById('phone2').value+"-"
+	       			+document.getElementById('phone3').value;
+		        
+		        document.getElementById('phone').innerHTML=phone;
 		        
 		        setButtonState('loading');
 		        this.submit();
@@ -274,7 +329,7 @@
 		let toggolePassed = false;
 		function toggleSubmit(){
 			
-			if(idPass && pwdPass && namePass){
+			if(idPass && pwdPass && namePass && phonePass){
 				setButtonState('active');
 				toggolePassed = true;
 				
@@ -298,7 +353,8 @@
 					insertSubmit.classList.add("btn-primary");
 					
 					checkfinalResult.innerHTML = "잠시 기다려 주세요";
-					checkfinalResult.className = "alert alert-success text-center mb-4 loading";		            $btn.prop('disabled', true)
+					checkfinalResult.className = "alert alert-success text-center mb-4 loading";
+					$btn.prop('disabled', true)
 		               .html(`<span class="spinner-border spinner-border-sm" role="status"></span> 처리 중...`);
 		            break;
 		        case 'disabled':
