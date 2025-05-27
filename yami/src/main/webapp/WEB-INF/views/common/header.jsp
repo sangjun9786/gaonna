@@ -1,7 +1,7 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8"
     pageEncoding="UTF-8"%>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
-
+<%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -37,10 +37,11 @@
 			${sessionScope.loginUser.userName}님 안녕하세요
 			<br>
 			<a href="${pageScope.root}/mypage.me">마이페이지</a>
-			<c:if test="${pageScope.loginUser.userRole == 'Y'}">
+			<c:if test="${pageScope.loginUser.roleType != 'N'}">
 				<br>
 				<a href="${pageScope.root}/adminpage.ad">운영실</a>
 			</c:if>
+			<a href="${pageScope.root}/logout.me">로그아웃</a>
 		</c:otherwise>
 	</c:choose>
 	 

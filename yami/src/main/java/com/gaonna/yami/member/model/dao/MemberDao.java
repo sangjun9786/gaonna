@@ -28,5 +28,20 @@ public class MemberDao {
 		return sqlSession.selectOne("memberMapper.loginMember", userId);
 	}
 
+	public int updateId(SqlSessionTemplate sqlSession, Member m) {
+		return sqlSession.update("memberMapper.updateId", m);
+	}
+
+	public int updateName(SqlSessionTemplate sqlSession, Member m) {
+		return sqlSession.update("memberMapper.updateName", m);
+	}
+
+	public int updatePhone(SqlSessionTemplate sqlSession, Member m) {
+		return sqlSession.update("memberMapper.updatePhone", m);
+	}
+
+	public String selectRoleType(SqlSessionTemplate sqlSession, int userNo) {
+		return sqlSession.selectOne("memberMapper.selectRoleType", userNo);
+	}
 	
 }

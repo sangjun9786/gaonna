@@ -29,7 +29,7 @@ public class MemberController {
 	//회원가입 페이지 이동
 	@GetMapping("insert.me")
 	public String insertMember() {
-		return "member/MemberEnrollForm";
+		return "member/enrollForm";
 	}
 
 	
@@ -46,18 +46,26 @@ public class MemberController {
 					) {
 				return errorPage(model, "필수 항목을 확인해 주세요.");
 			}
+
+			if(m.getPhone().equals("--")) {
+				//전화번호를 입력하지 않았을 경우 전화번호 비우기
+				m.setPhone(null);
+			}else if(!m.getPhone().matches("^\\d{3}-\\d{3,4}-\\d{4}$")) {
+				return errorPage(model, "필수 항목을 확인해 주세요.");
+			}
+			
 			//입력받은 아이디와 도메인을 이메일 형식으로 변경
 			m.setUserId(m.getUserId()+"@"+domain);
 			
 			//아이디가 중복되는지 확인
 			int checkId = service.checkUserId(m.getUserId());
 			
-			//분명 프론트에서 걸려져야 할 중복아이디를 들고오는 놈에겐 에러페이지
+			//분명 프론트에서 걸려져야 할 중복아이디를 들고오는 놈은 에러페이지로 가세요라
 			if(checkId>0) {
 				return errorPage(model,"잘못된 아이디입니다.");
 			}
 			
-			//암호화
+			//비밀번호 암호화
 			m.setUserPwd(bcrypt.encode(m.getUserPwd()));
 			
 			//서비스로 보내고 겸사겸사 유저식별번호 따오기
@@ -111,7 +119,7 @@ public class MemberController {
 	//로그인 페이지로 이동
 	@GetMapping("login.me")
 	public String loginMember() {
-		return "member/loginMember";
+		return "member/login";
 	}
 	
 	//로그인
@@ -122,11 +130,24 @@ public class MemberController {
 			Member loginUser = service.loginMember(userId, domain, userPwd);
 			
 			if(loginUser != null) {
+				
+				switch(loginUser.getStatus()) {
+				//유저 꼬라지에 따라 작동
+				
+				case "U" : //이메일 인증을 완료하지 않았을 경우
+					Member resendEmailUser = loginUser;
+					session.setAttribute("resendEmailUser",resendEmailUser);
+					return "member/resendEmailMe";
+				}
+				
+				//로그인 성공
 				session.setAttribute("loginUser",loginUser);
 				return "redirect:/";
-			}else {
+				
+			}else{
+				//해당 유저 없음
 				session.setAttribute("alertMsg", "아이디와 비밀번호를 확인해 주세요.");
-				return "member/loginMember";
+				return "member/login";
 			}
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -134,9 +155,21 @@ public class MemberController {
 		}
 	}
 	
+	//로그아웃
+	@GetMapping("logout.me")
+	public String logout(HttpSession session ,Model model) {
+		try {
+			session.removeAttribute("loginUser");
+			return "redirect:/";
+		} catch (Exception e) {
+			e.printStackTrace();
+			return errorPage(model,"500 err");
+		}
+	}
+	
 	//마이페이지
 	@GetMapping("mypage.me")
-	public String myPage(HttpSession session, Model model) {
+	public String myPage(HttpSession session ,Model model) {
 		try {
 			return "member/myPage";
 		} catch (Exception e) {
@@ -144,15 +177,72 @@ public class MemberController {
 			return errorPage(model,"500 err");
 		}
 	}
+	@GetMapping("update.me")
+	public String updateMember(HttpSession session, Model model) {
+		try {
+			return "member/update";
+		} catch (Exception e) {
+			e.printStackTrace();
+			return errorPage(model,"500 err");
+		}
+	}
 	
+	//마이페이지 - 이름 변경
+	@PostMapping("updateName.me")
+	public String updateName(HttpSession session, Model model, String userName) {
+		try {
+			if(userName.length()>10) {
+				return errorPage(model,"이름이 너무 기네용");
+			}
+			
+			Member m = (Member)session.getAttribute("loginUser");
+			m.setUserName(userName);
+			
+			if(service.updateName(m)==0) {
+				//db저장이 안 될 경우
+				return errorPage(model,"500 err");
+			}
+			
+			//변경했으면 로그인유저 정보 업데이트
+			session.setAttribute("loginUser",m);
+			return "redirect:/mypage.me";
+			
+		} catch (Exception e) {
+			e.printStackTrace();
+			return errorPage(model,"500 err");
+		}
+	}
 	
+	//마이페이지 - 전화번호 변경
+	@GetMapping("updatePhone.me")
+	public String updatePhone(HttpSession session, Model model, String phone) {
+		try {
+			String phonePattern = "^\\d{3}-\\d{3,4}-\\d{4}$";
+			if (!phone.matches(phonePattern)) {
+			    return errorPage(model, "전화번호 형식이 올바르지 않습니다.");
+			}
+			
+			Member m = (Member)session.getAttribute("loginUser");
+			m.setPhone(phone);
+			
+			if(service.updatePhone(m)==0) {
+				//db저장이 안 될 경우
+				return errorPage(model,"500 err");
+			}
+			//변경했으면 로그인유저 정보 업데이트
+			session.setAttribute("loginUser",m);
+			return "redirect:/mypage.me";
+			
+		} catch (Exception e) {
+			e.printStackTrace();
+			return errorPage(model,"500 err");
+		}
+	}
 	
 	//유저 식별번호로 유저 아이디 조회
 	public String selectUserId(int userNo) {
 		try {
-			String userId = service.selectUserId(userNo);
-			return userId;
-			
+			return service.selectUserId(userNo);
 		}catch(Exception e){
 			e.printStackTrace();
 			return null;

@@ -3,5 +3,6 @@
 
 <!-- 이메일 제목 저장소 -->
 <properties>
-	<entry key="insertMeSubject">회원가입</entry>
+	<entry key="insertMeSubject">YAMI 회원가입</entry>
+	<entry key="updateIdSubject">YAMI 이메일 주소 변경</entry>
 </properties>

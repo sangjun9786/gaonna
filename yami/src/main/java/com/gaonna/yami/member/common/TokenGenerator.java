@@ -63,4 +63,11 @@ public class TokenGenerator {
     	String token = generateToken();
     	return emailService.insertMemberEmail(m,token);
     }
+
+    //이메일 변경
+	public int updateEmailToken(Member m) {
+    	emailService.deleteToken(m);
+    	String token = generateToken();
+    	return emailService.updateEmailToken(m,token);
+	}
 }

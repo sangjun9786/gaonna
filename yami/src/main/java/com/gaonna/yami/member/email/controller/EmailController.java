@@ -54,7 +54,7 @@ public class EmailController {
      * http://localhost:8888/yami/confirmEmailInsert.me?tokenNo=1&
      * token=dSNLdXM9Wk9fRW4jVjg2PWRWKHp6c3lidEEsJEdXWzQ
      */
-    //회원가입 - 이메일 링크 클릭할때
+    //이메일 링크 클릭해서 인증할때
     @RequestMapping(value="confirmEmailInsert.me", method=RequestMethod.GET)
     public String confirmEmailInsert(int tokenNo, String token, Model model, HttpSession session) {
     	try {
@@ -70,8 +70,8 @@ public class EmailController {
 	    		result= memberService.confirmEmailInsert(tokenNo);
 	    		
 	    		if(result>0) {
-	    			//회원가입 성공!
-	    			session.setAttribute("alertMsg", "회원가입 성공");
+	    			//인증 성공!
+	    			session.setAttribute("alertMsg", "이메일 인증이 완료되었습니다.");
 	    			return "redirect:/";
 	    			
 	    		}else {
@@ -119,7 +119,7 @@ public class EmailController {
 		}
     }
     
-    //회원가입 - 토큰 만료 후 이메일 변경
+    //회원가입 - 이메일 변경
     @GetMapping("updateEmail")
     public String updateEmail(HttpSession session, Model model, String userId, String domain) {
     	try {
@@ -135,17 +135,30 @@ public class EmailController {
 			
 			//입력받은 아이디와 도메인을 이메일 형식으로 변경
 			m.setUserId(userId+"@"+domain);
-    		
-			//아이디가 중복되는지 확인
-			int checkId = memberService.checkUserId(m.getUserId());
 			
-			if(checkId>0) {//중복되면 내다버리기
+			//아이디가 중복되는지 확인
+			int result = memberService.checkUserId(m.getUserId());
+			
+			if(result>0) {
+				//중복되면 내다버리기
 	    		model.addAttribute("errorMsg","잘못된 아이디입니다.");
 	    		return "common/errorPage";
+	    		
+			}else {
+				//중복 안 되면 아이디 업데이트
+				result = memberService.updateId(m);
+				
+				
+				if(result == 0) {
+					//업데이트 안 되면 내다버리기
+		    		model.addAttribute("errorMsg","500 err");
+		    		return "common/errorPage";
+				}
 			}
 			
+			
 			//토큰 생성기로 보내기
-			int result = tokenGenerator.insertMemberToken(m);
+			result = tokenGenerator.insertMemberToken(m);
 			if(result>0) {
 				session.setAttribute("alertMsg", "이메일을 확인해 주세요.");
 				return "redirect:/";
@@ -159,6 +172,59 @@ public class EmailController {
     		model.addAttribute("errorMsg","500err");
     		return "common/errorPage";
 		}
+    }
+    
+    //마이페이지에서 이메일 변경
+    @GetMapping("updateEmail.me")
+    public String updateEmailMypage(HttpSession session, Model model, String userId, String domain) {
+    	try {
+    		Member m = (Member)session.getAttribute("loginUser");
+    		
+    		//유효성 검사
+    		if(m == null || !userId.matches("^[a-zA-Z0-9]{1,30}$")) {
+    			throw new NullPointerException();
+    		}
+    		
+    		//입력받은 아이디와 도메인을 이메일 형식으로 변경
+    		m.setUserId(userId+"@"+domain);
+    		
+    		//아이디가 중복되는지 확인
+    		int result = memberService.checkUserId(m.getUserId());
+    		
+    		if(result>0) {
+    			//중복되면 내다버리기
+    			model.addAttribute("errorMsg","잘못된 아이디입니다.");
+    			return "common/errorPage";
+    			
+    		}else {
+    			//중복 안 되면 아이디 업데이트
+    			result = memberService.updateId(m);
+    			
+    			if(result == 0) {
+    				//업데이트 안 되면 내다버리기
+    				model.addAttribute("errorMsg","500 err");
+    				return "common/errorPage";
+    			}
+    		}
+    		
+    		//토큰 생성기로 보내기
+    		result = tokenGenerator.updateEmailToken(m);
+    		if(result>0) {
+    			session.setAttribute("alertMsg", "이메일을 확인해 주세요.");
+    			
+    			//로그아웃
+    			session.removeAttribute("loginUser");
+    			return "redirect:/";
+    		}else {
+    			model.addAttribute("errorMsg","이메일 송신이 실패하였습니다.");
+    			return "common/errorPage";
+    		}
+    		
+    	} catch (Exception e) {
+    		e.printStackTrace();
+    		model.addAttribute("errorMsg","500err");
+    		return "common/errorPage";
+    	}
     }
     
 }

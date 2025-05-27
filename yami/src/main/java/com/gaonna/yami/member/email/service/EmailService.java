@@ -13,7 +13,7 @@ public interface EmailService {
 	int deleteToken(Member m);
 
 	//회원가입 - 생성된 토큰 저장
-	int insertMemberToken(MemberToken memberToken);
+	int insertToken(MemberToken memberToken);
 
 	//회원가입 - 이메일 송출
 	int insertMemberSendEmail(String userId, MemberToken memberToken);
@@ -26,6 +26,9 @@ public interface EmailService {
 
 	//토큰 만료, 해당 토큰 주인 찾기
 	Member resendEmail(MemberToken mt);
+
+	//마이페이지 아이디 변경
+	int updateEmailToken(Member m, String token);
 
 
 }

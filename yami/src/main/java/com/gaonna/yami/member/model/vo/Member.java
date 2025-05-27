@@ -16,10 +16,18 @@ public class Member {
 	private String userPwd;
 	private String userName;
 	private String phone;
+	private int point;
 	
 	private Date enrollDate;
 	private Date modifyDate;
 	private String status;
 	
-	private String userRole; //권한 테이블에 값이 있으면 Y, 없으면 N
+	
+	/*
+	 * 권한 테이블에 값이 없으면 roleType == N
+	 * 슈퍼 관리자 : superAdmin
+	 * 관리자 : admin
+	 * 뷰어 : viewer
+	 */
+	private String roleType;
 }

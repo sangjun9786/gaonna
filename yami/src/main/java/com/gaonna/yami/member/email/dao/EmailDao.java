@@ -13,8 +13,8 @@ public class EmailDao {
 		return sqlSession.update("emailMapper.deleteToken",m);
 	}
 	
-	public int insertMemberToken(SqlSessionTemplate sqlSession, MemberToken memberToken) {
-		return sqlSession.insert("emailMapper.insertMemberToken", memberToken);
+	public int insertToken(SqlSessionTemplate sqlSession, MemberToken memberToken) {
+		return sqlSession.insert("emailMapper.insertToken", memberToken);
 	}
 
 	public int confirmEmailInsert(SqlSessionTemplate sqlSession, MemberToken mt) {

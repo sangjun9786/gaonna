@@ -40,7 +40,7 @@
                                     <input list="domain" name="domain" id="domainList" class="form-control">
                                     <datalist id="domain">
                                         <option value="naver.com">naver.com</option>
-                                        <option value="goole.com">google.com</option>
+                                        <option value="gmail.com">gmail.com</option>
                                     </datalist>
                                 </div>
                             </div>
@@ -53,7 +53,7 @@
 
                             <!-- 제출 -->
                             <div class="d-grid">
-                                <button type="button" id="loginFormSubmit" class="btn btn-secondary" disabled>
+                                <button type="submit" id="loginFormSubmit" class="btn btn-secondary" disabled>
                                     <span class="validation-message">모든 필수 항목을 입력하세요</span>
                                 </button>
                             </div>
@@ -135,17 +135,15 @@
         submitBtn.disabled = true;
     };
 
-    // 엔터 누르면 제출됨
-    document.getElementById('loginForm').addEventListener('keydown', function(event) {
-        if (event.key === 'Enter' && !document.getElementById("loginFormSubmit").disabled) {
-            this.submit();
-        }
-    });
-
-    // 로그인 버튼 누르면 제출됨
-    document.getElementById('loginFormSubmit').addEventListener('click', function() {
-        document.getElementById('loginForm').submit();
-    });
+    //제출 버튼 이벤트 핸들러
+	document.getElementById("loginForm").addEventListener("submit", function(event) {
+	    event.preventDefault();
+	    
+	    $('#loginFormSubmit').prop('disabled', true)
+           .html(`<span class="spinner-border spinner-border-sm" role="status"></span> 처리 중...`);
+	    
+		this.submit();
+	});
     </script>
 
 </body>
