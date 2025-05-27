@@ -1,0 +1,28 @@
+package com.gaonna.yami.common;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
+
+import org.springframework.web.servlet.HandlerInterceptor;
+
+public class MemberInterceptor implements HandlerInterceptor{
+	
+	//요청 처리 전 인터셉터
+	@Override
+	public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler)
+			throws Exception {
+		//request : 사용자 요청
+		//response : 사용자에게 보낼 정보
+		//handler : 요청 처리 주체
+		
+		//로그인이 되어 있지 않으면 넌 모찌나간다
+		HttpSession session = request.getSession();
+		if(session.getAttribute("loginUser") == null) {
+			session.setAttribute("alerMsg", "로그인을 해 주세요.");
+			response.sendRedirect(request.getContextPath());
+			return false;
+		}
+		return HandlerInterceptor.super.preHandle(request, response, handler);
+	}
+}
