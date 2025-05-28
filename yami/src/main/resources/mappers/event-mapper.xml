@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="eventMapper">
+
+	<resultMap type="Event" id="eventResultMap">
+		<result column="EVENT_NO" property="eventNo"/>
+		<result column="USER_NO" property="userNo"/>
+		<result column="LAST_DATE" property="lastDate"/>
+	</resultMap>
+	
+	<select id="eventInfo" parameterType="Member" resultMap="eventResultMap">
+		SELECT *
+		FROM EVENT
+		WHERE USER_NO = #{loginUser.userNo}
+	</select>
+	
+	<insert id="insertEvent" parameterType="Member">
+		INSERT INTO EVENT
+		VALUES(SEQ_ENO.NEXTVAL, #{loginUser.userNo}, 0);
+	</insert>
+	
+</mapper>
