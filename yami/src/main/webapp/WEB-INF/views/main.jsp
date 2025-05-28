@@ -8,9 +8,9 @@ pageEncoding="UTF-8"%>
     <title>YAMI</title>
   </head>
   <body>
-    <%@include file="/WEB-INF/views/common/header.jsp"%>
-    
-    <br><br><br><br><br><br>
+  <%@include file="/WEB-INF/views/common/header.jsp" %>
 	<a href="${root}/lab">실험실</a>
+	
+	root : ${root }
   </body>
 </html>
