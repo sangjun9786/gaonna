@@ -60,10 +60,27 @@ pageEncoding="UTF-8"%>
     <br>
     <hr>
     <br>
-    <form action="${root}/address.lab"></form>
-    주소 입력 : <input type="textarea" name="address" id="address">
+    <form action="${root}/address.lab">
+	    주소 입력 : <input type="textarea" name="address" id="address">
+	    <button type="submit">DORO?</button>
+    </form>
     <br>
-    <div>뭘봐요</div>
+    <div id="addresses">
+    	<c:choose>
+    		<c:when test="${empty sessionScope.currAdd }">
+    			뭘봐요
+    		</c:when>
+    		<c:otherwise>
+    			가까운 장소 검색 결과 : <br>
+    			<c:set var="currAdd" value="${sessionScope.currAdd}" />
+    			<ul>
+					<c:forEach var="address" items="${currAdd}">
+						<li>${address}</li>
+					</c:forEach>
+				</ul>
+    		</c:otherwise>
+    	</c:choose>
+    </div>
     
     <br>
     <hr>
@@ -102,6 +119,8 @@ pageEncoding="UTF-8"%>
 				};
 
 		var map = new naver.maps.Map("map", mapOptions);
+		
+		//주소 찾기
     </script>
     
   </body>

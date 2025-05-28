@@ -3,10 +3,14 @@ package com.gaonna.yami.location.service;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.URI;
+import java.net.URLEncoder;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
+import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
 import java.util.Base64;
+import java.util.List;
 
 import javax.crypto.Mac;
 import javax.crypto.spec.SecretKeySpec;
@@ -14,6 +18,7 @@ import javax.crypto.spec.SecretKeySpec;
 import org.springframework.stereotype.Service;
 
 import com.gaonna.yami.location.vo.Location;
+import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 
@@ -122,7 +127,6 @@ public class LocationServiceImpl implements LocationService{
 		//받아오기
 		HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
 		String result =  response.body();
-		System.out.println(result);
 		
 		// JSON 파싱
 	    JsonObject responseJson = JsonParser.parseString(result).getAsJsonObject();
@@ -135,9 +139,57 @@ public class LocationServiceImpl implements LocationService{
 	    lo.setArea2(region.getAsJsonObject("area2").get("name").getAsString());
 	    lo.setArea3(region.getAsJsonObject("area3").get("name").getAsString());
 	    
-	    System.out.println(lo);
-	    
 		return lo;
+	}
+	
+	@Override
+	public List<String> geocode(String address) throws Exception{
+		
+		address = URLEncoder.encode(address, StandardCharsets.UTF_8.toString());
+		String timestamp = String.valueOf(System.currentTimeMillis());
+		
+		String url = new StringBuilder()
+				.append(geocoding)
+				.append("?query=")
+				.append(address)
+				.toString();
+		
+		//시그니처 생성
+		String signature = makeSignature(url, timestamp);
+		
+		//http형식으로 던지기
+		HttpClient client = HttpClient.newHttpClient();
+		HttpRequest request = HttpRequest.newBuilder()
+		    .uri(URI.create(url))
+//		    .header("x-ncp-apigw-timestamp", timestamp)
+//		    .header("x-ncp-iam-access-key", accessKey)
+		    .header("Accept", "json")
+//		    .header("x-ncp-apigw-signature-v2", signature)
+		    .header("x-ncp-apigw-api-key-id", keyId)
+		    .header("x-ncp-apigw-api-key", key)
+		    .GET()
+		    .build();
+		
+		//받아오기
+		HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
+		String result =  response.body();
+		
+		//오류 : {"error":{"errorCode":500,"message":"서비스 예외 오류"}}
+		
+		
+		//결과 담을 컬렉숀
+		List<String> addresses = new ArrayList<>();
+		
+		// JSON 파싱
+	    JsonArray array = JsonParser.parseString(result).getAsJsonArray();
+	    for (int i = 0; i < array.size(); i++) {
+            String roadAddress = array.get(i).getAsJsonObject()
+            		.getAsJsonArray("addresses").get(0)
+            		.getAsJsonObject().get("roadAddress").getAsString();
+            addresses.add(roadAddress);
+	    }
+	    
+		return addresses;
 	}
 
 }

@@ -1,5 +1,7 @@
 package com.gaonna.yami.location.controller;
 
+import java.util.List;
+
 import javax.servlet.http.HttpSession;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -30,18 +32,19 @@ public class LocationCotroller {
 			return "redirect:/lab";
 		} catch (Exception e) {
 			e.printStackTrace();
-			return null;
+			return "redirect:/lab";
 		}
 	}
 	@RequestMapping("address.lab")
 	public String getAddress(HttpSession session, Model model, String address) {
 		try {
-			
-			
-			return null;
+			session.removeAttribute("currAdd");
+			List<String> result = service.geocode(address);
+			session.setAttribute("currAdd", result);
+			return "redirect:/lab";
 		} catch (Exception e) {
 			e.printStackTrace();
-			return null;
+			return "redirect:/lab";
 		}
 	}
 }
