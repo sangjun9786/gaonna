@@ -26,24 +26,7 @@
 	<a href="${pageScope.root }">메인화면</a>
 	
 	<br>
-	
-	<c:choose>
-		<c:when test="${empty sessionScope.loginUser}">
-			<a href="${pageScope.root}/insert.me">회원가입</a>
-			<br>
-			<a href="${pageScope.root}/login.me">로그인</a>
-		</c:when>
-		<c:otherwise>
-			${sessionScope.loginUser.userName}님 안녕하세요
-			<br>
-			<a href="${pageScope.root}/mypage.me">마이페이지</a>
-			<c:if test="${pageScope.loginUser.roleType != 'N'}">
-				<br>
-				<a href="${pageScope.root}/adminpage.ad">운영실</a>
-			</c:if>
-			<a href="${pageScope.root}/logout.me">로그아웃</a>
-		</c:otherwise>
-	</c:choose>
+
 	 
 </body>
 </html>
