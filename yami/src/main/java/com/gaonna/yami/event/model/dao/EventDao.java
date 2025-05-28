@@ -10,7 +10,15 @@ import com.gaonna.yami.member.model.vo.Member;
 public class EventDao {
 
 	public Event eventInfo(SqlSessionTemplate sqlSession, Member loginUser) {
-		return sqlSession.selectOne("eventMapper.eventInfo", loginUser);
+		
+		Event event = sqlSession.selectOne("eventMapper.eventInfo", loginUser);
+		
+		if(event != null) {
+			return event;
+		}else {
+			sqlSession.insert("eventMapper.insertEvent", loginUser);
+			return sqlSession.selectOne("eventMapper.eventInfo", loginUser);
+		}
 	}
 
 }
