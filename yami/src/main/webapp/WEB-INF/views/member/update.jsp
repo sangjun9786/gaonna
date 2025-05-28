@@ -39,6 +39,15 @@
                                 <td class="border-start ps-3">${loginUser.userId}</td>
                             </tr>
                             
+                            <!-- 비밀번호 수정 -->
+                            <tr data-bs-toggle="modal" data-bs-target="#passwordModal" 
+							    class="editable-row cursor-pointer">
+							    <td class="fw-bold text-primary">
+							        <i class="bi bi-shield-lock me-2"></i>눌러서 비밀번호 변경
+							    </td>
+							    <td class="border-start ps-3">••••••••</td>
+							</tr>
+                            
                             <!-- 이름 수정 -->
                             <tr data-bs-toggle="modal" data-bs-target="#nameModal"
                                 class="editable-row cursor-pointer">
@@ -127,6 +136,51 @@
                       data-bs-dismiss="modal">닫기</button>
                     <button type="submit" class="btn btn-primary"
                      id="insertSubmit" disabled>이메일 변경</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- 비밀번호 모달 -->
+<div class="modal fade" id="passwordModal" tabindex="-1" 
+  aria-labelledby="passwordModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header bg-light">
+                <h5 class="modal-title" id="passwordModalLabel">
+                    <i class="bi bi-shield-lock me-2"></i>비밀번호 변경
+                </h5>
+                <button type="button" class="btn-close" 
+                  data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            
+            <form id="passwordUpdateForm" action="${root}/updatePwd.me" method="post">
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <label for="newPwd" class="form-label">새 비밀번호</label>
+                        <input type="password" class="form-control" 
+                            id="newPwd" name="newPwd" required>
+                        <div id="pwdValidation" class="form-text text-muted">
+                            특수문자 제외 4~30자리
+                        </div>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="confirmPwd" class="form-label">비밀번호 확인</label>
+                        <input type="password" class="form-control" 
+                            id="confirmPwd" required>
+                        <div id="pwdCheckResult" class="invalid-feedback"></div>
+                    </div>
+                </div>
+                
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" 
+                      data-bs-dismiss="modal">닫기</button>
+                    <button type="submit" class="btn btn-primary" 
+                      id="pwdSubmitBtn" disabled>
+                        <span>비밀번호 변경</span>
+                    </button>
                 </div>
             </form>
         </div>
@@ -327,6 +381,81 @@ document.getElementById('emailUpdateForm').addEventListener('submit', function(e
     
     location.href = "${root}/updateEmail.me?userId="+userId+"&domain="+domain;
 });
+
+//-------------------비밀번호 변경-------------------//
+let pwdPass = false;
+const pwdRegex = /^[A-Za-z0-9]{4,30}$/;
+
+//새 비밀번호 입력 검증
+document.getElementById('newPwd').addEventListener('input', function() {
+    validatePassword();
+});
+
+// 비밀번호 확인 입력 검증
+document.getElementById('confirmPwd').addEventListener('input', function() {
+    validatePassword();
+});
+
+function validatePassword() {
+    const newPwd = document.getElementById('newPwd').value;
+    const confirmPwd = document.getElementById('confirmPwd').value;
+    const resultDiv = document.getElementById('pwdCheckResult');
+    
+    // 기본 조건 검사
+    if (!pwdRegex.test(newPwd)) {
+        resultDiv.textContent = "특수문자 제외 4~30자리로 입력해주세요";
+        resultDiv.className = "invalid-feedback d-block";
+        pwdPass = false;
+    } else if (newPwd !== confirmPwd) {
+        resultDiv.textContent = "비밀번호가 일치하지 않습니다";
+        resultDiv.className = "invalid-feedback d-block";
+        pwdPass = false;
+    } else {
+        resultDiv.textContent = "사용 가능한 비밀번호입니다";
+        resultDiv.className = "valid-feedback d-block";
+        pwdPass = true;
+    }
+    
+    togglePwdSubmit();
+}
+
+function togglePwdSubmit() {
+    const submitBtn = document.getElementById('pwdSubmitBtn');
+    submitBtn.disabled = !pwdPass;
+    submitBtn.classList.toggle('btn-secondary', !pwdPass);
+    submitBtn.classList.toggle('btn-primary', pwdPass);
+}
+
+document.getElementById('passwordUpdateForm').addEventListener('submit', function(e) {
+    e.preventDefault();
+    
+    if (pwdPass) {
+        const submitBtn = document.getElementById('pwdSubmitBtn');
+        
+        // 로딩 상태 활성화
+        submitBtn.innerHTML = `
+            <span class="spinner-border spinner-border-sm" 
+                  role="status" aria-hidden="true"></span>
+            처리 중...
+        `;
+        submitBtn.disabled = true;
+        
+        // 서버 제출
+        setTimeout(() => {
+            this.submit();
+        }, 1500);
+    }
+});
+
+//모달 닫히면 초기화
+document.getElementById('passwordModal').addEventListener('hidden.bs.modal', () => {
+    document.getElementById('passwordUpdateForm').reset();
+    document.getElementById('pwdCheckResult').className = "";
+    document.getElementById('pwdSubmitBtn').innerHTML = `<span>비밀번호 변경</span>`;
+    pwdPass = false;
+    togglePwdSubmit();
+});
+
 
 //-------------------이름 변경-------------------//
 let namePass = false;

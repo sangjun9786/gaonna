@@ -93,6 +93,13 @@
 			MODIFYDATE = SYSDATE
 		where user_no = #{userNo}
 	</update>
+	
+	<update id="updatePwd">
+		update member
+		set user_pwd = #{userPwd},
+			MODIFYDATE = SYSDATE
+		where user_no = #{userNo}
+	</update>
 
 
 </mapper>
