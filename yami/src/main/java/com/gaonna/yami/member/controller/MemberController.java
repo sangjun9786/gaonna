@@ -26,6 +26,12 @@ public class MemberController {
 	@Autowired
 	private BCryptPasswordEncoder bcrypt;
 	
+	//실험실 이동
+	@GetMapping("lab")
+	public String lab() {
+		return "member/lab";
+	}
+	
 	//회원가입 페이지 이동
 	@GetMapping("insert.me")
 	public String insertMember() {

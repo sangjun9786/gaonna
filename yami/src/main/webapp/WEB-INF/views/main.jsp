@@ -9,43 +9,8 @@ pageEncoding="UTF-8"%>
   </head>
   <body>
     <%@include file="/WEB-INF/views/common/header.jsp"%>
-	
-	<hr>
-	<h3>이메일 실험하기</h3>
-	<br>
-    <form action="${root}/sendEmail" method="post">
-      이메일 : <input type="email" name="toAddress" required/> <br />
-      제목 : <input type="text" name="subject" required/> <br />
-      내용 : <input type="text" name="content" required/> <br />
-      <button type="submit">이메일 보내기</button>
-    </form>
     
-    <hr>
-    <br>
-    <button type="button" id='location'>위치확인</button>
-    <div id = 'locationDiv'></div>
-    
-    
-    <br>
-    <hr>
-    <br>
-
-    <h3>바로가기</h3>
-    <br>
-    <a href="http://localhost:8888/yami/confirmEmailInsert.me?tokenNo=0&token=0">회원가입 이메일 만료 체험</a>
-    <br>
-    
-    
-    <script type="text/javascript">
-    	document.getElementById('location').addEventListener('click',function(){
-		    navigator.geolocation.getCurrentPosition(function(position) {
-		    	let div = document.getElementById('locationDiv');
-		    	div.innerHTML ="위도 : "+position.coords.latitude;
-		    	div.innerHTML +=" 경도 : "+position.coords.longitude;
-		    	div.innerHTML +=" 시간 : "+position.timestamp;
-		    });
-    	});
-    </script>
-    
+    <br><br><br><br><br><br>
+	<a href="${root}/lab">실험실</a>
   </body>
 </html>

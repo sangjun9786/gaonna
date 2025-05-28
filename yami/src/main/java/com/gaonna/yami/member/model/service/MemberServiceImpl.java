@@ -63,7 +63,7 @@ public class MemberServiceImpl implements MemberService{
 			//권한 있으면 조회해서 넣어주기
 			m.setRoleType(dao.selectRoleType(sqlSession,m.getUserNo()));
 		}
-		System.out.println(m);
+		
 		//비밀번호 검증
 		if(bcrypt.matches(userPwd,m.getUserPwd())) {
 			return m;
