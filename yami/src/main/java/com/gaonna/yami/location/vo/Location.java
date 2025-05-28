@@ -1,4 +1,4 @@
-package com.gaonna.yami.member.model.vo;
+package com.gaonna.yami.location.vo;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -7,11 +7,11 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 @Data
-public class MemberLocation {
-	private int userNo;
-	private double latitude; //위도
-	private double longitude; //경도
-	private long timestamp; //시간 - 1970.1.1부터 ms단위
+public class Location {
+	private int locationNo; //위치 식별번호
+	private String latitude; //위도
+	private String longitude; //경도
+	private String timestamp; //시간 - 1970.1.1부터 ms단위
 	
 	private String naverCode; //해당 행정구역 네이버 코드
 	private String area1; //시/도
