@@ -4,7 +4,9 @@ pageEncoding="UTF-8"%>
 <!DOCTYPE html>
 <html>
   <head>
-	<script type="text/javascript" src="https://oapi.map.naver.com/openapi/v3/maps.js?ncpKeyId=85oq183idp"></script>
+	<script type="text/javascript" 
+		src="https://oapi.map.naver.com/openapi/v3/maps.js?ncpKeyId=85oq183idp">
+	</script>
     <meta charset="UTF-8"/>
     <title>YAMI</title>
   </head>
@@ -41,7 +43,7 @@ pageEncoding="UTF-8"%>
     </div>
     <c:set var="currLo" value="${sessionScope.currLo}"/>
     
-    <form action="${root}/get.lo" method="post" id="locationForm">
+    <form action="${root}/currLo.lab" method="post" id="locationForm">
     	<input type="hidden" name="latitude" id="latitude">
     	<input type="hidden" name="longitude" id="longitude">
     	<input type="hidden" name="timestamp" id="timestamp">
@@ -51,13 +53,17 @@ pageEncoding="UTF-8"%>
     <hr>
     <br>
 
+	<h3>Web Dynamic Map</h3>
     <div id="map" style="width: 600px; height: 400px"></div>
-
-    <script>
     
-
-    </script>
     
+    <br>
+    <hr>
+    <br>
+    <form action="${root}/address.lab"></form>
+    주소 입력 : <input type="textarea" name="address" id="address">
+    <br>
+    <div>뭘봐요</div>
     
     <br>
     <hr>
@@ -71,12 +77,15 @@ pageEncoding="UTF-8"%>
     
     <script type="text/javascript">
     	let div = document.getElementById('locationDiv');
-    	let latitude = position.coords.latitude;
-    	let longitude = position.coords.longitude;
-    	let timestamp = position.timestamp;
+    	let latitude;
+    	let longitude;
+    	let timestamp;
     	
     	document.getElementById('location').addEventListener('click',function(){
 		    navigator.geolocation.getCurrentPosition(function(position) {
+		    	latitude = position.coords.latitude;
+		    	longitude = position.coords.longitude;
+		    	timestamp = position.timestamp;
 		    	
 		    	document.getElementById('latitude').value = latitude;
 		    	document.getElementById('longitude').value = longitude;
@@ -88,8 +97,8 @@ pageEncoding="UTF-8"%>
     	
     	//지도
 		var mapOptions = {
-				  center: new naver.maps.LatLng(longitude, latitude),
-				  zoom: 10,
+				  center: new naver.maps.LatLng(37.5392375,126.9003409),
+				  zoom: 15,
 				};
 
 		var map = new naver.maps.Map("map", mapOptions);

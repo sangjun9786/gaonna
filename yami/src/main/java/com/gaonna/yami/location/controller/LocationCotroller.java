@@ -18,7 +18,7 @@ public class LocationCotroller {
 	// https://api.ncloud-docs.com/docs/application-maps-overview
 	
 	//실험실
-	@RequestMapping("get.lo")
+	@RequestMapping("currLo.lab")
 	public String getLocation(HttpSession session, Model model, Location lo) {
 		try {
 			session.removeAttribute("currLo");
@@ -28,6 +28,17 @@ public class LocationCotroller {
 			Location currLo = service.reverseGeocode(lo);
 			session.setAttribute("currLo", currLo);
 			return "redirect:/lab";
+		} catch (Exception e) {
+			e.printStackTrace();
+			return null;
+		}
+	}
+	@RequestMapping("address.lab")
+	public String getAddress(HttpSession session, Model model, String address) {
+		try {
+			
+			
+			return null;
 		} catch (Exception e) {
 			e.printStackTrace();
 			return null;
