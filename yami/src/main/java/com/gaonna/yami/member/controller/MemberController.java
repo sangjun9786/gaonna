@@ -37,7 +37,6 @@ public class MemberController {
 	public String insertMember() {
 		return "member/enrollForm";
 	}
-
 	
 	//회원가입
 	@Transactional
@@ -122,6 +121,25 @@ public class MemberController {
 		}
 	}
 	
+	//ajax 비밀번호 확인
+	@ResponseBody
+	@RequestMapping("checkUserPwd.me")
+	public String checkUserId(HttpSession session, Model model, String inputPwd) {
+		try {
+			Member m = (Member)session.getAttribute("loginUser");
+			
+			if(bcrypt.matches(inputPwd,m.getUserPwd())) {
+				return "pass";
+			}else {
+				return "noPass";
+			}
+			
+		}catch(Exception e){
+			e.printStackTrace();
+			return "err";
+		}
+	}
+	
 	//로그인 페이지로 이동
 	@GetMapping("login.me")
 	public String loginMember() {
@@ -184,9 +202,40 @@ public class MemberController {
 		}
 	}
 	@GetMapping("update.me")
-	public String updateMember(HttpSession session, Model model) {
+	public String updateMember(HttpSession session, Model model, String inputPwd) {
 		try {
 			return "member/update";
+		} catch (Exception e) {
+			e.printStackTrace();
+			return errorPage(model,"500 err");
+		}
+	}
+	
+	//마이페이지 - 비밀번호 변경
+	@PostMapping("updatePwd.me")
+	public String updatePwd(HttpSession session, Model model,
+			String newPwd) {
+		try {
+			Member m = (Member)session.getAttribute("loginUser");
+			
+			if(!newPwd.matches("^[a-zA-Z0-9]{4,30}$")) {
+				//유효성 확인
+				return errorPage(model, "비밀번호를 확인해주세요.");
+				
+			}
+			
+			//비밀번호 암호화
+			m.setUserPwd(bcrypt.encode(newPwd));
+			
+			if(service.updatePwd(m)>0) {
+				//수정 성공하면 로그인 세션 지우기
+				session.removeAttribute("loginUser");
+				session.setAttribute("alertMsg", "비밀번호가 변경되었습니다. 다시 로그인 해 주세요.");
+				return "redirect:/";
+			}else {
+				return errorPage(model,"500 err");
+			}
+			
 		} catch (Exception e) {
 			e.printStackTrace();
 			return errorPage(model,"500 err");

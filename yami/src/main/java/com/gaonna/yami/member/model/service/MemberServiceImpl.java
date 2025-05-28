@@ -84,4 +84,8 @@ public class MemberServiceImpl implements MemberService{
 	public int updatePhone(Member m) {
 		return dao.updatePhone(sqlSession,m);
 	}
+	@Override
+	public int updatePwd(Member m) {
+		return dao.updatePwd(sqlSession,m);
+	}
 }
