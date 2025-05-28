@@ -119,8 +119,6 @@ pageEncoding="UTF-8"%>
 				};
 
 		var map = new naver.maps.Map("map", mapOptions);
-		
-		//주소 찾기
     </script>
     
   </body>
