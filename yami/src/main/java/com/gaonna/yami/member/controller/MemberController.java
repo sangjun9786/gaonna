@@ -47,7 +47,7 @@ public class MemberController {
 				return errorPage(model, "필수 항목을 확인해 주세요.");
 			}
 
-			if(m.getPhone().equals("--")) {
+			if(m.getPhone().equals("")) {
 				//전화번호를 입력하지 않았을 경우 전화번호 비우기
 				m.setPhone(null);
 			}else if(!m.getPhone().matches("^\\d{3}-\\d{3,4}-\\d{4}$")) {
