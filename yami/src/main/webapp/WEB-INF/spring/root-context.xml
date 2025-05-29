@@ -18,7 +18,15 @@
 	 <!-- 1단계 : db접속정보 등록 -->
 	 <bean class="org.apache.commons.dbcp2.BasicDataSource" id="dataSource">
 	 	<property name="driverClassName" value="oracle.jdbc.OracleDriver"/>
+	 	
+	 	
+	 	<!--
+	 	<property name="url" value="jdbc:oracle:thin:@localhost:1521:xe"/>
+	 	 -->
+	 	
 	 	<property name="url" value="jdbc:oracle:thin:@192.168.150.31:1521:xe"/>
+	 	 
+	 	
 	 	<property name="username" value="yami"/>
 	 	<property name="password" value="yami"/>
 	 </bean>

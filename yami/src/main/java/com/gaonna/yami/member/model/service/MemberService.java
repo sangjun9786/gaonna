@@ -22,11 +22,15 @@ public interface MemberService {
 	//아이디 업데이트
 	int updateId(Member m);
 
+	//비번 업데이트
+	int updatePwd(Member m);
+	
 	//이름 업데이트
 	int updateName(Member m);
 	
 	//전화번호 업데이트
 	int updatePhone(Member m);
+
 
 	
 }

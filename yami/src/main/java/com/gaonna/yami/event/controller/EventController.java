@@ -24,7 +24,7 @@ public class EventController {
 			session.setAttribute("event", event);
 			return "redirect:/";
 		}else {
-			session.setAttribute("errorMsg", "이벤트 테이블 조회 실패");
+			session.setAttribute("alertMsg", "이벤트 테이블 조회 실패");
 			return "redirect:/";
 		}
 		
