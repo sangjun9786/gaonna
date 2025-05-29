@@ -31,9 +31,7 @@ pageEncoding="UTF-8"%>
     		<c:when test="${not empty currLo}">
 		    	흠...당신은
 		    	<br>
-		    	좌표가 '${currLo.longitude}, ${currLo.latitude}'이니
-		    	<br>
-		    	'${currLo.roadAddress}'에 있군요.
+		    	'${currLo}'에 있군요.
 		    	<br>
     		</c:when>
     		<c:otherwise>
@@ -41,6 +39,10 @@ pageEncoding="UTF-8"%>
     		</c:otherwise>
     	</c:choose>
     </div>
+    <br>
+    <button type="button" id='location2'>DORO!!</button>
+    <div id="location2Div"></div>
+    
     <c:set var="currLo" value="${sessionScope.currLo}"/>
     
     <form action="${root}/currLo.lab" method="post" id="locationForm">
@@ -116,11 +118,27 @@ pageEncoding="UTF-8"%>
 		    	longitude = position.coords.longitude;
 		    	timestamp = position.timestamp;
 		    	
+		    	console.log("위도 : "+latitude);
+		    	console.log("경도 : "+longitude);
+		    	
+		    	
 		    	document.getElementById('latitude').value = latitude;
 		    	document.getElementById('longitude').value = longitude;
 		    	document.getElementById('timestamp').value = timestamp;
 		    	
 		    	document.getElementById('locationForm').submit();
+		    });
+    	});
+    	
+    	document.getElementById('location2').addEventListener('click',function(){
+		    navigator.geolocation.getCurrentPosition(function(position) {
+		    	latitude = position.coords.latitude;
+		    	longitude = position.coords.longitude;
+		    	timestamp = position.timestamp;
+		    	let location2Div = document.getElementById("location2Div");
+		    	
+		    	location2Div.innerHTML = '위도 :'+latitude+'<br>';
+		    	location2Div.innerHTML += '경도 :'+longitude+'<br>';
 		    });
     	});
     	

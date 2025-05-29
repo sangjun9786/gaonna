@@ -1,6 +1,7 @@
 package com.gaonna.yami.member.controller;
 
 import javax.servlet.http.HttpSession;
+import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -12,6 +13,8 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import com.gaonna.yami.location.service.LocationService;
+import com.gaonna.yami.location.vo.Coord;
 import com.gaonna.yami.member.common.TokenGenerator;
 import com.gaonna.yami.member.model.service.MemberService;
 import com.gaonna.yami.member.model.vo.Member;
@@ -22,6 +25,8 @@ public class MemberController {
 	public MemberService service;
 	@Autowired
 	public TokenGenerator tokenGenerator;
+	@Autowired
+	public LocationService locationService;
 	
 	@Autowired
 	private BCryptPasswordEncoder bcrypt;
@@ -293,6 +298,38 @@ public class MemberController {
 			return errorPage(model,"500 err");
 		}
 	}
+	
+	//우리동네 설정페이지로
+	@GetMapping("dongne.me")
+	public String myDongne(HttpSession session, Model model){
+		try {
+			//유저 식별번호 추출
+			int userNo = ((Member)session.getAttribute("loginUser")).getUserNo();
+			
+			//해당 유저의 우리동네들을 조회하기
+			List<Coord> coords = locationService.selectUserDongne(userNo);
+			session.setAttribute("coords", coords);
+			System.out.println(coords);
+			return "member/dongne";
+		} catch (Exception e) {
+			e.printStackTrace();
+			return errorPage(model,"500 err");
+		}
+	}
+	
+	//주소록 설정페이지로
+	@GetMapping("deliveryAddress.me")
+	public String myDeliveryAddress(HttpSession session, Model model){
+		try {
+			return "member/deliveryAddress";
+		} catch (Exception e) {
+			e.printStackTrace();
+			return errorPage(model,"500 err");
+		}
+	}
+	
+	
+	
 	
 	//유저 식별번호로 유저 아이디 조회
 	public String selectUserId(int userNo) {

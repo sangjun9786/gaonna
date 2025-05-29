@@ -30,4 +30,7 @@ public class Member {
 	 * 뷰어 : viewer
 	 */
 	private String roleType;
+	
+	private int mainCoord;
+	private int mainLocation;
 }

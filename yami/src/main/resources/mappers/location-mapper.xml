@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="locationMapper">
+
+	<resultMap type="Location" id="locationResultMap">
+		<result column="LOCATION_NO" property="locationNo"/>
+		<result column="LOCATION_DATE" property="locationDate"/>
+		<result column="ROAD_ADDRESS" property="roadAddress"/>
+		<result column="JINBUN_ADDRESS" property="jibunAddress"/>
+		<result column="DETAIL_ADDRESS" property="detailAddress"/>
+		<result column="ZIP_CODE" property="zipCode"/>
+	</resultMap>
+	
+	<resultMap type="Coord" id="coordResultMap">
+		<result column="COORD_NO" property="coordNo"/>
+		<result column="COORD_ADDRESS" property="coordAddress"/>
+		<result column="LOCATION_DATE" property="locationDate"/>
+	</resultMap>
+	
+	<select id="selectUserDongne" parameterType="int" resultMap="coordResultMap">
+		select c.coord_no, 
+			c.latitude,
+			c.longitude,
+			c.coord_address,
+			c.coord_date
+		from coords c
+		left join member_coords mc
+			on (c.coord_no = mc.coord_no)
+		left join member m
+			on(mc.user_no = m.user_no)
+		where m.user_no = #{userNo}
+	</select>
+	
+</mapper>

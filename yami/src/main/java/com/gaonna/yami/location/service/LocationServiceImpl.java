@@ -9,14 +9,14 @@ import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
-import java.util.Base64;
 import java.util.List;
 
-import javax.crypto.Mac;
-import javax.crypto.spec.SecretKeySpec;
-
+import org.mybatis.spring.SqlSessionTemplate;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.gaonna.yami.location.dao.LocationDao;
+import com.gaonna.yami.location.vo.Coord;
 import com.gaonna.yami.location.vo.Location;
 import com.google.gson.Gson;
 import com.google.gson.JsonArray;
@@ -26,6 +26,11 @@ import com.google.gson.JsonParser;
 
 @Service
 public class LocationServiceImpl implements LocationService{
+	@Autowired
+	private SqlSessionTemplate sqlSession;
+	@Autowired
+	private LocationDao dao;
+	
     String staticMap;
     String directions5;
     String directions15;
@@ -94,15 +99,15 @@ public class LocationServiceImpl implements LocationService{
 	*/
 
 	@Override
-	public Location reverseGeocode(Location lo) throws Exception{
+	public String reverseGeocode(Coord coord) throws Exception{
 		
 		//url 만들기
 		String url = new StringBuilder()
 				.append(reverseGeocoding)
 				.append("?coords=")
-				.append(lo.getLongitude())
+				.append(coord.getLongitude())
 				.append(",")
-				.append(lo.getLatitude())
+				.append(coord.getLatitude())
 				.append("&output=json")
 				.append("&orders=admcode")
 				.toString();
@@ -134,7 +139,7 @@ public class LocationServiceImpl implements LocationService{
 	        .getAsJsonObject("region");
 	        
 	    // 주소 정보 설정
-	    lo.setRoadAddress(new StringBuilder()
+	    String address = new StringBuilder()
 				.append(region.getAsJsonObject("area1").get("name").getAsString())
 				.append(" ")
 				.append(region.getAsJsonObject("area2").get("name").getAsString())
@@ -142,9 +147,9 @@ public class LocationServiceImpl implements LocationService{
 				.append(region.getAsJsonObject("area3").get("name").getAsString())
 				.append(" ")
 				.append(region.getAsJsonObject("area4").get("name").getAsString())
-				.toString());
+				.toString();
 	    
-		return lo;
+		return address;
 	}
 	
 	@Override
@@ -172,7 +177,6 @@ public class LocationServiceImpl implements LocationService{
 		HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
 		String result =  response.body();
 	    List<Location> locations = new ArrayList<>();
-	    Gson gson = new Gson();
 	    
 	    JsonObject root = JsonParser.parseString(result).getAsJsonObject();
 	    JsonArray addresses = root.getAsJsonArray("addresses");
@@ -181,8 +185,6 @@ public class LocationServiceImpl implements LocationService{
 	        JsonObject address = element.getAsJsonObject();
 	        Location location = new Location();
 	        
-	        location.setLongitude(address.get("x").getAsString());
-	        location.setLatitude(address.get("y").getAsString());
 	        location.setRoadAddress(address.get("roadAddress").getAsString());
 	        location.setJibunAddress(address.get("jibunAddress").getAsString());
 	        
@@ -192,15 +194,19 @@ public class LocationServiceImpl implements LocationService{
 	            JsonArray types = item.getAsJsonArray("types");
 	            
 	            for (JsonElement type : types) {
-	                switch (type.getAsString()) {
-	                case "POSTAL_CODE":
-                    	location.setZipCode(item.get("longName").getAsString());
-                        break;
-	                }
+	            	if(type.getAsString().equals("POSTAL_CODE")) {
+	            		location.setZipCode(item.get("longName").getAsString());
+	            		break;
+	            	}
 	            }
 	        }
 	        locations.add(location);
 	    }
 	    return locations;
+	}
+	
+	@Override
+	public List<Coord> selectUserDongne(int userNo) {
+		return dao.selectUserDongne(sqlSession,userNo);
 	}
 }
