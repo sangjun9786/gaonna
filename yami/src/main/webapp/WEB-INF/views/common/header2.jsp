@@ -100,20 +100,20 @@
       <ul class="navbar-nav fs-6 d-flex flex-row">
         <%if(session.getAttribute("loginUser")== null) {%>
           <li class="nav-item">
-            <a class="nav-link" href="${root}/login.me">Login</a>
+            <a class="nav-link" href="${root}/login.me">로그인</a>
           </li>
           <li class="nav-item">
-            <a class="nav-link" href="${root}/insert.me">Sign up</a>
+            <a class="nav-link" href="${root}/insert.me">회원가입</a>
           </li>
         <%}else{%>
           <li class="nav-item">
-            <a class="nav-link" href="${root}/mypage.me">my page</a>
+            <a class="nav-link" href="${root}/mypage.me">마이페이지</a>
           </li>
           <li class="nav-item">
-            <a class="nav-link" href="${root}/logout.me">Log out</a>
+            <a class="nav-link" href="${root}/logout.me">로그아웃</a>
           </li>
           <li class="nav-item">
-            <a class="nav-link" href="${root}>/insert.me">Sign up</a>
+            <a class="nav-link" href="${root}>/insert.me">회원가입</a>
           </li>
         <%}%>
       </ul>
