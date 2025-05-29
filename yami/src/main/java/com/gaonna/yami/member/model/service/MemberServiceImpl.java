@@ -1,10 +1,17 @@
 package com.gaonna.yami.member.model.service;
 
+import java.util.List;
+
+import javax.servlet.http.HttpSession;
+
 import org.mybatis.spring.SqlSessionTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.ui.Model;
 
+import com.gaonna.yami.location.service.LocationService;
+import com.gaonna.yami.location.vo.Coord;
 import com.gaonna.yami.member.model.dao.MemberDao;
 import com.gaonna.yami.member.model.vo.Member;
 
@@ -15,6 +22,9 @@ public class MemberServiceImpl implements MemberService{
 	private SqlSessionTemplate sqlSession;
 	@Autowired
 	private BCryptPasswordEncoder bcrypt;
+	@Autowired
+	private LocationService locationService;
+	
 	
 	@Autowired
 	private MemberDao dao;
@@ -87,5 +97,48 @@ public class MemberServiceImpl implements MemberService{
 	@Override
 	public int updatePwd(Member m) {
 		return dao.updatePwd(sqlSession,m);
+	}
+	
+	@Override
+	public int insertDongne(HttpSession session, Model model
+			, String isMain, String latitude, String longitude) throws Exception {
+		
+		
+		Member loginUser = (Member)session.getAttribute("loginUser");
+		
+		//이미 가지고 있는 좌표들
+		List<Coord> coords = (List)session.getAttribute("coords");
+		if(coords.size()>=5) {
+			return -1;
+		}
+		
+		//해당 위도, 경도에 해당하는 위치 추출
+		Coord currCoord = new Coord();
+		currCoord.setLongitude(longitude);
+		currCoord.setLatitude(latitude);
+		
+		currCoord.setCoordAddress(locationService.reverseGeocode(currCoord));
+		
+		//위치가 이미 존재하는 위치면 가세요라
+		for(Coord i : coords) {
+			if(i.getCoordAddress().equals(currCoord.getCoordAddress())) {
+				return 0;
+			}
+		}
+		
+		int result=0;
+		if(isMain.equals("Y")) {
+			//위치 넣고 바로 대표로 삼기
+			
+		}else {
+			//위치 넣기
+			result = locationService.insertDongne(currCoord);
+		}
+		
+		
+		coords = locationService.selectUserDongne(loginUser.getUserNo());
+		session.setAttribute("coords", coords);
+		
+		return 1;
 	}
 }
