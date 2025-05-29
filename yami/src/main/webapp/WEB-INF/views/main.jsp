@@ -119,15 +119,13 @@
 	
 	<!-- main페이지 로드 시 loginUser값 검사하여
 		 값이 존재할 시 회원 정보에 맞는 이벤트 테이블 정보 가져오기 -->
-	<script>
-		//여기에 작성
-		$(function() {
-			var user = "${loginUser}";
-			if(user !== "") {
-				location.href = "${root}/info.ev";
-			}
-		})
-	</script>
+	<c:if test="${not empty loginUser and empty event}">
+	  <script>
+	    $(function() {
+	      location.href = "${root}/info.ev";
+	    });
+	  </script>
+	</c:if>
 	
     <div class="wrapper">
         <div class="inner">

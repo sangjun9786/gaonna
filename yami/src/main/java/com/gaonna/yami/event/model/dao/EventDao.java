@@ -12,7 +12,7 @@ public class EventDao {
 	public Event eventInfo(SqlSessionTemplate sqlSession, Member loginUser) {
 		
 		Event event = sqlSession.selectOne("eventMapper.eventInfo", loginUser);
-		
+		System.out.println(event);
 		if(event != null) {
 			return event;
 		}else {

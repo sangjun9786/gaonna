@@ -16,10 +16,11 @@ public class EventController {
 	private EventService service;
 	
 	@RequestMapping("info.ev")
-	public String eventInfo(Member loginUser, HttpSession session) {
+	public String eventInfo(HttpSession session) {
+		Member loginUser = (Member)session.getAttribute("loginUser");
 		
 		Event event = service.eventInfo(loginUser);
-		
+		System.out.println(loginUser);
 		if(event != null) {
 			session.setAttribute("event", event);
 			return "redirect:/";
