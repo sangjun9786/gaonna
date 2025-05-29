@@ -21,4 +21,10 @@ public class EventServiceImpl implements EventService {
 	public Event eventInfo(Member loginUser) {
 		return dao.eventInfo(sqlSession, loginUser);
 	}
+	
+	@Override
+	public int attendance(Event e) {
+		return dao.attendance(sqlSession, e);
+	}
+	
 }

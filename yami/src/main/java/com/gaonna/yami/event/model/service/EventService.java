@@ -7,4 +7,6 @@ public interface EventService {
 
 	Event eventInfo(Member loginUser);
 
+	int attendance(Event e);
+
 }
