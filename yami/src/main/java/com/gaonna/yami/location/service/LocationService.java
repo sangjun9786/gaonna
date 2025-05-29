@@ -10,6 +10,6 @@ public interface LocationService {
 	Location reverseGeocode(Location lo) throws Exception;
 
 	//주소 검색
-	List<String> geocode(String address) throws Exception;
+	List<Location> geocode(String address) throws Exception;
 
 }

@@ -39,7 +39,7 @@ public class LocationCotroller {
 	public String getAddress(HttpSession session, Model model, String address) {
 		try {
 			session.removeAttribute("currAdd");
-			List<String> result = service.geocode(address);
+			List<Location> result = service.geocode(address);
 			session.setAttribute("currAdd", result);
 			return "redirect:/lab";
 		} catch (Exception e) {

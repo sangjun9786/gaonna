@@ -33,7 +33,7 @@ pageEncoding="UTF-8"%>
 		    	<br>
 		    	좌표가 '${currLo.longitude}, ${currLo.latitude}'이니
 		    	<br>
-		    	'${currLo.area1} ${currLo.area2} ${currLo.area3}'에 있군요.
+		    	'${currLo.roadAddress}'에 있군요.
 		    	<br>
     		</c:when>
     		<c:otherwise>
@@ -75,7 +75,19 @@ pageEncoding="UTF-8"%>
     			<c:set var="currAdd" value="${sessionScope.currAdd}" />
     			<ul>
 					<c:forEach var="address" items="${currAdd}">
-						<li>${address}</li>
+						<li>
+							도로명 :
+							${address.roadAddress}
+						</li>
+						<li>
+							지번 :
+							${address.jibunAddress}
+						</li>
+						<li>
+							우편번호 :
+							${address.zipCode}
+						</li>
+						<br>
 					</c:forEach>
 				</ul>
     		</c:otherwise>
