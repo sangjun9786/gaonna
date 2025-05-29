@@ -16,15 +16,16 @@ public class EventController {
 	private EventService service;
 	
 	@RequestMapping("info.ev")
-	public String eventInfo(Member loginUser, HttpSession session) {
+	public String eventInfo(HttpSession session) {
+		Member loginUser = (Member)session.getAttribute("loginUser");
 		
 		Event event = service.eventInfo(loginUser);
-		
+		System.out.println(loginUser);
 		if(event != null) {
 			session.setAttribute("event", event);
 			return "redirect:/";
 		}else {
-			session.setAttribute("errorMsg", "이벤트 테이블 조회 실패");
+			session.setAttribute("alertMsg", "이벤트 테이블 조회 실패");
 			return "redirect:/";
 		}
 		

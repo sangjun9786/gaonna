@@ -14,12 +14,12 @@
 	<select id="eventInfo" parameterType="Member" resultMap="eventResultMap">
 		SELECT *
 		FROM EVENT
-		WHERE USER_NO = #{loginUser.userNo}
+		WHERE USER_NO = #{userNo}
 	</select>
 	
 	<insert id="insertEvent" parameterType="Member">
-		INSERT INTO EVENT
-		VALUES(SEQ_ENO.NEXTVAL, #{loginUser.userNo}, 0);
+		INSERT INTO EVENT (EVENT_NO, USER_NO, COUNT)
+		VALUES(SEQ_ENO.NEXTVAL, #{userNo}, 0)
 	</insert>
 	
 </mapper>

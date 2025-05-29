@@ -189,6 +189,7 @@ public class MemberController {
 	public String logout(HttpSession session ,Model model) {
 		try {
 			session.removeAttribute("loginUser");
+			session.removeAttribute("event");
 			return "redirect:/";
 		} catch (Exception e) {
 			e.printStackTrace();

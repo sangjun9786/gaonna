@@ -119,21 +119,20 @@
 	
 	<!-- main페이지 로드 시 loginUser값 검사하여
 		 값이 존재할 시 회원 정보에 맞는 이벤트 테이블 정보 가져오기 -->
-	<script>
-		//여기에 작성
-		$(function() {
-			if(${loginUser} != null) {
-				location.href = "${root}/info.ev";
-			}
-		})
-	</script>
+	<c:if test="${not empty loginUser and empty event}">
+	  <script>
+	    $(function() {
+	      location.href = "${root}/info.ev";
+	    });
+	  </script>
+	</c:if>
 	
     <div class="wrapper">
         <div class="inner">
         
             <!-- 회원 로그인 여부에 따라 테이블 조건 분기 -->
             <c:choose>
-                <c:when test="${not empty loginUser }">
+                <c:when test="${not empty sessionScope.loginUser }">
                     <table id="event">
                         <caption>출석 이벤트</caption>
                         <tbody>
@@ -184,6 +183,7 @@
                     포인트가 500점 적립됩니다. <br>
                     매 10일 출석 시 1000포인트 적립! <br><br><br>
                     해당 기능은 로그인 이후 이용 가능합니다.
+<!--                test -->
                 </p>
                 <button type="button">출석하기</button>
             </div>
