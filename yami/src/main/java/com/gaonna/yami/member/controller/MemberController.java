@@ -176,7 +176,7 @@ public class MemberController {
 				List<Coord> coords = locationService.selectUserDongne(loginUser.getUserNo());
 				session.setAttribute("coords", coords);
 				
-				return "redirect:/";
+				return "redirect:/mypage.me";
 				
 			}else{
 				//해당 유저 없음
@@ -316,12 +316,17 @@ public class MemberController {
 		}
 	}
 	
-	@GetMapping("insertDongne")
+	//우리동네 추가하기
+	@GetMapping("insertDongne.me")
 	public String insertDongne(HttpSession session, Model model,
 			String isMain, String latitude, String longitude) {
 		try {
-			service.insertDongne(session, model,
+			int result = service.insertDongne(session, model,
 					isMain, latitude, longitude);
+			if(result==0) {
+				throw new Exception();
+			}
+			
 			return "redirect:/dongne.me";
 		} catch (Exception e) {
 			e.printStackTrace();

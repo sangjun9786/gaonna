@@ -9,7 +9,9 @@ import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.mybatis.spring.SqlSessionTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,7 +20,7 @@ import org.springframework.stereotype.Service;
 import com.gaonna.yami.location.dao.LocationDao;
 import com.gaonna.yami.location.vo.Coord;
 import com.gaonna.yami.location.vo.Location;
-import com.google.gson.Gson;
+import com.gaonna.yami.member.model.vo.Member;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
@@ -209,4 +211,38 @@ public class LocationServiceImpl implements LocationService{
 	public List<Coord> selectUserDongne(int userNo) {
 		return dao.selectUserDongne(sqlSession,userNo);
 	}
+	
+	@Override
+	public int insertDongneMain(Coord currCoord, Member loginUser) {
+		
+		//currCoord를 coords에 저장하고 currCoord에 coordNo받아옴
+		int result = dao.insertDongne(sqlSession,currCoord);
+		
+		//MEMBER_COORDS에 userNo, coordNo넣기
+		Map<String, Integer> memberCoords = new HashMap<>();
+		memberCoords.put("userNo", loginUser.getUserNo());
+		memberCoords.put("coordNo", currCoord.getCoordNo());
+		result *= dao.insertMemberCoords(sqlSession,memberCoords);
+
+		//member의 MAIN_COORD수정
+		loginUser.setMainCoord(currCoord.getCoordNo());
+		result *= dao.updateMainCoord(sqlSession,loginUser);
+		
+		return result;
+	}
+	
+	@Override
+	public int insertDongne(Coord currCoord, Member loginUser) {
+		
+		//currCoord를 coords에 저장하고 currCoord에 coordNo받아옴
+		int result = dao.insertDongne(sqlSession,currCoord);
+		
+		//MEMBER_COORDS에 userNo, coordNo넣기
+		Map<String, Integer> memberCoords = new HashMap<>();
+		memberCoords.put("userNo", loginUser.getUserNo());
+		memberCoords.put("coordNo", currCoord.getCoordNo());
+		result *= dao.insertMemberCoords(sqlSession,memberCoords);
+		return result;
+	}
+	
 }

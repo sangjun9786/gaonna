@@ -104,6 +104,10 @@
 			MODIFYDATE = SYSDATE
 		where user_no = #{userNo}
 	</update>
-
-
+	
+	<update id="updateMainCoord" parameterType="Member">
+		update member
+		set MAIN_COORD = #{mainCoord}
+		where user_no = #{userNo}
+	</update>
 </mapper>

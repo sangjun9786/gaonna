@@ -14,5 +14,5 @@ public class Coord {
 	private String latitude; //위도
 	private String longitude; //경도
 	private String coordAddress; //해당 좌표 위치
-	private Date locationDate; //추가/수정된 날짜
+	private Date coordDate; //추가/수정된 날짜
 }

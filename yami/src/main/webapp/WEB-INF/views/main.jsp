@@ -116,7 +116,6 @@
 	
 	<hr>
 	<a href="${root}/lab">실험실</a>
-	
 	<!-- main페이지 로드 시 loginUser값 검사하여
 		 값이 존재할 시 회원 정보에 맞는 이벤트 테이블 정보 가져오기 -->
 	<c:if test="${not empty loginUser and empty event}">
@@ -190,6 +189,5 @@
             
         </div>
     </div>
-    
   </body>
 </html>

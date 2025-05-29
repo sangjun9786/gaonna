@@ -60,7 +60,7 @@
                                                         <p class="text-muted mb-0">
                                                             <small>
                                                                 <i class="bi bi-calendar me-1"></i>
-                                                                <fmt:formatDate value="${coord.locationDate}" pattern="yyyy.MM.dd 추가"/>
+                                                                <fmt:formatDate value="${coord.coordDate}" pattern="yyyy.MM.dd 추가"/>
                                                             </small>
                                                         </p>
                                                     </div>
@@ -113,21 +113,19 @@
                 
                 <!-- 숨겨진 액션 버튼 -->
                 <div class="collapse mt-3" id="addButtons">
-                    <div class="d-flex justify-content-center gap-2">
-                        <form id="addForm" >
-	                        <button type="button" 
-	                        	class="btn btn-outline-warning">
-	                            <i class="bi bi-check-circle me-1"></i>추가하기
-	                        </button>
-	                        <button type="button"
-	                        		id="addMain"
-	                        		class="btn btn-outline-warning" 
-							        data-bs-toggle="collapse" 
-							        data-bs-target="#addButtons">
-							    <i class="bi bi-star me-1"></i>대표 동네로 추가하기
-							</button>
-                        </form>
-                        
+                    <div id="addForm" class="d-flex justify-content-center gap-2">
+                        <button type="button"
+                        	id="addNormal"
+                        	class="btn btn-outline-warning">
+                            <i class="bi bi-check-circle me-1"></i>추가하기
+                        </button>
+                        <button type="button"
+                        		id="addMain"
+                        		class="btn btn-outline-warning" 
+						        data-bs-toggle="collapse" 
+						        data-bs-target="#addButtons">
+						    <i class="bi bi-star me-1"></i>대표 동네로 추가하기
+						</button>
                     </div>
                 </div>
             </div>
@@ -180,7 +178,12 @@
 <script>
 
     document.getElementById('addForm').addEventListener('click', function(e) {
-        e.preventDefault();
+    	//버튼만 이벤트 작동되도록
+    	if (e.target.tagName !== 'BUTTON' 
+    			&& e.target.closest('button') == null) {
+    		return;
+    	}
+        let btn = e.target.closest('button');
         
         //좌표 개수 구해서 5보다 크면 더 이상 넣을 수 없습니다
         let coordsLength = 
@@ -193,6 +196,7 @@
         	showAlert('더 이상 우리동네를 추가할 수 없습니다.', 'danger');
             return;
         }
+        //중복확인 로직 추가
 
         navigator.geolocation.getCurrentPosition(
             function(position) {
@@ -200,13 +204,13 @@
             	let longitude = position.coords.longitude;
             	let link = "${root}/insertDongne.me?isMain=";
             	
-                if(this.id =="addMain"){
+                if(btn.id =="addMain"){
                 	link += 'Y&';
-                }else{
+                }else if(btn.id =="addNormal"){
                 	link += 'N&';
                 }
                 
-                location.href = link+"latitude="+latitude
+                location.href = link+"latitude="+latitude+
                 	"&longitude="+longitude;
             },
             function(error) {
