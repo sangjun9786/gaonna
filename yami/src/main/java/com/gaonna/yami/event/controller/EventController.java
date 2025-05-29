@@ -43,6 +43,9 @@ public class EventController {
 			e = service.eventInfo(loginUser);
 			session.setAttribute("event", e);
 			session.setAttribute("alertMsg", "출석 완료!!!");
+			int ecount = e.getCount();
+			//ecount % 10, ecount % 5 구분해서 포인트 지급
+			//ecount 30이면 1000포인트 지급 후 count초기화
 			return "redirect:/";
 		}else {
 			model.addAttribute("errorMsg", "출석은 하루에 한 번만 하실 수 있습니다.");

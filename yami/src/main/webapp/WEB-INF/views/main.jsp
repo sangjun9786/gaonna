@@ -156,10 +156,23 @@
 							<c:forEach var="i" begin="1" end="6">
 								<tr>
 									<c:forEach var="j" begin="1" end="5">
-										<td>
+										<td
+									        <c:if test="${cellIndex <= event.count}">
+									          style="background-image: linear-gradient(rgba(255,255,255,0.5), rgba(255,255,255,0.5)),
+											           url('${pageContext.request.contextPath}/resources/img/야미콘.png');
+											           background-size: cover;
+											           background-position: center;
+											           background-blend-mode: lighten;
+											           font-weight: bold;
+											           color: white
+											           text-shadow:
+													        0 0 2px black,
+        													0 0 3px black;"
+									        </c:if>
+									      >
 											<c:choose>
 												<c:when test="${cellIndex <= event.count}">
-					                                출석!
+					                                야미!
 					                            </c:when>
 												<c:otherwise>
 					                                ${cellIndex}
