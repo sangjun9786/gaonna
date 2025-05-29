@@ -239,7 +239,9 @@ update member
 set main_coord = 0
 where user_no = 0;
 
-
+insert into coords (COORD_NO,LATITUDE,LONGITUDE,COORD_ADDRESS)
+values(-1,0,0,'이 세상 어딘가');
+insert into member_coords values(0,-1);
 
 
 

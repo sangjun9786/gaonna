@@ -17,7 +17,7 @@
 	<resultMap type="Coord" id="coordResultMap">
 		<result column="COORD_NO" property="coordNo"/>
 		<result column="COORD_ADDRESS" property="coordAddress"/>
-		<result column="LOCATION_DATE" property="locationDate"/>
+		<result column="COORD_DATE" property="coordDate"/>
 	</resultMap>
 	
 	<select id="selectUserDongne" parameterType="int" resultMap="coordResultMap">
@@ -34,4 +34,16 @@
 		where m.user_no = #{userNo}
 	</select>
 	
+	<insert id="insertDongne" parameterType="Coord">
+		<selectKey keyProperty="coordNo" resultType="int" order="BEFORE">
+	        SELECT seq_coords.nextval FROM dual
+	    </selectKey>
+	    insert into coords(COORD_NO,LATITUDE,LONGITUDE,COORD_ADDRESS,COORD_DATE)
+	    values(#{coordNo}, #{latitude}, #{longitude}, #{coordAddress}, SYSDATE)
+	</insert>
+	
+	<insert id="insertMemberCoords" parameterType="map">
+	    insert into member_coords(USER_NO, COORD_NO)
+	    values(#{userNo}, #{coordNo})
+	</insert>
 </mapper>
