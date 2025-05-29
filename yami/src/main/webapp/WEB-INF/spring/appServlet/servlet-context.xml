@@ -27,6 +27,7 @@
 	    
 	        <!-- 적용할 패턴 -->
 	        <mvc:mapping path="/*.me"/>
+	        <mvc:mapping path="/*.lo"/>
 	        
 	        <!-- 제외할 패턴 -->
 	        <mvc:exclude-mapping path="/insert.me"/>
@@ -37,6 +38,7 @@
 	        <!-- 인터셉터 경로 -->
 	        <bean class="com.gaonna.yami.common.MemberInterceptor"/>
 	    </mvc:interceptor>
+	    
 	</mvc:interceptors>
 	
 	<!-- 파일 업로드 처리 MultipartResolver -->

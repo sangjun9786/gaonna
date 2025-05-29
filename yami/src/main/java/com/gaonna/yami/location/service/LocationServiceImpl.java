@@ -9,21 +9,28 @@ import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
-import java.util.Base64;
 import java.util.List;
 
-import javax.crypto.Mac;
-import javax.crypto.spec.SecretKeySpec;
-
+import org.mybatis.spring.SqlSessionTemplate;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.gaonna.yami.location.dao.LocationDao;
+import com.gaonna.yami.location.vo.Coord;
 import com.gaonna.yami.location.vo.Location;
+import com.google.gson.Gson;
 import com.google.gson.JsonArray;
+import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 
 @Service
 public class LocationServiceImpl implements LocationService{
+	@Autowired
+	private SqlSessionTemplate sqlSession;
+	@Autowired
+	private LocationDao dao;
+	
     String staticMap;
     String directions5;
     String directions15;
@@ -63,6 +70,7 @@ public class LocationServiceImpl implements LocationService{
         }
 	}
 	
+	/*
 	//시그니처 생성 - url과 timestamp쥐어주고 시그니처 만들기
 	public String makeSignature(String url, String timestamp) throws Exception {
 		String space = " ";
@@ -88,17 +96,18 @@ public class LocationServiceImpl implements LocationService{
 			
 		return encodeBase64String;
 	}
+	*/
 
 	@Override
-	public Location reverseGeocode(Location lo) throws Exception{
+	public String reverseGeocode(Coord coord) throws Exception{
 		
 		//url 만들기
 		String url = new StringBuilder()
 				.append(reverseGeocoding)
 				.append("?coords=")
-				.append(lo.getLongitude())
+				.append(coord.getLongitude())
 				.append(",")
-				.append(lo.getLatitude())
+				.append(coord.getLatitude())
 				.append("&output=json")
 				.append("&orders=admcode")
 				.toString();
@@ -109,16 +118,11 @@ public class LocationServiceImpl implements LocationService{
 		 * 도로명주소 : roadaddr
 		 */
 		
-		//시그니처 생성
-		String signature = makeSignature(url, lo.getTimestamp());
 		
 		//http형식으로 던지기
 		HttpClient client = HttpClient.newHttpClient();
 		HttpRequest request = HttpRequest.newBuilder()
 		    .uri(URI.create(url))
-		    .header("x-ncp-apigw-timestamp", lo.getTimestamp())
-		    .header("x-ncp-iam-access-key", accessKey)
-		    .header("x-ncp-apigw-signature-v2", signature)
 		    .header("x-ncp-apigw-api-key-id", keyId)
 		    .header("x-ncp-apigw-api-key", key)
 		    .GET()
@@ -135,36 +139,35 @@ public class LocationServiceImpl implements LocationService{
 	        .getAsJsonObject("region");
 	        
 	    // 주소 정보 설정
-	    lo.setArea1(region.getAsJsonObject("area1").get("name").getAsString());
-	    lo.setArea2(region.getAsJsonObject("area2").get("name").getAsString());
-	    lo.setArea3(region.getAsJsonObject("area3").get("name").getAsString());
+	    String address = new StringBuilder()
+				.append(region.getAsJsonObject("area1").get("name").getAsString())
+				.append(" ")
+				.append(region.getAsJsonObject("area2").get("name").getAsString())
+				.append(" ")
+				.append(region.getAsJsonObject("area3").get("name").getAsString())
+				.append(" ")
+				.append(region.getAsJsonObject("area4").get("name").getAsString())
+				.toString();
 	    
-		return lo;
+		return address;
 	}
 	
 	@Override
-	public List<String> geocode(String address) throws Exception{
+	public List<Location> geocode(String inputAddress) throws Exception{
 		
-		address = URLEncoder.encode(address, StandardCharsets.UTF_8.toString());
-		String timestamp = String.valueOf(System.currentTimeMillis());
+		inputAddress = URLEncoder.encode(inputAddress, StandardCharsets.UTF_8.toString());
 		
 		String url = new StringBuilder()
 				.append(geocoding)
 				.append("?query=")
-				.append(address)
+				.append(inputAddress)
 				.toString();
-		
-		//시그니처 생성
-		String signature = makeSignature(url, timestamp);
 		
 		//http형식으로 던지기
 		HttpClient client = HttpClient.newHttpClient();
 		HttpRequest request = HttpRequest.newBuilder()
 		    .uri(URI.create(url))
-//		    .header("x-ncp-apigw-timestamp", timestamp)
-//		    .header("x-ncp-iam-access-key", accessKey)
-		    .header("Accept", "json")
-//		    .header("x-ncp-apigw-signature-v2", signature)
+		    .header("Accept", "application/json")
 		    .header("x-ncp-apigw-api-key-id", keyId)
 		    .header("x-ncp-apigw-api-key", key)
 		    .GET()
@@ -173,23 +176,37 @@ public class LocationServiceImpl implements LocationService{
 		//받아오기
 		HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
 		String result =  response.body();
-		
-		//오류 : {"error":{"errorCode":500,"message":"서비스 예외 오류"}}
-		
-		
-		//결과 담을 컬렉숀
-		List<String> addresses = new ArrayList<>();
-		
-		// JSON 파싱
-	    JsonArray array = JsonParser.parseString(result).getAsJsonArray();
-	    for (int i = 0; i < array.size(); i++) {
-            String roadAddress = array.get(i).getAsJsonObject()
-            		.getAsJsonArray("addresses").get(0)
-            		.getAsJsonObject().get("roadAddress").getAsString();
-            addresses.add(roadAddress);
-	    }
+	    List<Location> locations = new ArrayList<>();
 	    
-		return addresses;
-	}
+	    JsonObject root = JsonParser.parseString(result).getAsJsonObject();
+	    JsonArray addresses = root.getAsJsonArray("addresses");
 
+	    for (JsonElement element : addresses) {
+	        JsonObject address = element.getAsJsonObject();
+	        Location location = new Location();
+	        
+	        location.setRoadAddress(address.get("roadAddress").getAsString());
+	        location.setJibunAddress(address.get("jibunAddress").getAsString());
+	        
+	        JsonArray addressElements = address.getAsJsonArray("addressElements");
+	        for (JsonElement elem : addressElements) {
+	            JsonObject item = elem.getAsJsonObject();
+	            JsonArray types = item.getAsJsonArray("types");
+	            
+	            for (JsonElement type : types) {
+	            	if(type.getAsString().equals("POSTAL_CODE")) {
+	            		location.setZipCode(item.get("longName").getAsString());
+	            		break;
+	            	}
+	            }
+	        }
+	        locations.add(location);
+	    }
+	    return locations;
+	}
+	
+	@Override
+	public List<Coord> selectUserDongne(int userNo) {
+		return dao.selectUserDongne(sqlSession,userNo);
+	}
 }

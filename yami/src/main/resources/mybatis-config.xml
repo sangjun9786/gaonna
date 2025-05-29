@@ -12,6 +12,8 @@
 		<typeAlias type="com.gaonna.yami.member.model.vo.Member" alias="Member"/>
 		<typeAlias type="com.gaonna.yami.member.email.vo.MemberToken" alias="MemberToken"/>
 		<typeAlias type="com.gaonna.yami.event.model.vo.Event" alias="Event"/>
+		<typeAlias type="com.gaonna.yami.location.vo.Coord" alias="Coord"/>
+		<typeAlias type="com.gaonna.yami.location.vo.Location" alias="Location"/>
 	</typeAliases>
 	
 </configuration>
