@@ -22,4 +22,20 @@
 		VALUES(SEQ_ENO.NEXTVAL, #{userNo}, 0)
 	</insert>
 	
+	<select id="compareDate" parameterType="Event" resultMap="eventResultMap">
+		SELECT *
+		FROM EVENT
+		WHERE TRUNC(LAST_DATE) != TRUNC(SYSDATE)
+		AND EVENT_NO = #{eventNo}
+		AND STATUS = 'Y'
+	</select>
+	
+	<update id="attendance">
+		UPDATE EVENT
+		SET COUNT = COUNT + 1,
+        	LAST_DATE = SYSDATE
+		WHERE EVENT_NO = #{eventNo}
+		AND STATUS = 'Y'
+	</update>
+	
 </mapper>

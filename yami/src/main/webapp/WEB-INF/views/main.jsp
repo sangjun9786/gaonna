@@ -96,6 +96,14 @@
   <body>
 
   <%@include file="/WEB-INF/views/common/header.jsp" %>
+  <script>
+	var msg="${alertMsg}";
+		
+	if(msg!="") {
+		alert(msg);
+	}
+  </script>
+  <c:remove var="alertMsg"/>
 	<c:choose>
 		<c:when test="${empty sessionScope.loginUser}">
 			<a href="${pageScope.root}/insert.me">회원가입</a>
@@ -125,6 +133,13 @@
 	    });
 	  </script>
 	</c:if>
+    <script>
+    	$(function() {
+    		$('#attendanceBtn').click(function() {
+    			location.href = '${root}/attendance.me';
+    		});
+    	});
+    </script>
 	
     <div class="wrapper">
         <div class="inner">
@@ -180,11 +195,12 @@
                 <p>
                     매 5일 출석 시 현금처럼 사용 가능한 <br>
                     포인트가 500점 적립됩니다. <br>
-                    매 10일 출석 시 1000포인트 적립! <br><br><br>
+                    매 10일 출석 시 1000포인트 적립! <br><br>
+                    출석은 하루에 한 번만 가능합니다.
+                    <br> <br>
                     해당 기능은 로그인 이후 이용 가능합니다.
-<!--                test -->
                 </p>
-                <button type="button">출석하기</button>
+                <button type="button" id="attendanceBtn">출석하기</button>
             </div>
             
         </div>
