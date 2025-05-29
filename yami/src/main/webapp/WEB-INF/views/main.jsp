@@ -122,7 +122,8 @@
 	<script>
 		//여기에 작성
 		$(function() {
-			if(${loginUser} != null) {
+			var user = "${loginUser}";
+			if(user !== "") {
 				location.href = "${root}/info.ev";
 			}
 		})
@@ -133,7 +134,7 @@
         
             <!-- 회원 로그인 여부에 따라 테이블 조건 분기 -->
             <c:choose>
-                <c:when test="${not empty loginUser }">
+                <c:when test="${not empty sessionScope.loginUser }">
                     <table id="event">
                         <caption>출석 이벤트</caption>
                         <tbody>
