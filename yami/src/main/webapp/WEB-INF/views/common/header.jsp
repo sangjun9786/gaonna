@@ -68,8 +68,8 @@
 <nav class="navbar navbar-expand-lg custom-navbar position-relative">
   <div class="container-fluid">
 
-    <!-- 왼쪽: 브랜드 로고 삽입 해야함 -->
-    <a class="navbar-brand" href="#">
+    <!-- 왼쪽: 야미 파비콘  -->
+    <a class="navbar-brand" href="${root}/index.jsp">
     <img src="${pageContext.request.contextPath}/resources/icon/favicon.ico" alt="favicon" width="32" height="32">
     Yami
     </a>
@@ -102,27 +102,39 @@
     </div>
 
     <!-- 오른쪽: 로그인/회원가입 메뉴 -->
-    <div class="right-menu">
-      <ul class="navbar-nav fs-6 d-flex flex-row">
-        <%if(session.getAttribute("loginUser")== null) {%>
+    <div class="right-menu text-end">
+  <ul class="navbar-nav fs-6 d-flex flex-row align-items-center">
+    <c:choose>
+      <c:when test="${empty loginUser}">
+        <li class="nav-item">
+          <a class="nav-link" href="${root}/login.me">Login</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="${root}/insert.me">Sign up</a>
+        </li>
+      </c:when>
+      <c:otherwise>
+        <li class="nav-item">
+          <a class="nav-link" href="${root}/mypage.me">My Page</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="${root}/logout.me">Log out</a>
+        </li>
+        <c:if test="${loginUser.roleType != 'N'}">
           <li class="nav-item">
-            <a class="nav-link" href="${root}/login.me">Login</a>
+            <a class="nav-link" href="${root}/adminpage.ad">운영실</a>
           </li>
-          <li class="nav-item">
-            <a class="nav-link" href="${root}/insert.me">Sign up</a>
-          </li>
-        <%}else{%>
-          <li class="nav-item">
-            <a class="nav-link" href="${root}/mypage.me">my page</a>
-          </li>
-          <li class="nav-item">
-            <a class="nav-link" href="${root}/logout.me">Log out</a>
-          </li>
-          <li class="nav-item">
-            <a class="nav-link" href="${root}/insert.me">Sign up</a>
-          </li>
-        <%}%>
-      </ul>
+        </c:if>
+      </c:otherwise>
+    </c:choose>
+  </ul>
+
+  <!-- 인사 메시지 -->
+  <c:if test="${not empty loginUser}">
+    <div class="mt-1 small text-muted">
+      ${loginUser.userName}님 안녕하세요
+    </div>
+  </c:if>
     </div>
 
   </div>
