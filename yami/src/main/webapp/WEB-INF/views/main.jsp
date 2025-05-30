@@ -1,5 +1,6 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
+<%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
 <!DOCTYPE html>
 <html>
   <head>
@@ -7,31 +8,27 @@
     <title>YAMI</title>
   </head>
   <body>
-    <%@include file="/WEB-INF/views/common/header.jsp"%>
-    
-    <hr>
-    <br>
-    <button type="button" id='location'>위치확인</button>
-    <div id = 'locationDiv'></div>
-    <br>
-    <hr>
-    <br>
-
-    <h3>바로가기</h3>
-    <br>
-    <a href="http://localhost:8888/yami/confirmEmailInsert.me?tokenNo=0&token=0">회원가입 이메일 만료 체험</a>
-    <br><br><br>
-    <a href="${root}/lab">실험실</a>
-
-    <script type="text/javascript">
-    	document.getElementById('location').addEventListener('click',function(){
-		    navigator.geolocation.getCurrentPosition(function(position) {
-		    	let div = document.getElementById('locationDiv');
-		    	div.innerHTML ="위도 : "+position.coords.latitude;
-		    	div.innerHTML +=" 경도 : "+position.coords.longitude;
-		    	div.innerHTML +=" 시간 : "+position.timestamp;
-		    });
-    	});
-    </script>
+  <%@include file="/WEB-INF/views/common/header.jsp" %>
+	<c:choose>
+		<c:when test="${empty sessionScope.loginUser}">
+			<a href="${pageScope.root}/insert.me">회원가입</a>
+			<br>
+			<a href="${pageScope.root}/login.me">로그인</a>
+		</c:when>
+		<c:otherwise>
+			${sessionScope.loginUser.userName}님 안녕하세요
+			<br>
+			<a href="${pageScope.root}/mypage.me">마이페이지</a>
+			<c:if test="${pageScope.loginUser.roleType != 'N'}">
+				<br>
+				<a href="${pageScope.root}/adminpage.ad">운영실</a>
+			</c:if>
+			<a href="${pageScope.root}/logout.me">로그아웃</a>
+		</c:otherwise>
+	</c:choose>
+	
+	<hr>
+	<a href="${root}/lab">실험실</a>
+	
   </body>
 </html>
