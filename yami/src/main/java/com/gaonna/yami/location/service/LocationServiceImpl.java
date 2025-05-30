@@ -245,4 +245,11 @@ public class LocationServiceImpl implements LocationService{
 		return result;
 	}
 	
+	@Override
+	public int deleteCoord(int coordNo) {
+		//coords 테이블에서 지우기
+		//member-coords테이블은 delete on cascade가 걸렸으므로 건드릴 필요없다
+		return dao.deleteCoord(sqlSession,coordNo);
+	}
+	
 }

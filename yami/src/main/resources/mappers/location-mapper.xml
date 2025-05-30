@@ -46,4 +46,9 @@
 	    insert into member_coords(USER_NO, COORD_NO)
 	    values(#{userNo}, #{coordNo})
 	</insert>
+	
+	<delete id="deleteCoord" parameterType="int">
+		delete from coords
+		where coord_no = #{coordNo}
+	</delete>
 </mapper>

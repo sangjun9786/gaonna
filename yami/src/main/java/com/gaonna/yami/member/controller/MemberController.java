@@ -57,7 +57,7 @@ public class MemberController {
 				return errorPage(model, "필수 항목을 확인해 주세요.");
 			}
 
-			if(m.getPhone().equals("")) {
+			if(m.getPhone().equals("--")) {
 				//전화번호를 입력하지 않았을 경우 전화번호 비우기
 				m.setPhone(null);
 			}else if(!m.getPhone().matches("^\\d{3}-\\d{3,4}-\\d{4}$")) {
@@ -80,6 +80,7 @@ public class MemberController {
 			
 			//서비스로 보내고 겸사겸사 유저식별번호 따오기
 			int result = service.insertMember(m);
+			
 			
 			if(result>0) {
 				//토큰 생성기로 보내기
@@ -176,12 +177,12 @@ public class MemberController {
 				List<Coord> coords = locationService.selectUserDongne(loginUser.getUserNo());
 				session.setAttribute("coords", coords);
 				
-				return "redirect:/mypage.me";
+				return "redirect:/";
 				
 			}else{
 				//해당 유저 없음
 				session.setAttribute("alertMsg", "아이디와 비밀번호를 확인해 주세요.");
-				return "member/login";
+				return "redirect:/login.me";
 			}
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -316,16 +317,55 @@ public class MemberController {
 		}
 	}
 	
-	//우리동네 추가하기
-	@GetMapping("insertDongne.me")
-	public String insertDongne(HttpSession session, Model model,
-			String isMain, String latitude, String longitude) {
+	
+	
+	//ajax로 우리동네 중복확인
+	@ResponseBody
+	@GetMapping("checkDongne.me")
+	public String checkDongne(HttpSession session, Model model,
+		String latitude, String longitude) {
 		try {
-			int result = service.insertDongne(session, model,
-					isMain, latitude, longitude);
+			List<Coord> coords = (List)session.getAttribute("coords");
+			
+			//해당 위도, 경도에 해당하는 위치 추출
+			Coord currCoord = new Coord();
+			currCoord.setLongitude(longitude);
+			currCoord.setLatitude(latitude);
+			currCoord.setCoordAddress(locationService.reverseGeocode(currCoord));
+			
+			//위치가 이미 존재하면 가세요라
+			for(Coord i : coords) {
+				//위치 판별은 coordAddress기준
+				if((i.getCoordAddress().replaceAll("\\s+", ""))
+						.equals(currCoord.getCoordAddress().replaceAll("\\s+", ""))) {
+					return "noPass";
+				}
+			}
+			
+			//중복 안 되면 session에 currCoord넣고 통과
+			session.setAttribute("currCoord",currCoord);
+			return "pass";
+			
+		} catch (Exception e) {
+			e.printStackTrace();
+			return "err";
+		}
+	}
+	
+	
+	//우리동네 추가하기
+	@Transactional
+	@GetMapping("insertDongne.me")
+	public String insertDongne(HttpSession session, Model model,String isMain) {
+		try {
+			//세션에 넣어둔 currCoord를 이용할거에요
+			int result = service.insertDongne(session, isMain);
 			if(result==0) {
 				throw new Exception();
 			}
+			
+			//세션 청소
+			session.removeAttribute("currCoord");
 			
 			return "redirect:/dongne.me";
 		} catch (Exception e) {
@@ -334,12 +374,72 @@ public class MemberController {
 		}
 	}
 	
+	//우리동네 삭제
+	@Transactional
+	@PostMapping("deleteCoord.me")
+	public String deleteCoord(HttpSession session, Model model, 
+			int coordNo) {
+		
+		try {
+			int result = service.deleteCoord(session, coordNo);
+			
+			if(result==0) {
+				throw new Exception();
+			}
+			
+			//coord의 session반영
+			Member loginUser = (Member)session.getAttribute("loginUser");
+			List<Coord> coords = locationService.selectUserDongne(loginUser.getUserNo());
+			session.setAttribute("coords", coords);
+			
+			return "redirect:/dongne.me";
+		} catch (Exception e) {
+			e.printStackTrace();
+			return errorPage(model,"500 err");
+		}
+	}
+	
+	//대표동네 설정하기
+	@PostMapping("updateMainCoord.me")
+	public String updateMainCoord(HttpSession session, Model model, int coordNo) {
+		try {
+			Member m = (Member)session.getAttribute("loginUser");
+			
+			if(service.updateMainCoord(m,coordNo)>0) {
+				//session업데이트
+				session.setAttribute("loginUsert", m);
+				
+				return "redirect:/dongne.me";
+			}
+			
+			return errorPage(model,"500 err");
+		} catch (Exception e) {
+			e.printStackTrace();
+			return errorPage(model,"500 err");
+		}
+	}
+	
+	
 	
 	//주소록 설정페이지로
 	@GetMapping("deliveryAddress.me")
 	public String myDeliveryAddress(HttpSession session, Model model){
 		try {
 			return "member/deliveryAddress";
+		} catch (Exception e) {
+			e.printStackTrace();
+			return errorPage(model,"500 err");
+		}
+	}
+	
+	//주소록 설정페이지로
+	@GetMapping("insertLocation.me")
+	public String insertLocation(Model model, String isMain){
+		try {
+			//받아온 model을 넘겨요!
+			model.addAttribute("isMain",isMain);
+			
+			return "member/insertDeliveryAddress";
 		} catch (Exception e) {
 			e.printStackTrace();
 			return errorPage(model,"500 err");

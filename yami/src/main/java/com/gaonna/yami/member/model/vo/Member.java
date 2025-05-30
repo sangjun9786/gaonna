@@ -30,6 +30,6 @@ public class Member {
 	 */
 	private String roleType;
 	
-	private int mainCoord;
+	private int mainCoord; //0이면 대표 동네가 없다는 뜻
 	private int mainLocation;
 }

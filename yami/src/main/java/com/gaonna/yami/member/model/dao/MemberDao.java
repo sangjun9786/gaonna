@@ -47,5 +47,13 @@ public class MemberDao {
 	public int updatePwd(SqlSessionTemplate sqlSession, Member m) {
 		return sqlSession.update("memberMapper.updatePwd", m);
 	}
+
+	public int deleteMainCoord(SqlSessionTemplate sqlSession, Member loginUser) {
+		return sqlSession.update("memberMapper.deleteMainCoord", loginUser);
+	}
+
+	public int updateMainCoord(SqlSessionTemplate sqlSession, Member m) {
+		return sqlSession.update("memberMapper.updateMainCoord", m);
+	}
 	
 }

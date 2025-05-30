@@ -23,4 +23,7 @@ public interface LocationService {
 	//우리동네 추가
 	int insertDongne(Coord currCoord, Member loginUser);
 
+	//좌표 삭제
+	int deleteCoord(int coordNo);
+
 }

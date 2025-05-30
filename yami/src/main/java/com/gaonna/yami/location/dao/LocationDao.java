@@ -28,4 +28,7 @@ public class LocationDao {
 		return sqlSession.update("memberMapper.updateMainCoord",loginUser);
 	}
 
+	public int deleteCoord(SqlSessionTemplate sqlSession, int coordNo) {
+		return sqlSession.delete("locationMapper.deleteCoord",coordNo);
+	}
 }

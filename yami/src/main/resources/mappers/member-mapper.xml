@@ -79,29 +79,31 @@
 	<update id="updateId">
 		update member
 		set user_id = #{userId},
-			status = 'U',
-			MODIFYDATE = SYSDATE
+			status = 'U'
 		where user_no = #{userNo}
 	</update>
 	
 	<update id="updateName">
 		update member
-		set user_name = #{userName},
-			MODIFYDATE = SYSDATE
+		set user_name = #{userName}
 		where user_no = #{userNo}
 	</update>
 	
 	<update id="updatePhone">
 		update member
-		set phone = #{phone},
-			MODIFYDATE = SYSDATE
+		set phone = #{phone}
 		where user_no = #{userNo}
 	</update>
 	
 	<update id="updatePwd">
 		update member
-		set user_pwd = #{userPwd},
-			MODIFYDATE = SYSDATE
+		set user_pwd = #{userPwd}
+		where user_no = #{userNo}
+	</update>
+	
+	<update id="deleteMainCoord" parameterType="Member">
+		update member
+		set MAIN_COORD = null
 		where user_no = #{userNo}
 	</update>
 	

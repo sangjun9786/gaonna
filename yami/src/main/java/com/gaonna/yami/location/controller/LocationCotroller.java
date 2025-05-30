@@ -8,6 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.gaonna.yami.location.service.LocationService;
 import com.gaonna.yami.location.vo.Coord;
@@ -43,4 +44,20 @@ public class LocationCotroller {
 			return "redirect:/lab";
 		}
 	}
+	
+	
+	//ajax로 위치 검색
+	@ResponseBody
+	@RequestMapping("getGeocode.lo")
+	public List<Location> getGeocode(HttpSession session
+			, Model model, String inputAddress){
+		try {
+			List<Location> search = service.geocode(inputAddress);
+			return search;
+		} catch (Exception e) {
+			e.printStackTrace();
+			return null;
+		}
+	}
+	
 }
