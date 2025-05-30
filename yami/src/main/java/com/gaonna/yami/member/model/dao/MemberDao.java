@@ -43,5 +43,9 @@ public class MemberDao {
 	public String selectRoleType(SqlSessionTemplate sqlSession, int userNo) {
 		return sqlSession.selectOne("memberMapper.selectRoleType", userNo);
 	}
+
+	public int updatePwd(SqlSessionTemplate sqlSession, Member m) {
+		return sqlSession.update("memberMapper.updatePwd", m);
+	}
 	
 }

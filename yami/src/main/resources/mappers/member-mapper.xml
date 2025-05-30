@@ -11,6 +11,8 @@
 		<result column="USER_PWD" property="userPwd"/>
 		<result column="USER_NAME" property="userName"/>
 		<result column="ROLE_TYPE" property="roleType"/>
+		<result column="MAIN_COORD" property="mainCoord"/>
+		<result column="MAIN_LOCATION" property="mainLocation"/>
 	</resultMap>
 	
 	<insert id="insertMember" parameterType="Member">
@@ -54,6 +56,8 @@
 	        m.ENROLLDATE,
 	        m.MODIFYDATE,
 	        m.STATUS,
+	        m.MAIN_COORD,
+	        m.MAIN_LOCATION,
 	        case 
 	            when exists (
 	                select 1
@@ -93,6 +97,17 @@
 			MODIFYDATE = SYSDATE
 		where user_no = #{userNo}
 	</update>
-
-
+	
+	<update id="updatePwd">
+		update member
+		set user_pwd = #{userPwd},
+			MODIFYDATE = SYSDATE
+		where user_no = #{userNo}
+	</update>
+	
+	<update id="updateMainCoord" parameterType="Member">
+		update member
+		set MAIN_COORD = #{mainCoord}
+		where user_no = #{userNo}
+	</update>
 </mapper>

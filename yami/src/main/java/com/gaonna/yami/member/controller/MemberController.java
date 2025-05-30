@@ -1,6 +1,7 @@
 package com.gaonna.yami.member.controller;
 
 import javax.servlet.http.HttpSession;
+import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -12,6 +13,8 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import com.gaonna.yami.location.service.LocationService;
+import com.gaonna.yami.location.vo.Coord;
 import com.gaonna.yami.member.common.TokenGenerator;
 import com.gaonna.yami.member.model.service.MemberService;
 import com.gaonna.yami.member.model.vo.Member;
@@ -22,6 +25,8 @@ public class MemberController {
 	public MemberService service;
 	@Autowired
 	public TokenGenerator tokenGenerator;
+	@Autowired
+	public LocationService locationService;
 	
 	@Autowired
 	private BCryptPasswordEncoder bcrypt;
@@ -37,7 +42,6 @@ public class MemberController {
 	public String insertMember() {
 		return "member/enrollForm";
 	}
-
 	
 	//회원가입
 	@Transactional
@@ -122,6 +126,25 @@ public class MemberController {
 		}
 	}
 	
+	//ajax 비밀번호 확인
+	@ResponseBody
+	@RequestMapping("checkUserPwd.me")
+	public String checkUserId(HttpSession session, Model model, String inputPwd) {
+		try {
+			Member m = (Member)session.getAttribute("loginUser");
+			
+			if(bcrypt.matches(inputPwd,m.getUserPwd())) {
+				return "pass";
+			}else {
+				return "noPass";
+			}
+			
+		}catch(Exception e){
+			e.printStackTrace();
+			return "err";
+		}
+	}
+	
 	//로그인 페이지로 이동
 	@GetMapping("login.me")
 	public String loginMember() {
@@ -148,7 +171,12 @@ public class MemberController {
 				
 				//로그인 성공
 				session.setAttribute("loginUser",loginUser);
-				return "redirect:/";
+				
+				//우리동네 조회
+				List<Coord> coords = locationService.selectUserDongne(loginUser.getUserNo());
+				session.setAttribute("coords", coords);
+				
+				return "redirect:/mypage.me";
 				
 			}else{
 				//해당 유저 없음
@@ -166,6 +194,7 @@ public class MemberController {
 	public String logout(HttpSession session ,Model model) {
 		try {
 			session.removeAttribute("loginUser");
+			session.removeAttribute("event");
 			return "redirect:/";
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -184,9 +213,40 @@ public class MemberController {
 		}
 	}
 	@GetMapping("update.me")
-	public String updateMember(HttpSession session, Model model) {
+	public String updateMember(HttpSession session, Model model, String inputPwd) {
 		try {
 			return "member/update";
+		} catch (Exception e) {
+			e.printStackTrace();
+			return errorPage(model,"500 err");
+		}
+	}
+	
+	//마이페이지 - 비밀번호 변경
+	@PostMapping("updatePwd.me")
+	public String updatePwd(HttpSession session, Model model,
+			String newPwd) {
+		try {
+			Member m = (Member)session.getAttribute("loginUser");
+			
+			if(!newPwd.matches("^[a-zA-Z0-9]{4,30}$")) {
+				//유효성 확인
+				return errorPage(model, "비밀번호를 확인해주세요.");
+				
+			}
+			
+			//비밀번호 암호화
+			m.setUserPwd(bcrypt.encode(newPwd));
+			
+			if(service.updatePwd(m)>0) {
+				//수정 성공하면 로그인 세션 지우기
+				session.removeAttribute("loginUser");
+				session.setAttribute("alertMsg", "비밀번호가 변경되었습니다. 다시 로그인 해 주세요.");
+				return "redirect:/";
+			}else {
+				return errorPage(model,"500 err");
+			}
+			
 		} catch (Exception e) {
 			e.printStackTrace();
 			return errorPage(model,"500 err");
@@ -244,6 +304,48 @@ public class MemberController {
 			return errorPage(model,"500 err");
 		}
 	}
+	
+	//우리동네 설정페이지로
+	@GetMapping("dongne.me")
+	public String myDongne(HttpSession session, Model model){
+		try {
+			return "member/dongne";
+		} catch (Exception e) {
+			e.printStackTrace();
+			return errorPage(model,"500 err");
+		}
+	}
+	
+	//우리동네 추가하기
+	@GetMapping("insertDongne.me")
+	public String insertDongne(HttpSession session, Model model,
+			String isMain, String latitude, String longitude) {
+		try {
+			int result = service.insertDongne(session, model,
+					isMain, latitude, longitude);
+			if(result==0) {
+				throw new Exception();
+			}
+			
+			return "redirect:/dongne.me";
+		} catch (Exception e) {
+			e.printStackTrace();
+			return errorPage(model,"500 err");
+		}
+	}
+	
+	
+	//주소록 설정페이지로
+	@GetMapping("deliveryAddress.me")
+	public String myDeliveryAddress(HttpSession session, Model model){
+		try {
+			return "member/deliveryAddress";
+		} catch (Exception e) {
+			e.printStackTrace();
+			return errorPage(model,"500 err");
+		}
+	}
+	
 	
 	//유저 식별번호로 유저 아이디 조회
 	public String selectUserId(int userNo) {

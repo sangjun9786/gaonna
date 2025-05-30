@@ -3,22 +3,36 @@ package com.gaonna.yami.location.service;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.URI;
+import java.net.URLEncoder;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
-import java.util.Base64;
+import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
-import javax.crypto.Mac;
-import javax.crypto.spec.SecretKeySpec;
-
+import org.mybatis.spring.SqlSessionTemplate;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.gaonna.yami.location.dao.LocationDao;
+import com.gaonna.yami.location.vo.Coord;
 import com.gaonna.yami.location.vo.Location;
+import com.gaonna.yami.member.model.vo.Member;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 
 @Service
 public class LocationServiceImpl implements LocationService{
+	@Autowired
+	private SqlSessionTemplate sqlSession;
+	@Autowired
+	private LocationDao dao;
+	
     String staticMap;
     String directions5;
     String directions15;
@@ -58,6 +72,7 @@ public class LocationServiceImpl implements LocationService{
         }
 	}
 	
+	/*
 	//시그니처 생성 - url과 timestamp쥐어주고 시그니처 만들기
 	public String makeSignature(String url, String timestamp) throws Exception {
 		String space = " ";
@@ -83,17 +98,18 @@ public class LocationServiceImpl implements LocationService{
 			
 		return encodeBase64String;
 	}
+	*/
 
 	@Override
-	public Location reverseGeocode(Location lo) throws Exception{
+	public String reverseGeocode(Coord coord) throws Exception{
 		
 		//url 만들기
 		String url = new StringBuilder()
 				.append(reverseGeocoding)
 				.append("?coords=")
-				.append(lo.getLongitude())
+				.append(coord.getLongitude())
 				.append(",")
-				.append(lo.getLatitude())
+				.append(coord.getLatitude())
 				.append("&output=json")
 				.append("&orders=admcode")
 				.toString();
@@ -104,16 +120,11 @@ public class LocationServiceImpl implements LocationService{
 		 * 도로명주소 : roadaddr
 		 */
 		
-		//시그니처 생성
-		String signature = makeSignature(url, lo.getTimestamp());
 		
 		//http형식으로 던지기
 		HttpClient client = HttpClient.newHttpClient();
 		HttpRequest request = HttpRequest.newBuilder()
 		    .uri(URI.create(url))
-		    .header("x-ncp-apigw-timestamp", lo.getTimestamp())
-		    .header("x-ncp-iam-access-key", accessKey)
-		    .header("x-ncp-apigw-signature-v2", signature)
 		    .header("x-ncp-apigw-api-key-id", keyId)
 		    .header("x-ncp-apigw-api-key", key)
 		    .GET()
@@ -122,7 +133,6 @@ public class LocationServiceImpl implements LocationService{
 		//받아오기
 		HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
 		String result =  response.body();
-		System.out.println(result);
 		
 		// JSON 파싱
 	    JsonObject responseJson = JsonParser.parseString(result).getAsJsonObject();
@@ -131,240 +141,108 @@ public class LocationServiceImpl implements LocationService{
 	        .getAsJsonObject("region");
 	        
 	    // 주소 정보 설정
-	    lo.setArea1(region.getAsJsonObject("area1").get("name").getAsString());
-	    lo.setArea2(region.getAsJsonObject("area2").get("name").getAsString());
-	    lo.setArea3(region.getAsJsonObject("area3").get("name").getAsString());
+	    String address = new StringBuilder()
+				.append(region.getAsJsonObject("area1").get("name").getAsString())
+				.append(" ")
+				.append(region.getAsJsonObject("area2").get("name").getAsString())
+				.append(" ")
+				.append(region.getAsJsonObject("area3").get("name").getAsString())
+				.append(" ")
+				.append(region.getAsJsonObject("area4").get("name").getAsString())
+				.toString();
 	    
-	    System.out.println(lo);
-	    
-		return lo;
+		return address;
 	}
+	
+	@Override
+	public List<Location> geocode(String inputAddress) throws Exception{
+		
+		inputAddress = URLEncoder.encode(inputAddress, StandardCharsets.UTF_8.toString());
+		
+		String url = new StringBuilder()
+				.append(geocoding)
+				.append("?query=")
+				.append(inputAddress)
+				.toString();
+		
+		//http형식으로 던지기
+		HttpClient client = HttpClient.newHttpClient();
+		HttpRequest request = HttpRequest.newBuilder()
+		    .uri(URI.create(url))
+		    .header("Accept", "application/json")
+		    .header("x-ncp-apigw-api-key-id", keyId)
+		    .header("x-ncp-apigw-api-key", key)
+		    .GET()
+		    .build();
+		
+		//받아오기
+		HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
+		String result =  response.body();
+	    List<Location> locations = new ArrayList<>();
+	    
+	    JsonObject root = JsonParser.parseString(result).getAsJsonObject();
+	    JsonArray addresses = root.getAsJsonArray("addresses");
 
-}
+	    for (JsonElement element : addresses) {
+	        JsonObject address = element.getAsJsonObject();
+	        Location location = new Location();
+	        
+	        location.setRoadAddress(address.get("roadAddress").getAsString());
+	        location.setJibunAddress(address.get("jibunAddress").getAsString());
+	        
+	        JsonArray addressElements = address.getAsJsonArray("addressElements");
+	        for (JsonElement elem : addressElements) {
+	            JsonObject item = elem.getAsJsonObject();
+	            JsonArray types = item.getAsJsonArray("types");
+	            
+	            for (JsonElement type : types) {
+	            	if(type.getAsString().equals("POSTAL_CODE")) {
+	            		location.setZipCode(item.get("longName").getAsString());
+	            		break;
+	            	}
+	            }
+	        }
+	        locations.add(location);
+	    }
+	    return locations;
+	}
+	
+	@Override
+	public List<Coord> selectUserDongne(int userNo) {
+		return dao.selectUserDongne(sqlSession,userNo);
+	}
+	
+	@Override
+	public int insertDongneMain(Coord currCoord, Member loginUser) {
+		
+		//currCoord를 coords에 저장하고 currCoord에 coordNo받아옴
+		int result = dao.insertDongne(sqlSession,currCoord);
+		
+		//MEMBER_COORDS에 userNo, coordNo넣기
+		Map<String, Integer> memberCoords = new HashMap<>();
+		memberCoords.put("userNo", loginUser.getUserNo());
+		memberCoords.put("coordNo", currCoord.getCoordNo());
+		result *= dao.insertMemberCoords(sqlSession,memberCoords);
 
-/* 네이버 api사용 응답 예제
-{
-  "status": {
-    "code": 0,
-    "name": "ok",
-    "message": "done"
-  },
-  "results": [
-    {
-      "name": "legalcode",
-      "code": {
-        "id": "1156011700",
-        "type": "L",
-        "mappingId": "09560117"
-      },
-      "region": {
-        "area0": {
-          "name": "kr",
-          "coords": {
-            "center": {
-              "crs": "",
-              "x": 0.0,
-              "y": 0.0
-            }
-          }
-        },
-        "area1": {
-          "name": "서울특별시",
-          "coords": {
-            "center": {
-              "crs": "EPSG:4326",
-              "x": 126.978388,
-              "y": 37.56661
-            }
-          },
-          "alias": "서울"
-        },
-        "area2": {
-          "name": "영등포구",
-          "coords": {
-            "center": {
-              "crs": "EPSG:4326",
-              "x": 126.896004,
-              "y": 37.526436
-            }
-          }
-        },
-        "area3": {
-          "name": "당산동",
-          "coords": {
-            "center": {
-              "crs": "EPSG:4326",
-              "x": 126.9065,
-              "y": 37.5347
-            }
-          }
-        },
-        "area4": {
-          "name": "",
-          "coords": {
-            "center": {
-              "crs": "",
-              "x": 0.0,
-              "y": 0.0
-            }
-          }
-        }
-      }
-    },
-    {
-      "name": "admcode",
-      "code": {
-        "id": "1156056000",
-        "type": "A",
-        "mappingId": "09560560"
-      },
-      "region": {
-        "area0": {
-          "name": "kr",
-          "coords": {
-            "center": {
-              "crs": "",
-              "x": 0.0,
-              "y": 0.0
-            }
-          }
-        },
-        "area1": {
-          "name": "서울특별시",
-          "coords": {
-            "center": {
-              "crs": "EPSG:4326",
-              "x": 126.978388,
-              "y": 37.56661
-            }
-          },
-          "alias": "서울"
-        },
-        "area2": {
-          "name": "영등포구",
-          "coords": {
-            "center": {
-              "crs": "EPSG:4326",
-              "x": 126.896004,
-              "y": 37.526436
-            }
-          }
-        },
-        "area3": {
-          "name": "당산2동",
-          "coords": {
-            "center": {
-              "crs": "EPSG:4326",
-              "x": 126.897327,
-              "y": 37.531048
-            }
-          }
-        },
-        "area4": {
-          "name": "",
-          "coords": {
-            "center": {
-              "crs": "",
-              "x": 0.0,
-              "y": 0.0
-            }
-          }
-        }
-      }
-    },
-    {
-      "name": "addr",
-      "code": {
-        "id": "1156011700",
-        "type": "L",
-        "mappingId": "09560117"
-      },
-      "region": {
-        "area0": {
-          "name": "kr",
-          "coords": {
-            "center": {
-              "crs": "",
-              "x": 0.0,
-              "y": 0.0
-            }
-          }
-        },
-        "area1": {
-          "name": "서울특별시",
-          "coords": {
-            "center": {
-              "crs": "EPSG:4326",
-              "x": 126.978388,
-              "y": 37.56661
-            }
-          },
-          "alias": "서울"
-        },
-        "area2": {
-          "name": "영등포구",
-          "coords": {
-            "center": {
-              "crs": "EPSG:4326",
-              "x": 126.896004,
-              "y": 37.526436
-            }
-          }
-        },
-        "area3": {
-          "name": "당산동",
-          "coords": {
-            "center": {
-              "crs": "EPSG:4326",
-              "x": 126.9065,
-              "y": 37.5347
-            }
-          }
-        },
-        "area4": {
-          "name": "",
-          "coords": {
-            "center": {
-              "crs": "",
-              "x": 0.0,
-              "y": 0.0
-            }
-          }
-        }
-      },
-      "land": {
-        "type": "1",
-        "number1": "74",
-        "number2": "5",
-        "addition0": {
-          "type": "",
-          "value": ""
-        },
-        "addition1": {
-          "type": "",
-          "value": ""
-        },
-        "addition2": {
-          "type": "",
-          "value": ""
-        },
-        "addition3": {
-          "type": "",
-          "value": ""
-        },
-        "addition4": {
-          "type": "",
-          "value": ""
-        },
-        "coords": {
-          "center": {
-            "crs": "",
-            "x": 0.0,
-            "y": 0.0
-          }
-        }
-      }
-    }
-  ]
+		//member의 MAIN_COORD수정
+		loginUser.setMainCoord(currCoord.getCoordNo());
+		result *= dao.updateMainCoord(sqlSession,loginUser);
+		
+		return result;
+	}
+	
+	@Override
+	public int insertDongne(Coord currCoord, Member loginUser) {
+		
+		//currCoord를 coords에 저장하고 currCoord에 coordNo받아옴
+		int result = dao.insertDongne(sqlSession,currCoord);
+		
+		//MEMBER_COORDS에 userNo, coordNo넣기
+		Map<String, Integer> memberCoords = new HashMap<>();
+		memberCoords.put("userNo", loginUser.getUserNo());
+		memberCoords.put("coordNo", currCoord.getCoordNo());
+		result *= dao.insertMemberCoords(sqlSession,memberCoords);
+		return result;
+	}
+	
 }
-*/

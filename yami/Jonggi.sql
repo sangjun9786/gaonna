@@ -25,6 +25,12 @@ START WITH 1
 INCREMENT BY 1
 NOCACHE;
 
+--좌표번호 시퀀스
+CREATE SEQUENCE seq_coords
+START WITH 1
+INCREMENT BY 1
+NOCACHE;
+
 --member테이블
 CREATE TABLE member (
     user_no    NUMBER,
@@ -36,6 +42,8 @@ CREATE TABLE member (
     enrolldate DATE,
     modifydate DATE          DEFAULT SYSDATE,
     status     VARCHAR2(1)   DEFAULT 'U',
+    MAIN_COORD NUMBER,
+    MAIN_LOCATION NUMBER,
     
     CONSTRAINT USER_NO_PK    PRIMARY KEY (user_no),
     CONSTRAINT USER_ID_NN    CHECK (user_id IS NOT NULL),
@@ -54,35 +62,55 @@ COMMENT ON COLUMN member.point IS '포인트';
 COMMENT ON COLUMN member.enrolldate IS '가입일';
 COMMENT ON COLUMN member.modifydate IS '수정일';
 COMMENT ON COLUMN member.status IS '회원 상태 (Y:정상, N:탈퇴, E:휴면, U:이메일 미인증)';
+COMMENT ON COLUMN member.MAIN_COORD IS '대표 좌표';
+COMMENT ON COLUMN member.MAIN_LOCATION IS '대표 위치';
+
+
+--좌표
+create table coords(
+    coord_no NUMBER,
+    LATITUDE VARCHAR2(20),
+    LONGITUDE VARCHAR2(20),
+    COORD_Address VARCHAR2(300),
+    coord_date DATE default sysdate,
+    
+    CONSTRAINT coords_no_PK PRIMARY KEY (coord_no)
+);
+COMMENT ON TABLE coords IS '좌표';
+COMMENT ON COLUMN coords.coord_no IS '좌표 식별번호';
+COMMENT ON COLUMN coords.LATITUDE IS '위도';
+COMMENT ON COLUMN coords.LONGITUDE IS '경도';
+COMMENT ON COLUMN coords.COORD_Address IS '해당 좌표 주소';
+COMMENT ON COLUMN coords.coord_date IS '추가/수정된 날짜';
+
+--member-coords조인 테이블
+CREATE TABLE MEMBER_COORDS (
+    USER_NO NUMBER,
+    COORD_NO NUMBER,
+    CONSTRAINT MEMBER_COORDS_USER_NO_fk FOREIGN KEY (USER_NO) REFERENCES member(USER_NO) ON DELETE CASCADE,
+    CONSTRAINT MEMBER_COORDS_COORD_NO_fk FOREIGN KEY (COORD_NO) REFERENCES coords(COORD_NO) ON DELETE CASCADE
+);
+COMMENT ON TABLE MEMBER_COORDS IS '유저-좌표';
+COMMENT ON COLUMN MEMBER_COORDS.USER_NO IS '유저 식별번호';
+COMMENT ON COLUMN MEMBER_COORDS.COORD_NO IS '좌표 식별번호';
 
 --위치
 CREATE TABLE LOCATION (
     LOCATION_NO NUMBER,
-    LATITUDE NUMBER,
-    LONGITUDE NUMBER,
-    TIMESTAMP NUMBER,
-    NAVER_CODE VARCHAR2(20),
-    AREA1 VARCHAR2(30),
-    AREA2 VARCHAR2(50),
-    AREA3 VARCHAR2(50),
-    BUILDING_CODE VARCHAR2(30),
+    location_date DATE default sysdate,
+    road_Address VARCHAR2(300),
+    jibun_Address VARCHAR2(300),
+    detail_Address VARCHAR2(200),
     ZIP_CODE VARCHAR2(10),
-    ROAD_CODE VARCHAR2(20),
 
     CONSTRAINT LOCATION_NO_PK PRIMARY KEY (LOCATION_NO)
 );
 COMMENT ON TABLE LOCATION IS '위치';
-COMMENT ON COLUMN LOCATION.LOCATION_NO IS '위치 식별번호';
-COMMENT ON COLUMN LOCATION.LATITUDE IS '위도';
-COMMENT ON COLUMN LOCATION.LONGITUDE IS '경도';
-COMMENT ON COLUMN LOCATION.TIMESTAMP IS '측정 시각';
-COMMENT ON COLUMN LOCATION.NAVER_CODE IS '네이버 코드';
-COMMENT ON COLUMN LOCATION.AREA1 IS '시/도';
-COMMENT ON COLUMN LOCATION.AREA2 IS '시/군/구';
-COMMENT ON COLUMN LOCATION.AREA3 IS '읍/면/동';
-COMMENT ON COLUMN LOCATION.BUILDING_CODE IS '빌딩번호';
+COMMENT ON COLUMN LOCATION.location_date IS '추가/수정된 날짜';
+COMMENT ON COLUMN LOCATION.road_Address IS '도로명주소';
+COMMENT ON COLUMN LOCATION.jibun_Address IS '지번주소';
+COMMENT ON COLUMN LOCATION.detail_Address IS '세부주소';
 COMMENT ON COLUMN LOCATION.ZIP_CODE IS '우편번호';
-COMMENT ON COLUMN LOCATION.ROAD_CODE IS '도로코드';
 
 --member-location조인 테이블
 CREATE TABLE MEMBER_LOCATION (
@@ -91,9 +119,9 @@ CREATE TABLE MEMBER_LOCATION (
     CONSTRAINT MEMBER_LOCATION_USER_NO_fk FOREIGN KEY (USER_NO) REFERENCES member(USER_NO) ON DELETE CASCADE,
     CONSTRAINT MEMBER_LOCATION_LOCATION_NO_fk FOREIGN KEY (LOCATION_NO) REFERENCES LOCATION(LOCATION_NO) ON DELETE CASCADE
 );
-COMMENT ON TABLE MEMBER_LOCATION IS '위치';
-COMMENT ON COLUMN MEMBER_LOCATION.USER_NO IS '위치 식별번호';
-COMMENT ON COLUMN MEMBER_LOCATION.LOCATION_NO IS '위도';
+COMMENT ON TABLE MEMBER_LOCATION IS '유저-위치';
+COMMENT ON COLUMN MEMBER_LOCATION.USER_NO IS '유저 식별번호';
+COMMENT ON COLUMN MEMBER_LOCATION.LOCATION_NO IS '위치 식별번호';
 
 --이메일 인증용 토큰 저장소
 CREATE TABLE token (
@@ -154,7 +182,7 @@ END;
 CREATE TABLE role (
     user_no      NUMBER,
     role_type    VARCHAR2(20) 
-        CONSTRAINT role_type_check CHECK (role_type IN ('superAdmin', 'admin', 'viewer')),
+    CONSTRAINT role_type_check CHECK (role_type IN ('superAdmin', 'admin', 'viewer')),
     /*
         role_type에 들어갈 데이터
         최고 관리자 superAdmin
@@ -202,5 +230,19 @@ select * from dual;
 --만료된 토큰 체험
 insert into token(user_no,token_no,token,generated_time,token_status)
 values(0,0,0,SYSDATE,'N');
+
+--좌표
+insert into coords (COORD_NO,LATITUDE,LONGITUDE,COORD_ADDRESS)
+values(0,37.5392375,126.9003409,'서울특별시 영등포구 당산2동');
+insert into member_coords values(0,0);
+update member
+set main_coord = 0
+where user_no = 0;
+
+insert into coords (COORD_NO,LATITUDE,LONGITUDE,COORD_ADDRESS)
+values(-1,0,0,'이 세상 어딘가');
+insert into member_coords values(0,-1);
+
+
 
 commit;

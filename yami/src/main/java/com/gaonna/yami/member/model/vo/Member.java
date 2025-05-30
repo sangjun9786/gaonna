@@ -22,7 +22,6 @@ public class Member {
 	private Date modifyDate;
 	private String status;
 	
-	
 	/*
 	 * 권한 테이블에 값이 없으면 roleType == N
 	 * 슈퍼 관리자 : superAdmin
@@ -30,4 +29,7 @@ public class Member {
 	 * 뷰어 : viewer
 	 */
 	private String roleType;
+	
+	private int mainCoord;
+	private int mainLocation;
 }

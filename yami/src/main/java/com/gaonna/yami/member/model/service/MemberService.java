@@ -1,5 +1,9 @@
 package com.gaonna.yami.member.model.service;
 
+import javax.servlet.http.HttpSession;
+
+import org.springframework.ui.Model;
+
 import com.gaonna.yami.member.model.vo.Member;
 
 public interface MemberService {
@@ -22,11 +26,19 @@ public interface MemberService {
 	//아이디 업데이트
 	int updateId(Member m);
 
+	//비번 업데이트
+	int updatePwd(Member m);
+	
 	//이름 업데이트
 	int updateName(Member m);
 	
 	//전화번호 업데이트
 	int updatePhone(Member m);
+
+	//좌표(동네) 업데이트
+	int insertDongne(HttpSession session, Model model
+			, String isMain, String latitude, String longitude) throws Exception;
+
 
 	
 }

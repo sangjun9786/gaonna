@@ -4,7 +4,9 @@ pageEncoding="UTF-8"%>
 <!DOCTYPE html>
 <html>
   <head>
-	<script type="text/javascript" src="https://oapi.map.naver.com/openapi/v3/maps.js?ncpKeyId=85oq183idp"></script>
+	<script type="text/javascript" 
+		src="https://oapi.map.naver.com/openapi/v3/maps.js?ncpKeyId=85oq183idp">
+	</script>
     <meta charset="UTF-8"/>
     <title>YAMI</title>
   </head>
@@ -29,9 +31,7 @@ pageEncoding="UTF-8"%>
     		<c:when test="${not empty currLo}">
 		    	흠...당신은
 		    	<br>
-		    	좌표가 '${currLo.longitude}, ${currLo.latitude}'이니
-		    	<br>
-		    	'${currLo.area1} ${currLo.area2} ${currLo.area3}'에 있군요.
+		    	'${currLo}'에 있군요.
 		    	<br>
     		</c:when>
     		<c:otherwise>
@@ -39,9 +39,13 @@ pageEncoding="UTF-8"%>
     		</c:otherwise>
     	</c:choose>
     </div>
+    <br>
+    <button type="button" id='location2'>DORO!!</button>
+    <div id="location2Div"></div>
+    
     <c:set var="currLo" value="${sessionScope.currLo}"/>
     
-    <form action="${root}/get.lo" method="post" id="locationForm">
+    <form action="${root}/currLo.lab" method="post" id="locationForm">
     	<input type="hidden" name="latitude" id="latitude">
     	<input type="hidden" name="longitude" id="longitude">
     	<input type="hidden" name="timestamp" id="timestamp">
@@ -51,13 +55,46 @@ pageEncoding="UTF-8"%>
     <hr>
     <br>
 
+	<h3>Web Dynamic Map</h3>
     <div id="map" style="width: 600px; height: 400px"></div>
-
-    <script>
     
-
-    </script>
     
+    <br>
+    <hr>
+    <br>
+    <form action="${root}/address.lab">
+	    주소 입력 : <input type="textarea" name="address" id="address">
+	    <button type="submit">DORO?</button>
+    </form>
+    <br>
+    <div id="addresses">
+    	<c:choose>
+    		<c:when test="${empty sessionScope.currAdd }">
+    			뭘봐요
+    		</c:when>
+    		<c:otherwise>
+    			가까운 장소 검색 결과 : <br>
+    			<c:set var="currAdd" value="${sessionScope.currAdd}" />
+    			<ul>
+					<c:forEach var="address" items="${currAdd}">
+						<li>
+							도로명 :
+							${address.roadAddress}
+						</li>
+						<li>
+							지번 :
+							${address.jibunAddress}
+						</li>
+						<li>
+							우편번호 :
+							${address.zipCode}
+						</li>
+						<br>
+					</c:forEach>
+				</ul>
+    		</c:otherwise>
+    	</c:choose>
+    </div>
     
     <br>
     <hr>
@@ -71,12 +108,19 @@ pageEncoding="UTF-8"%>
     
     <script type="text/javascript">
     	let div = document.getElementById('locationDiv');
-    	let latitude = position.coords.latitude;
-    	let longitude = position.coords.longitude;
-    	let timestamp = position.timestamp;
+    	let latitude;
+    	let longitude;
+    	let timestamp;
     	
     	document.getElementById('location').addEventListener('click',function(){
 		    navigator.geolocation.getCurrentPosition(function(position) {
+		    	latitude = position.coords.latitude;
+		    	longitude = position.coords.longitude;
+		    	timestamp = position.timestamp;
+		    	
+		    	console.log("위도 : "+latitude);
+		    	console.log("경도 : "+longitude);
+		    	
 		    	
 		    	document.getElementById('latitude').value = latitude;
 		    	document.getElementById('longitude').value = longitude;
@@ -86,10 +130,22 @@ pageEncoding="UTF-8"%>
 		    });
     	});
     	
+    	document.getElementById('location2').addEventListener('click',function(){
+		    navigator.geolocation.getCurrentPosition(function(position) {
+		    	latitude = position.coords.latitude;
+		    	longitude = position.coords.longitude;
+		    	timestamp = position.timestamp;
+		    	let location2Div = document.getElementById("location2Div");
+		    	
+		    	location2Div.innerHTML = '위도 :'+latitude+'<br>';
+		    	location2Div.innerHTML += '경도 :'+longitude+'<br>';
+		    });
+    	});
+    	
     	//지도
 		var mapOptions = {
-				  center: new naver.maps.LatLng(longitude, latitude),
-				  zoom: 10,
+				  center: new naver.maps.LatLng(37.5392375,126.9003409),
+				  zoom: 15,
 				};
 
 		var map = new naver.maps.Map("map", mapOptions);
