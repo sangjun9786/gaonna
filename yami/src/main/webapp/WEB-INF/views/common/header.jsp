@@ -69,13 +69,19 @@
   <div class="container-fluid">
 
     <!-- 왼쪽: 브랜드 로고 삽입 해야함 -->
-    <a class="navbar-brand" href="#">yami</a>
+    <a class="navbar-brand" href="#">
+    <img src="${pageContext.request.contextPath}/resources/icon/favicon.ico" alt="favicon" width="32" height="32">
+    Yami
+    </a>
 
     <!-- 가운데: 메뉴 항목들 중앙 정렬 각 기능 링크 넣기 필요-->
     <div class="center-menu">
       <ul class="navbar-nav mb-2 mb-lg-0 d-flex flex-row">
         <li class="nav-item">
           <a class="nav-link" href="#">Resell</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="#">Location</a>
         </li>
         <li class="nav-item">
           <a class="nav-link" href="#">Recommend</a>
@@ -113,7 +119,7 @@
             <a class="nav-link" href="${root}/logout.me">Log out</a>
           </li>
           <li class="nav-item">
-            <a class="nav-link" href="${root}>/insert.me">Sign up</a>
+            <a class="nav-link" href="${root}/insert.me">Sign up</a>
           </li>
         <%}%>
       </ul>
