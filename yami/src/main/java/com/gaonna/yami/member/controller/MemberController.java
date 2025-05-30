@@ -171,7 +171,12 @@ public class MemberController {
 				
 				//로그인 성공
 				session.setAttribute("loginUser",loginUser);
-				return "redirect:/";
+				
+				//우리동네 조회
+				List<Coord> coords = locationService.selectUserDongne(loginUser.getUserNo());
+				session.setAttribute("coords", coords);
+				
+				return "redirect:/mypage.me";
 				
 			}else{
 				//해당 유저 없음
@@ -304,19 +309,31 @@ public class MemberController {
 	@GetMapping("dongne.me")
 	public String myDongne(HttpSession session, Model model){
 		try {
-			//유저 식별번호 추출
-			int userNo = ((Member)session.getAttribute("loginUser")).getUserNo();
-			
-			//해당 유저의 우리동네들을 조회하기
-			List<Coord> coords = locationService.selectUserDongne(userNo);
-			session.setAttribute("coords", coords);
-			System.out.println(coords);
 			return "member/dongne";
 		} catch (Exception e) {
 			e.printStackTrace();
 			return errorPage(model,"500 err");
 		}
 	}
+	
+	//우리동네 추가하기
+	@GetMapping("insertDongne.me")
+	public String insertDongne(HttpSession session, Model model,
+			String isMain, String latitude, String longitude) {
+		try {
+			int result = service.insertDongne(session, model,
+					isMain, latitude, longitude);
+			if(result==0) {
+				throw new Exception();
+			}
+			
+			return "redirect:/dongne.me";
+		} catch (Exception e) {
+			e.printStackTrace();
+			return errorPage(model,"500 err");
+		}
+	}
+	
 	
 	//주소록 설정페이지로
 	@GetMapping("deliveryAddress.me")
@@ -328,8 +345,6 @@ public class MemberController {
 			return errorPage(model,"500 err");
 		}
 	}
-	
-	
 	
 	
 	//유저 식별번호로 유저 아이디 조회
