@@ -9,4 +9,10 @@ public interface EventService {
 
 	int attendance(Event e);
 
+	int resetCount(Event e);
+
+	int point1000(Member loginUser);
+
+	int point500(Member loginUser);
+
 }
