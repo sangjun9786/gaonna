@@ -8,9 +8,7 @@
     <title>YAMI</title>
   </head>
   <body>
-
   <%@include file="/WEB-INF/views/common/header.jsp" %>
-  
 	<c:choose>
 		<c:when test="${empty sessionScope.loginUser}">
 			<a href="${pageScope.root}/insert.me">회원가입</a>
