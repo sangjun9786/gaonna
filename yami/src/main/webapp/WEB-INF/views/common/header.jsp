@@ -93,7 +93,7 @@
           <a class="nav-link" href="#">Notice</a>
         </li>
         <li class="nav-item">
-          <a class="nav-link" href="#">Event</a>
+          <a class="nav-link" href="${root }/event.ev">Event</a>
         </li>
         <li class="nav-item">
           <a class="nav-link" href="#">Report</a>

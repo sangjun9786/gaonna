@@ -38,4 +38,23 @@
 		AND STATUS = 'Y'
 	</update>
 	
+	<update id="resetCount">
+		UPDATE EVENT
+		SET COUNT = 0
+		WHERE EVENT_NO = #{eventNo}
+		AND STATUS = 'Y'
+	</update>
+	
+	<update id="point1000">
+		UPDATE MEMBER
+		SET POINT = POINT + 1000
+		WHERE USER_NO = #{userNo}
+	</update>
+	
+	<update id="point500">
+		UPDATE MEMBER
+		SET POINT = POINT + 500
+		WHERE USER_NO = #{userNo}
+	</update>
+	
 </mapper>

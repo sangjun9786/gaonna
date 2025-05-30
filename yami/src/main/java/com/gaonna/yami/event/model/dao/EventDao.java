@@ -30,4 +30,16 @@ public class EventDao {
 		}
 	}
 
+	public int resetCount(SqlSessionTemplate sqlSession, Event e) {
+		return sqlSession.update("eventMapper.resetCount", e);
+	}
+
+	public int point1000(SqlSessionTemplate sqlSession, Member loginUser) {
+		return sqlSession.update("eventMapper.point1000", loginUser);
+	}
+	
+	public int point500(SqlSessionTemplate sqlSession, Member loginUser) {
+		return sqlSession.update("eventMapper.point500", loginUser);
+	}
+
 }
