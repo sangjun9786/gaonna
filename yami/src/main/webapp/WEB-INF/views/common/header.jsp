@@ -70,7 +70,7 @@
 
     <!-- 왼쪽: 야미 파비콘  -->
     <a class="navbar-brand" href="${root}/index.jsp">
-    <img src="${pageContext.request.contextPath}/resources/icon/favicon.ico" alt="favicon" width="32" height="32">
+    <img src="${pageContext.request.contextPath}/resources/img/야미콘.png" alt="favicon" width="45" height="45">
     Yami
     </a>
 
@@ -78,7 +78,7 @@
     <div class="center-menu">
       <ul class="navbar-nav mb-2 mb-lg-0 d-flex flex-row">
         <li class="nav-item">
-          <a class="nav-link" href="#">Resell</a>
+          <a class="nav-link" href="${root }/productList.pro">Resell</a>
         </li>
         <li class="nav-item">
           <a class="nav-link" href="#">Location</a>
