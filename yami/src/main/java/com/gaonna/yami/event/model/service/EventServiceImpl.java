@@ -27,4 +27,19 @@ public class EventServiceImpl implements EventService {
 		return dao.attendance(sqlSession, e);
 	}
 	
+	@Override
+	public int resetCount(Event e) {
+		return dao.resetCount(sqlSession, e);
+	}
+	
+	@Override
+	public int point1000(Member loginUser) {
+		return dao.point1000(sqlSession, loginUser);
+	}
+	
+	@Override
+	public int point500(Member loginUser) {
+		return dao.point500(sqlSession, loginUser);
+	}
+	
 }
