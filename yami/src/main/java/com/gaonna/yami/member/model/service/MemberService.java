@@ -43,7 +43,5 @@ public interface MemberService {
 
 	//대표 동네 바꾸기
 	int updateMainCoord(Member m, int coordNo);
-
-
 	
 }

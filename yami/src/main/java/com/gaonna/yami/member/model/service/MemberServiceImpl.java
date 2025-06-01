@@ -148,6 +148,7 @@ public class MemberServiceImpl implements MemberService{
 	}
 	
 	@Override
+	@Transactional
 	public int deleteCoord(HttpSession session, int coordNo) {
 		
 		Member loginUser = (Member)session.getAttribute("loginUser");

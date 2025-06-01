@@ -9,8 +9,11 @@
     버그
     
     헤더 변경에 따른 alertMsg확인
-    회원가입 작성 폼 등으로 뒤로가기 막기
-
+    회원가입 작성 폼에서 뒤로가기 막기
+    유저 우리동네, 배송지 페이지 비동기식으로 변경
+    
+    추가 필요
+    로그인 정보 저장
 */
 
 
@@ -268,5 +271,28 @@ insert into coords (COORD_NO,LATITUDE,LONGITUDE,COORD_ADDRESS)
 values(-4,0,0,'깊은 산 속 옹달샘');
 insert into member_coords values(0,-4);
 
+insert into location(LOCATION_NO,LOCATION_DATE,ROAD_ADDRESS
+,JIBUN_ADDRESS,DETAIL_ADDRESS,ZIP_CODE)
+values(-1,sysdate,'서울 영등포구 선유동2로 57 이레빌딩'
+,'서울 영등포구 양평동4가 2', '20층 어딘가','07212');
+insert into member_location values(0,-1);
+
+insert into location(LOCATION_NO, LOCATION_DATE, ROAD_ADDRESS
+, JIBUN_ADDRESS, DETAIL_ADDRESS, ZIP_CODE)
+values(-2, sysdate, '서울 종로구 사직로 161 경복궁'
+, '서울 종로구 세종로 1-1', '근정전 앞', '03045');
+insert into member_location values(0, -2);
+
+insert into location(LOCATION_NO, LOCATION_DATE
+, ROAD_ADDRESS, JIBUN_ADDRESS, DETAIL_ADDRESS, ZIP_CODE)
+values(-3, sysdate, '부산 해운대구 해운대해변로 264'
+, '부산 해운대구 중동 1411-1', '해운대 백사장 중앙', '48094');
+insert into member_location values(0, -3);
+
+insert into location(LOCATION_NO, LOCATION_DATE
+, ROAD_ADDRESS, JIBUN_ADDRESS, DETAIL_ADDRESS, ZIP_CODE)
+values(-4, sysdate, '경북 경주시 첨성로 140'
+, '경북 경주시 인왕동 839-1', '첨성대 남쪽 잔디밭', '38171');
+insert into member_location values(0, -4);
 
 commit;

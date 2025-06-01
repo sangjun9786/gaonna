@@ -101,15 +101,27 @@
 		where user_no = #{userNo}
 	</update>
 	
+	<update id="updateMainCoord" parameterType="Member">
+		update member
+		set MAIN_COORD = #{mainCoord}
+		where user_no = #{userNo}
+	</update>
+	
 	<update id="deleteMainCoord" parameterType="Member">
 		update member
 		set MAIN_COORD = null
 		where user_no = #{userNo}
 	</update>
 	
-	<update id="updateMainCoord" parameterType="Member">
+	<update id="updateMainLocation" parameterType="Member">
 		update member
-		set MAIN_COORD = #{mainCoord}
+		set MAIN_LOCATION = #{mainLocation}
+		where user_no = #{userNo}
+	</update>
+	
+	<update id="deleteMainLocation" parameterType="Member">
+		update member
+		set MAIN_LOCATION = null
 		where user_no = #{userNo}
 	</update>
 </mapper>

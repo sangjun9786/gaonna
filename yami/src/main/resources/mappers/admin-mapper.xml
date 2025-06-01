@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="adminMapper">
+
+	<resultMap type="Member" id="memberResultMap">
+		<result column="USER_NO" property="userNo"/>
+		<result column="USER_ID" property="userId"/>
+		<result column="USER_PWD" property="userPwd"/>
+		<result column="USER_NAME" property="userName"/>
+		<result column="ROLE_TYPE" property="roleType"/>
+		<result column="MAIN_COORD" property="mainCoord"/>
+		<result column="MAIN_LOCATION" property="mainLocation"/>
+	</resultMap>
+
+	<select id="consoleLogin" resultMap="memberResultMap">
+	    select 
+	        m.USER_NO,
+	        m.USER_ID,
+	        m.USER_PWD,
+	        m.USER_NAME,
+	        m.PHONE,
+	        m.point,
+	        m.ENROLLDATE,
+	        m.MODIFYDATE,
+	        m.STATUS,
+	        m.MAIN_COORD,
+	        m.MAIN_LOCATION,
+	        case 
+	            when exists (
+	                select 1
+	                from ROLE r
+	                where r.USER_NO = m.USER_NO
+	            ) then 'Y'
+	            else 'N'
+	        end as ROLE_TYPE
+	    from MEMBER m
+	    where m.USER_ID = #{userId}
+	</select>
+
+	<select id="selectRoleType" resultType="string">
+		select role_type
+		from role
+		join member using(user_no)
+		where user_no = #{userNo}
+	</select>
+	
+	<select id="searchAdmin" parameterType="string" resultMap="memberResultMap">
+		select USER_NO
+				,USER_ID
+				,USER_PWD
+				,USER_NAME
+				,PHONE
+				,POINT
+				,ENROLLDATE
+				,MODIFYDATE
+				,STATUS
+				,MAIN_COORD
+				,MAIN_LOCATION
+				,role_type
+		from member
+		join role using(user_no)
+		
+		<if test="select != 'all'">
+			where role_type = #{select}
+		</if>
+	</select>
+</mapper>

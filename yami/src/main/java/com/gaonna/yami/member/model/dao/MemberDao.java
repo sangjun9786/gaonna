@@ -55,5 +55,4 @@ public class MemberDao {
 	public int updateMainCoord(SqlSessionTemplate sqlSession, Member m) {
 		return sqlSession.update("memberMapper.updateMainCoord", m);
 	}
-	
 }

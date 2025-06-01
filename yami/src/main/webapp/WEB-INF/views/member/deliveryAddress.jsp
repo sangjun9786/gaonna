@@ -7,251 +7,131 @@
 	<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.7.1/font/bootstrap-icons.css">
 	<style>
 	.title-orange { color: #ff6b35; }
-	.dongne-card { transition: all 0.3s ease; }
 	.dongne-card:hover { transform: translateY(-5px); }
 	.main-dongne { border: 2px solid #ff6b35; background-color: #fff3e8; }
 	.bi-trash:hover { color: #dc3545 !important; }
+	  .dongne-card {
+    margin-bottom: 0 !important;
+  }
+  .card-body {
+    padding: 0.75rem !important;
+  }
+  .row.g-2 {
+    --bs-gutter-x: 0.5rem;
+    --bs-gutter-y: 0.5rem;
+  }
 	</style>
 </head>
 
-<body class="bg-light">
 <%@include file="/WEB-INF/views/common/header.jsp"%>
-	
-<div class="container py-5">
-    <div class="row justify-content-center">
-        <div class="col-md-10 col-lg-8">
-            <!-- 헤더 섹션 -->
-            <div class="text-center mb-5">
-                <h1 class="title-orange fw-bold mb-3">
-                    <i class="bi bi-geo-alt-fill"></i> 배송지 설정
-                </h1>
-                <p class="lead text-muted">어디로 YAMI한 물건을 받으시겠어요?</p>
-            </div>
+<body>
 
-            <!-- 동네 목록 카드 -->
-            <div class="card shadow-sm mb-4">
-                <div class="card-header bg-warning text-white">
-                    <h4 class="mb-0">
-                        <i class="bi bi-house-door me-2"></i> 등록된 배송지 목록
-                    </h4>
-                </div>
-                
-                <div class="card-body">
-                    <c:choose>
-                        <c:when test="${empty sessionScope.location}">
-                            <div class="alert alert-warning text-center">
-                                <i class="bi bi-exclamation-circle me-2"></i>등록된 배송지가 없습니다.
-                            </div>
-                        </c:when>
-                        
-                        <c:otherwise>
-                            <div class="row g-4">
-                                <c:forEach var="coord" items="${sessionScope.location}">
-                                    <div class="col-12">
-                                        <div class="card dongne-card ${location.locationNo == loginUser.mainLocation ? 'main-dongne' : ''}">
-                                            <div class="card-body">
-                                                <div class="d-flex justify-content-between align-items-start">
-                                                    <div>
-                                                        <h5 class="card-title">
-                                                            <i class="bi bi-geo me-1"></i>
-                                                            ${location.coordAddress}
-                                                        </h5>
-                                                        <p class="text-muted mb-0">
-                                                            <small>
-                                                                <i class="bi bi-calendar me-1"></i>
-                                                                <fmt:formatDate value="${location.locationDate}" pattern="yyyy.MM.dd 추가"/>
-                                                            </small>
-                                                        </p>
-                                                    </div>
-                                                    
-                                                    <!-- 액션 버튼 그룹 -->
-                                                    <div class="btn-group">
-                                                        <c:if test="${location.locationNo == loginUser.mainLocation}">
-                                                            <span class="badge bg-warning me-2">
-                                                                <i class="bi bi-star-fill"></i> 대표동네
-                                                            </span>
-                                                        </c:if>
-                                                        
-                                                        <!-- 삭제 버튼 클릭시 삭제요청 -->
-                                                        <form id="deleteForm_${location.locationNo}" action="deletelocation.me" method="post">
-														    <input type="hidden" name="locationNo" value="${location.locationNo}">
-														</form>
-														<!-- 삭제 모달창 띄우기 -->
-														<button type="button" class="btn btn-link text-danger p-0" 
-														        data-bs-toggle="modal" 
-														        data-bs-target="#deleteModal"
-														        data-form-id="deleteForm_${location.locationNo}">
-														    <i class="bi bi-trash fs-5"></i>
-														</button>
-                                                        
-                                                        <c:if test="${location.locationNo != loginUser.mainCoord}">
-                                                        	<!-- 변경 버튼 클릭시 변경요청 -->
-                                                            <form id="updateForm_${location.locationNo}" action="updateMainlocation.me" method="post">
-															    <input type="hidden" name="locationNo" value="${location.locationNo}">
-															</form>
-															<!-- 별 버튼 -->
-															<button type="button" class="btn btn-link text-warning p-0" 
-															        onclick="document.getElementById('updateForm_${location.locationNo}').submit()">
-															    <i class="bi bi-star fs-5"></i>
-															</button>
-                                                        </c:if>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </c:forEach>
-                            </div>
-                        </c:otherwise>
-                    </c:choose>
-                </div>
-            </div>
+<div class="container py-3">
 
-            <!-- 배송지 추가 섹션 -->
-            <div class="text-center mt-4">
-                <button class="btn btn-warning btn-lg px-5" 
-                        id="insertDongne"
-                        data-bs-toggle="collapse" 
-                        data-bs-target="#addButtons">
-                    <i class="bi bi-plus-circle me-2"></i>배송지 추가
-                </button>
-                
-                <!-- 숨겨진 액션 버튼 -->
-                <div class="collapse mt-3" id="addButtons">
-                    <div id="addForm" class="d-flex justify-content-center gap-2">
-                    
-                    <!-- 대표 배송지가 없으면 그냥 배송지 추가하기 버튼은 보이지 않음 -->
-	                    <c:if test="${loginUser.mainLocation == 0}">
-	                        <button type="button"
-	                        	id="addNormal"
-	                        	class="btn btn-outline-warning">
-	                            <i class="bi bi-check-circle me-1"></i>추가하기
-	                        </button>
-	                    </c:if>
-                        <button type="button"
-                        		id="addMain"
-                        		class="btn btn-outline-warning" 
-						        data-bs-toggle="collapse" 
-						        data-bs-target="#addButtons">
-						    <i class="bi bi-star me-1"></i>대표 배송지 추가하기
-						</button>
-                    </div>
+  <!-- 상단 타이틀 & 버튼 -->
+  <div class="d-flex justify-content-between align-items-center mb-3">
+    <h4 class="mb-0 fw-bold">
+      <i class="bi bi-geo-alt-fill me-2 text-primary"></i>배송지 설정
+    </h4>
+    <a href="insertLocationForm.me" class="btn btn-primary">
+      <i class="bi bi-plus-lg me-1"></i>배송지 추가하기
+    </a>
+  </div>
+
+  <!-- 주소 카드 2열 배치 -->
+  <div class="row row-cols-1 row-cols-md-2 g-2">
+    <c:forEach var="location" items="${sessionScope.location}" varStatus="status">
+      <c:if test="${status.index < 5}">
+        <div class="col">
+          <div class="card dongne-card ${location.locationNo == loginUser.mainLocation ? 'main-dongne' : ''} h-100">
+            <div class="card-body p-2">
+              <div class="fw-semibold text-secondary mb-1">
+                <i class="bi bi-geo-alt-fill me-1 text-primary"></i>
+                배송지 정보
+                <span class="badge bg-light text-dark border border-primary ms-2">
+                  우편번호 ${location.zipCode}
+                </span>
+              </div>
+              <div class="small text-body mb-2">
+                <div><span class="fw-semibold text-dark">도로명</span> : ${location.roadAddress}</div>
+                <div><span class="fw-semibold text-dark">지번</span> : ${location.jibunAddress}</div>
+                <div><span class="fw-semibold text-dark">상세</span> : ${location.detailAddress}</div>
+              </div>
+              <div class="d-flex justify-content-between align-items-center mt-2">
+                <small class="text-muted">
+                  <i class="bi bi-calendar me-1"></i>
+                  <fmt:formatDate value="${location.locationDate}" pattern="yyyy.MM.dd 추가"/>
+                </small>
+                <div>
+                  <!-- 삭제 버튼 -->
+                  <form id="deleteForm_${location.locationNo}" action="deleteLocation.me" method="post" class="d-inline">
+                    <input type="hidden" name="locationNo" value="${location.locationNo}">
+                  </form>
+                  <button type="button" class="btn btn-link text-danger p-0 me-1"
+                          data-bs-toggle="modal"
+                          data-bs-target="#deleteModal"
+                          data-form-id="deleteForm_${location.locationNo}">
+                    <i class="bi bi-trash fs-5"></i>
+                  </button>
+                  <!-- 별(대표) 버튼 -->
+                  <c:choose>
+                    <c:when test="${location.locationNo == loginUser.mainLocation}">
+                      <span class="text-warning"><i class="bi bi-star-fill fs-5"></i></span>
+                    </c:when>
+                    <c:otherwise>
+                      <form id="updateForm_${location.locationNo}" action="updateMainlocation.me" method="post" class="d-inline">
+                        <input type="hidden" name="locationNo" value="${location.locationNo}">
+                      </form>
+                      <button type="button" class="btn btn-link text-warning p-0"
+                              onclick="document.getElementById('updateForm_${location.locationNo}').submit()">
+                        <i class="bi bi-star fs-5"></i>
+                      </button>
+                    </c:otherwise>
+                  </c:choose>
                 </div>
+              </div>
             </div>
+          </div>
         </div>
-    </div>
+      </c:if>
+    </c:forEach>
+  </div>
 </div>
 
-<!-- 삭제 확인 모달 -->
-<div class="modal fade" id="deleteModal" tabindex="-1">
-	<div class="modal-dialog">
-		<div class="modal-content">
-			<div class="modal-body">
-				배송지를 삭제하시겠습니까?
-			</div>
-			<div class="modal-footer">
-				<button type="button" class="btn btn-secondary" data-bs-dismiss="modal">취소</button>
-				<button type="button" class="btn btn-danger" 
-				        onclick="deleteForm()">
-					삭제
-				</button>
-			</div>
-		</div>
-	</div>
-</div>
-
-<!-- 대표동 설정 모달 -->
-<div class="modal fade" id="setMainModal" tabindex="-1">
-    <div class="modal-dialog">
-        <div class="modal-content">
-            <div class="modal-header bg-warning text-white">
-                <h5 class="modal-title">
-                    <i class="bi bi-star me-2"></i>대표 배송지 설정
-                </h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-            </div>
-            <div class="modal-body">
-                이 배송지를 대표 배송지로 설정하시겠습니까?
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">취소</button>
-                <button type="button" class="btn btn-warning" onclick="setMainFrom()">설정</button>
-            </div>
-        </div >
+<!-- 삭제 모달 예시 (필요시) -->
+<div class="modal fade" id="deleteModal" tabindex="-1" aria-labelledby="deleteModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="deleteModalLabel">주소 삭제</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="닫기"></button>
+      </div>
+      <div class="modal-body">
+        정말 이 주소를 삭제하시겠습니까?
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">취소</button>
+        <button type="button" class="btn btn-danger" id="confirmDeleteBtn">삭제</button>
+      </div>
     </div>
+  </div>
 </div>
 
 <script>
-
-    document.getElementById('addForm').addEventListener('click', function(e) {
-    	//버튼만 이벤트 작동되도록
-    	if (e.target.tagName !== 'BUTTON' 
-    			&& e.target.closest('button') == null) {
-    		return;
-    	}
-        let btn = e.target.closest('button');
-        
-        //좌표 개수 구해서 5보다 크면 더 이상 넣을 수 없습니다
-        let locationLength = 
-        	${empty sessionScope.location ? 0 : sessionScope.location.size()};
-		if(locationLength>=5){
-        	showAlert('더 이상 우리동네를 추가할 수 없습니다.', 'danger');
-            return;
-        }
-        
-		//젤다 만들기
-		let link = "${root}/insertLocation.me?isMain=";
-		if(btn.id =="addMain"){
-			link += 'Y';
-		}else if(btn.id =="addNormal"){
-			link += 'N';
-		}
-		location.href = link;
-		
-    });
-
-    // 취소 버튼
-    document.querySelectorAll('.btn-outline-secondary[data-bs-toggle="collapse"]').forEach(function(btn){
-        btn.addEventListener('click', function(){
-            let target = document.querySelector(this.getAttribute('data-bs-target'));
-            let bsCollapse = bootstrap.Collapse.getOrCreateInstance(target);
-            bsCollapse.hide();
-        });
-    });
-
-    
-    function showAlert(message, type) {
-        const alert = document.createElement('div');
-        alert.className = `alert alert-\${type} alert-dismissible fade show mt-3`;
-        alert.innerHTML = `
-            <i class="bi bi-exclamation-circle me-2"></i>
-            \${message}
-            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-        `;
-        document.querySelector('#addButtons').after(alert);
-    }
-
-    //대표 배송지 지우기
-    $('#deleteModal').on('show.bs.modal', function(event) {
-        const button = $(event.relatedTarget); // 클릭한 삭제 버튼
-        const formId = button.data('form-id'); // data-form-id 값 추출
-        $(this).data('form-id', formId); // 모달에 폼 ID 저장
-    });
-    function deleteForm() {
-        const formId = $('#deleteModal').data('form-id');
-        if (formId) {
-            document.getElementById(formId).submit();
-        }
-    }
-    
-    //대포동으로 설정
-    function setMainFrom(){
-    	let formId = $('#setMainModal').data('form-id');
-    	if(formId) {
-    	    document.getElementById(formId).submit();
-    	}
-    }
-    
+// 삭제 모달에서 폼 제출
+let formIdToDelete = null;
+	document.querySelectorAll('button[data-form-id]').forEach(btn => {
+	btn.addEventListener('click', function() {
+		formIdToDelete = this.getAttribute('data-form-id');
+	});
+});
+document.getElementById('confirmDeleteBtn')?.addEventListener('click', function() {
+	if (formIdToDelete) {
+		document.getElementById(formIdToDelete).submit();
+	}
+});
 </script>
 </body>
+
+
 </html>

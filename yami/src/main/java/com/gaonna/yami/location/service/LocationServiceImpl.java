@@ -13,9 +13,12 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import javax.servlet.http.HttpSession;
+
 import org.mybatis.spring.SqlSessionTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.gaonna.yami.location.dao.LocationDao;
 import com.gaonna.yami.location.vo.Coord;
@@ -155,6 +158,93 @@ public class LocationServiceImpl implements LocationService{
 	}
 	
 	@Override
+	public Location reverseGeocodeLo(Coord coord) throws Exception {
+	    // URL 생성 (orders=roadaddr,addr - 도로명, 지번 주소 동시 요청)
+	    String url = new StringBuilder()
+	        .append(reverseGeocoding)
+	        .append("?coords=")
+	        .append(coord.getLongitude())
+	        .append(",")
+	        .append(coord.getLatitude())
+	        .append("&output=json")
+	        .append("&orders=roadaddr,addr")
+	        .toString();
+
+	    // HTTP 요청 전송
+	    HttpClient client = HttpClient.newHttpClient();
+	    HttpRequest request = HttpRequest.newBuilder()
+	        .uri(URI.create(url))
+	        .header("x-ncp-apigw-api-key-id", keyId)
+	        .header("x-ncp-apigw-api-key", key)
+	        .GET()
+	        .build();
+
+	    HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
+	    String result = response.body();
+
+	    // JSON 파싱
+	    JsonObject responseJson = JsonParser.parseString(result).getAsJsonObject();
+	    JsonArray results = responseJson.getAsJsonArray("results");
+	    
+	    Location location = new Location();
+	    
+	    for (JsonElement element : results) {
+	        JsonObject resultObj = element.getAsJsonObject();
+	        String resultType = resultObj.get("name").getAsString();
+	        
+	        // 도로명 주소 처리
+	        if ("roadaddr".equals(resultType)) {
+	            JsonObject region = resultObj.getAsJsonObject("region");
+	            String area1 = region.getAsJsonObject("area1").get("name").getAsString(); // 시/도
+	            String area2 = region.getAsJsonObject("area2").get("name").getAsString(); // 시/군/구
+	            
+	            // 도로명 주소 조합
+	            String roadPart = resultObj.has("roadAddress") 
+	                ? resultObj.get("roadAddress").getAsString() 
+	                : resultObj.getAsJsonObject("land").get("name").getAsString() + " " 
+	                  + resultObj.getAsJsonObject("land").get("number1").getAsString();
+	            
+	            location.setRoadAddress(area1 + " " + area2 + " " + roadPart);
+
+	            // 우편번호 처리
+	            if (resultObj.has("zipCode")) {
+	                location.setZipCode(resultObj.get("zipCode").getAsString());
+	            } else {
+	                JsonObject land = resultObj.getAsJsonObject("land");
+	                if (land.has("addition1")) {
+	                    JsonObject addition1 = land.getAsJsonObject("addition1");
+	                    if ("zipcode".equals(addition1.get("type").getAsString())) {
+	                        location.setZipCode(addition1.get("value").getAsString());
+	                    }
+	                }
+	            }
+	        }
+
+	        
+	        //지번 주소
+	        else if ("addr".equals(resultType)) {
+	            JsonObject region = resultObj.getAsJsonObject("region");
+	            StringBuilder jibunAddress = new StringBuilder();
+	            
+	            jibunAddress.append(region.getAsJsonObject("area1").get("name").getAsString()).append(" ");
+	            jibunAddress.append(region.getAsJsonObject("area2").get("name").getAsString()).append(" ");
+	            jibunAddress.append(region.getAsJsonObject("area3").get("name").getAsString());
+	            
+	            JsonObject land = resultObj.getAsJsonObject("land");
+	            jibunAddress.append(" ").append(land.get("number1").getAsString());
+	            if (!land.get("number2").getAsString().isEmpty()) {
+	                jibunAddress.append("-").append(land.get("number2").getAsString());
+	            }
+	            
+	            location.setJibunAddress(jibunAddress.toString());
+	        }
+	    }
+	    return location;
+	}
+
+
+	
+	@Override
 	public List<Location> geocode(String inputAddress) throws Exception{
 		
 		inputAddress = URLEncoder.encode(inputAddress, StandardCharsets.UTF_8.toString());
@@ -250,6 +340,80 @@ public class LocationServiceImpl implements LocationService{
 		//coords 테이블에서 지우기
 		//member-coords테이블은 delete on cascade가 걸렸으므로 건드릴 필요없다
 		return dao.deleteCoord(sqlSession,coordNo);
+	}
+	
+	@Override
+	public List<Location> selectLocation(Member m) {
+		return dao.selectLocation(sqlSession,m);
+	}
+	
+	@Transactional
+	@Override
+	public int deleteUserLocation(HttpSession session,Member m, int locationNo) {
+		
+		int result = 1;
+		
+		//유저 대표 배송지일 경우 대표 배송지 지워버리기
+		if(m.getMainLocation() == locationNo) {
+			result *= dao.deleteMainLocation(sqlSession,m);
+			
+			if(result>0) {
+				//세선 업데이트
+				m.setMainLocation(0);
+				session.setAttribute("loginUser", m);
+			}
+		}
+		
+		//location테이블에서 삭제하기
+		//member-location테이블은 delete on cascade가 걸렸으므로 건드릴 필요없다
+		result *= dao.deleteLocation(sqlSession,locationNo);
+		
+		return result;
+	}
+	
+	@Override
+	public int updateMainlocation(Member m) {
+		return dao.updateMainLocation(sqlSession,m);
+	}
+	
+	//배송지 추가하기
+	@Transactional
+	@Override
+	public int insertLocationMe(Member m, Location lo) {
+		int result = 1;
+		//location넣기
+		result *= dao.insertLocationMe(sqlSession,lo);
+		
+		//MEMBER_LOCARION에 userNo, locationNo넣기
+		Map<String, Integer> memberLocation = new HashMap<>();
+		memberLocation.put("userNo", m.getUserNo());
+		memberLocation.put("locationNo", lo.getLocationNo());
+		result *= dao.insertMemberLocation(sqlSession,memberLocation);
+		return result;
+	}
+	
+	//메인 배송지 추가하기
+	@Override
+	public int insertMainLocation(HttpSession session
+			,Member m, Location lo) {
+		int result = 1;
+		
+		//location넣기
+		result *= dao.insertLocationMe(sqlSession,lo);
+		
+		//MEMBER_LOCARION에 userNo, locationNo넣기
+		Map<String, Integer> memberLocation = new HashMap<>();
+		memberLocation.put("userNo", m.getUserNo());
+		memberLocation.put("locationNo", lo.getLocationNo());
+		result *= dao.insertMemberLocation(sqlSession,memberLocation);
+		
+		//mainLocation업데이트
+		result *= dao.updateMainLocation(sqlSession,m);
+		
+		//member세션 업데이트
+		m.setMainLocation(lo.getLocationNo());
+		session.setAttribute("loginUser", m);
+		return result;
 	}
 	
 }
