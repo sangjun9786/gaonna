@@ -36,9 +36,12 @@ public interface MemberService {
 	int updatePhone(Member m);
 
 	//좌표(동네) 업데이트
-	int insertDongne(HttpSession session, Model model
-			, String isMain, String latitude, String longitude) throws Exception;
+	int insertDongne(HttpSession session, String isMain) throws Exception;
 
+	//유저 좌표 삭제
+	int deleteCoord(HttpSession session, int coordNo);
 
+	//대표 동네 바꾸기
+	int updateMainCoord(Member m, int coordNo);
 	
 }

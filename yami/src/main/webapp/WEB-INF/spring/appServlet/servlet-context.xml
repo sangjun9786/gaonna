@@ -39,6 +39,12 @@
 	        <bean class="com.gaonna.yami.common.MemberInterceptor"/>
 	    </mvc:interceptor>
 	    
+	    
+	    <mvc:interceptor>
+	        <mvc:mapping path="/*.ad"/>
+	        <bean class="com.gaonna.yami.common.AdminInterceptor"/>
+	    </mvc:interceptor>
+	    
 	</mvc:interceptors>
 	
 	<!-- 파일 업로드 처리 MultipartResolver -->

@@ -55,7 +55,7 @@ pageEncoding="UTF-8"%>
     <hr>
     <br>
 
-	<h3>Web Dynamic Map</h3>
+	<h3>Web Dynamic Map</h3>	
     <div id="map" style="width: 600px; height: 400px"></div>
     
     
@@ -142,13 +142,32 @@ pageEncoding="UTF-8"%>
 		    });
     	});
     	
-    	//지도
-		var mapOptions = {
-				  center: new naver.maps.LatLng(37.5392375,126.9003409),
-				  zoom: 15,
-				};
+    	// 지도 생성 함수
+    	function createMap(centerLat, centerLng) {
+    	    var mapOptions = {
+    	        center: new naver.maps.LatLng(centerLat, centerLng),
+    	        zoom: 15
+    	    };
+    	    var map = new naver.maps.Map("map", mapOptions);
+    	}
 
-		var map = new naver.maps.Map("map", mapOptions);
+    	// 위치정보로 지도 초기화
+    	if (navigator.geolocation) {
+    	    navigator.geolocation.getCurrentPosition(
+    	        function(position) {
+    	            // 위치 정보 획득 성공
+    	            createMap(position.coords.latitude, position.coords.longitude);
+    	        },
+    	        function(error) {
+    	            // 위치 정보 획득 실패 시 기본 위치(서울 마포구)
+    	            createMap(37.5392375, 126.9003409);
+    	        }
+    	    );
+    	} else {
+    	    // Geolocation 미지원 시 기본 위치
+    	    createMap(37.5392375, 126.9003409);
+    	}
+
     </script>
     
   </body>

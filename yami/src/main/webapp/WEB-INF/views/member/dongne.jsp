@@ -53,7 +53,6 @@
                                                 <div class="d-flex justify-content-between align-items-start">
                                                     <div>
                                                         <h5 class="card-title">
-                                                            <!-- 주소 앞에 아이콘 다시 추가 -->
                                                             <i class="bi bi-geo me-1"></i>
                                                             ${coord.coordAddress}
                                                         </h5>
@@ -73,22 +72,28 @@
                                                             </span>
                                                         </c:if>
                                                         
-                                                        <form class="d-inline" action="deleteCoord.lo" method="post">
-                                                            <input type="hidden" name="coordNo" value="${coord.coordNo}">
-                                                            <button type="button" class="btn btn-link text-danger p-0" 
-                                                                    data-bs-toggle="modal" data-bs-target="#deleteModal">
-                                                                <i class="bi bi-trash fs-5"></i>
-                                                            </button>
-                                                        </form>
+                                                        <!-- 삭제 버튼 클릭시 삭제요청 -->
+                                                        <form id="deleteForm_${coord.coordNo}" action="deleteCoord.me" method="post">
+														    <input type="hidden" name="coordNo" value="${coord.coordNo}">
+														</form>
+														<!-- 삭제 모달창 띄우기 -->
+														<button type="button" class="btn btn-link text-danger p-0" 
+														        data-bs-toggle="modal" 
+														        data-bs-target="#deleteModal"
+														        data-form-id="deleteForm_${coord.coordNo}">
+														    <i class="bi bi-trash fs-5"></i>
+														</button>
                                                         
                                                         <c:if test="${coord.coordNo != loginUser.mainCoord}">
-                                                            <form class="d-inline ms-2" action="updateMainCoord.me" method="post">
-                                                                <input type="hidden" name="coordNo" value="${coord.coordNo}">
-                                                                <button type="button" class="btn btn-link text-warning p-0" 
-                                                                        data-bs-toggle="modal" data-bs-target="#setMainModal">
-                                                                    <i class="bi bi-star fs-5"></i>
-                                                                </button>
-                                                            </form>
+                                                        	<!-- 변경 버튼 클릭시 변경요청 -->
+                                                            <form id="updateForm_${coord.coordNo}" action="updateMainCoord.me" method="post">
+															    <input type="hidden" name="coordNo" value="${coord.coordNo}">
+															</form>
+															<!-- 별 버튼 -->
+															<button type="button" class="btn btn-link text-warning p-0" 
+															        onclick="document.getElementById('updateForm_${coord.coordNo}').submit()">
+															    <i class="bi bi-star fs-5"></i>
+															</button>
                                                         </c:if>
                                                     </div>
                                                 </div>
@@ -114,17 +119,21 @@
                 <!-- 숨겨진 액션 버튼 -->
                 <div class="collapse mt-3" id="addButtons">
                     <div id="addForm" class="d-flex justify-content-center gap-2">
-                        <button type="button"
-                        	id="addNormal"
-                        	class="btn btn-outline-warning">
-                            <i class="bi bi-check-circle me-1"></i>추가하기
-                        </button>
+                    
+                    <!-- 대표 동네가 없으면 그냥 동네 추가하기 버튼은 보이지 않음 -->
+	                    <c:if test="${empty loginUser.mainCoord || loginUser.mainCoord == 0}">
+	                        <button type="button"
+	                        	id="addNormal"
+	                        	class="btn btn-outline-warning">
+	                            <i class="bi bi-check-circle me-1"></i>추가하기
+	                        </button>
+	                    </c:if>
                         <button type="button"
                         		id="addMain"
                         		class="btn btn-outline-warning" 
 						        data-bs-toggle="collapse" 
 						        data-bs-target="#addButtons">
-						    <i class="bi bi-star me-1"></i>대표 동네로 추가하기
+						    <i class="bi bi-star me-1"></i>대표 동네 추가하기
 						</button>
                     </div>
                 </div>
@@ -135,43 +144,40 @@
 
 <!-- 삭제 확인 모달 -->
 <div class="modal fade" id="deleteModal" tabindex="-1">
-    <div class="modal-dialog">
-        <div class="modal-content">
-            <div class="modal-header bg-warning text-white">
-                <h5 class="modal-title">
-                    <i class="bi bi-exclamation-triangle me-2"></i>동네 삭제
-                </h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-            </div>
-            <div class="modal-body">
-                정말 이 동네를 삭제하시겠습니까?
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">취소</button>
-                <button type="button" class="btn btn-warning" onclick="document.querySelector('#deleteModal form').submit()">삭제</button>
-            </div>
-        </div>
-    </div>
+	<div class="modal-dialog">
+		<div class="modal-content">
+			<div class="modal-body">
+				동네를 삭제하시겠습니까?
+			</div>
+			<div class="modal-footer">
+				<button type="button" class="btn btn-secondary" data-bs-dismiss="modal">취소</button>
+				<button type="button" class="btn btn-danger" 
+				        onclick="deleteForm()">
+					삭제
+				</button>
+			</div>
+		</div>
+	</div>
 </div>
 
-<!-- 대표동 설정 모달 -->
+<!-- 대표 동네 설정 모달 -->
 <div class="modal fade" id="setMainModal" tabindex="-1">
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header bg-warning text-white">
                 <h5 class="modal-title">
-                    <i class="bi bi-star me-2"></i>대표동 설정
+                    <i class="bi bi-star me-2"></i>대표 동네 설정
                 </h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
             </div>
             <div class="modal-body">
-                이 동네를 대표동으로 설정하시겠습니까?
+                이 동네를 대표 동네로 설정하시겠습니까?
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">취소</button>
-                <button type="button" class="btn btn-warning" onclick="document.querySelector('#setMainModal form').submit()">설정</button>
+                <button type="button" class="btn btn-warning" onclick="setMainFrom()">설정</button>
             </div>
-        </div>
+        </div >
     </div>
 </div>
 
@@ -196,22 +202,41 @@
         	showAlert('더 이상 우리동네를 추가할 수 없습니다.', 'danger');
             return;
         }
-        //중복확인 로직 추가
-
+        
+		//네 위치 내놔
         navigator.geolocation.getCurrentPosition(
             function(position) {
             	let latitude = position.coords.latitude;
             	let longitude = position.coords.longitude;
-            	let link = "${root}/insertDongne.me?isMain=";
             	
+            	//젤다 만들기
+            	let link = "${root}/insertDongne.me?isMain=";
                 if(btn.id =="addMain"){
-                	link += 'Y&';
+                	link += 'Y';
                 }else if(btn.id =="addNormal"){
-                	link += 'N&';
+                	link += 'N';
                 }
-                
-                location.href = link+"latitude="+latitude+
-                	"&longitude="+longitude;
+            	
+		        //중복된 위치라면 못 넣는다.
+		        //checkDongne.me로 ajax요청
+            	$.ajax({
+			      url: "checkDongne.me",
+			      data: {latitude : latitude
+			    	  , longitude : longitude},
+			      success: function(result) {
+					if(result == "pass"){
+						//중복검사 통과하면 
+						location.href = link;
+					}else if(result == 'noPass'){
+						showAlert('이미 등록된 동네입니다.', 'danger');
+					}else{
+						showAlert('500 err', 'danger');
+					}
+			      },
+			      error: function(){
+			    	  showAlert('서버와 통신할 수 없습니다.', 'danger');
+			      }
+		      });
             },
             function(error) {
                 let message = '위치 권한을 허용해주세요';
@@ -232,17 +257,39 @@
         });
     });
 
-    
+    //뭔가 이상하면 보여주는 버튼
     function showAlert(message, type) {
         const alert = document.createElement('div');
-        alert.className = `alert alert-${type} alert-dismissible fade show mt-3`;
+        alert.className = `alert alert-\${type} alert-dismissible fade show mt-3`;
         alert.innerHTML = `
             <i class="bi bi-exclamation-circle me-2"></i>
-            ${message}
+            \${message}
             <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
         `;
         document.querySelector('#addButtons').after(alert);
     }
+
+    //동네 삭제
+    $('#deleteModal').on('show.bs.modal', function(event) {
+        const button = $(event.relatedTarget); // 클릭한 삭제 버튼
+        const formId = button.data('form-id'); // data-form-id 값 추출
+        $(this).data('form-id', formId); // 모달에 폼 ID 저장
+    });
+    function deleteForm() {
+        const formId = $('#deleteModal').data('form-id');
+        if (formId) {
+            document.getElementById(formId).submit();
+        }
+    }
+    
+    //대표동네 설정
+    function setMainFrom(){
+    	let formId = $('#setMainModal').data('form-id');
+    	if(formId) {
+    	    document.getElementById(formId).submit();
+    	}
+    }
+    
 </script>
 </body>
 </html>
