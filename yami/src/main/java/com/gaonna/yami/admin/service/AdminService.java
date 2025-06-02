@@ -14,5 +14,14 @@ public interface AdminService {
 
 	//ajax 관리자 조회
 	List<Member> searchAdmin(String select);
+
+	//관리자 데이터 수정
+	int updateAdmin(Member m);
+
+	//관리자 추가
+	int insertAdmin(Member m);
+
+	//ajax 회원 조회
+	List<Member> searchMember(String searchType, String searchKeyword, int searchCount, int page);
 	
 }

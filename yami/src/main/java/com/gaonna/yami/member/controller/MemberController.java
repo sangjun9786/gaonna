@@ -57,7 +57,7 @@ public class MemberController {
 			, Member m, String domain) {
 		try {
 			//---------유효성 검사---------//
-			if(!m.getUserId().matches("^[a-zA-Z0-9]{1,30}$") ||
+			if(!(m.getUserId()+"@"+domain).matches("^[a-zA-Z0-9]{1,30}$") ||
 					!m.getUserPwd().matches("^[a-zA-Z0-9]{4,30}$") ||
 					m.getUserName().isEmpty()
 					) {

@@ -15,7 +15,7 @@
 		<result column="MAIN_LOCATION" property="mainLocation"/>
 	</resultMap>
 
-	<select id="consoleLogin" resultMap="memberResultMap">
+	<select id="consoleLogin" parameterType="Member" resultMap="memberResultMap">
 	    select 
 	        m.USER_NO,
 	        m.USER_ID,
@@ -40,7 +40,7 @@
 	    where m.USER_ID = #{userId}
 	</select>
 
-	<select id="selectRoleType" resultType="string">
+	<select id="selectRoleType" parameterType="Member" resultType="string">
 		select role_type
 		from role
 		join member using(user_no)
@@ -67,4 +67,151 @@
 			where role_type = #{select}
 		</if>
 	</select>
+	
+	<update id="updateAdmin" parameterType="Member">
+		update member
+		set USER_ID = #{userId}
+			,USER_PWD = #{userPwd}
+			,USER_NAME = #{userName}
+			,PHONE = #{phone}
+			,POINT = #{point}
+			,STATUS = #{status}
+		where user_no = #{userNo}
+	</update>
+	
+	<update id="updateAdminRole" parameterType="Member">
+		update role
+		set ROLE_TYPE = #{roleType}
+		where user_no = #{userNo}
+	</update>
+	
+	<delete id="deleteAdminRole" parameterType="Member">
+		delete from role
+		where user_no = #{userNo}
+	</delete>
+	
+	<insert id="insertAdmin" parameterType="Member">
+		<selectKey keyProperty="userNo" resultType="int" order="BEFORE">
+	        SELECT seq_me.nextval FROM dual
+	    </selectKey>
+		insert into member
+				(USER_NO
+				,USER_ID
+				,USER_PWD
+				,USER_NAME
+				,PHONE
+				,POINT
+				,ENROLLDATE
+				,STATUS)
+		values(
+				#{userNo}
+				,#{userId}
+				,#{userPwd}
+				,#{userName}
+				,#{phone}
+				,#{point}
+				,SYSDATE
+				,'Y')
+	</insert>
+	
+	<insert id="insertAdminRole" parameterType="Member">
+		insert into role(USER_NO,ROLE_TYPE)
+		values(#{userNo}, #{roleType})
+	</insert>
+	
+	<select id="searchMemberAll" resultMap="Member">
+		select * 
+		from(
+			select USER_NO
+					,USER_ID
+					,USER_PWD
+					,USER_NAME
+					,PHONE
+					,POINT
+					,ENROLLDATE
+					,MODIFYDATE
+					,STATUS
+					,MAIN_COORD
+					,MAIN_LOCATION
+					,rownum as rn
+			from(
+				select USER_NO
+						,USER_ID
+						,USER_PWD
+						,USER_NAME
+						,PHONE
+						,POINT
+						,ENROLLDATE
+						,MODIFYDATE
+						,STATUS
+						,MAIN_COORD
+						,MAIN_LOCATION
+				from member
+				<where>
+	                <if test="searchKeyword != null and searchKeyword != ''">
+	                    (USER_NO LIKE '%' || #{searchKeyword} || '%'
+	                    OR USER_ID LIKE '%' || #{searchKeyword} || '%'
+	                    OR USER_NAME LIKE '%' || #{searchKeyword} || '%'
+	                    OR PHONE LIKE '%' || #{searchKeyword} || '%')
+	                </if>
+            	</where>
+				order by USER_NO
+				)
+			where rownum &lt;= #{endRow}
+			)
+		where rn &gt;= #{startRow}
+	</select>
+	
+	
+	<select id="searchMember" resultMap="Member">
+		select * 
+		from(
+			select USER_NO
+					,USER_ID
+					,USER_PWD
+					,USER_NAME
+					,PHONE
+					,POINT
+					,ENROLLDATE
+					,MODIFYDATE
+					,STATUS
+					,MAIN_COORD
+					,MAIN_LOCATION
+					,rownum as rn
+			from(
+				select USER_NO
+						,USER_ID
+						,USER_PWD
+						,USER_NAME
+						,PHONE
+						,POINT
+						,ENROLLDATE
+						,MODIFYDATE
+						,STATUS
+						,MAIN_COORD
+						,MAIN_LOCATION
+				from member
+				where 
+				<choose>
+					<when test="searchType = no">
+					user_no = #{searchKeyword}
+					</when>
+					<when test="searchType = id">
+					user_id = #{searchKeyword}
+					</when>
+					<when test="searchType = name">
+					user_name = #{searchKeyword}
+					</when>
+					<when test="searchType = phone">
+					phone = #{searchKeyword}
+					</when>
+				</choose>
+				order by USER_NO
+				)
+			where rownum &lt;= #{endRow}
+			)
+		where rn &gt;= #{startRow}
+	</select>
+	
+	
 </mapper>
