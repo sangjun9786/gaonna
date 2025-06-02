@@ -20,8 +20,7 @@
 	<div>
 		회원 관리
 		<c:choose>
-			<c:when test="${loginUser.roleType!='viewer' }">
-				<a href="${root}/insertUser.ad">회원 추가</a>
+			<c:when test="${loginUser.roleType!='viewer'}">
 				<a href="${root}/updateUser.ad">회원 조회/수정</a>
 			</c:when>
 			<c:otherwise>

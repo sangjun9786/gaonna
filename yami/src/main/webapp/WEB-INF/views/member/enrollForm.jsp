@@ -130,7 +130,7 @@
 			const userId = document.getElementById("userId").value;
 		    const regex = /^[A-Za-z0-9]{1,30}$/;
 		    
-		    if (regex.test(userId)) {
+		    if (regex.test(userId+"@"+domain)) {
 		    	if(document.getElementById("domainList").value !=""){
 			    	debounce();
 		    	}else{

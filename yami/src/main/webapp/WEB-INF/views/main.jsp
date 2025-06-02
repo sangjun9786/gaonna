@@ -84,7 +84,6 @@
 				<label for="consoleInput" class="form-label">관리자 콘솔</label>
 				<input type="text" id="consoleInput" name="command" class="form-control" placeholder="명령어를 입력하세요" autofocus />
 			</div>
-			<div class="text-muted small">sda: superAdmin, ad: admin, vw: viewer로 로그인</div>
 		</div>
 	</form>
 </div>
