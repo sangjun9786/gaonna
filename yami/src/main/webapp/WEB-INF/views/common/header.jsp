@@ -64,7 +64,14 @@
 
 <c:set var="root" value="${pageContext.request.contextPath}"/>
 <c:set var="loginUser" value="${sessionScope.loginUser}"/>
-
+<script>
+	  var msg="${alertMsg}";
+			
+	  if(msg!="") {
+		alert(msg);
+	  }
+	</script>
+	<c:remove var="alertMsg"/>
 <nav class="navbar navbar-expand-lg custom-navbar position-relative">
   <div class="container-fluid">
 

@@ -97,15 +97,6 @@
 <body>
 	<%@include file="/WEB-INF/views/common/header.jsp" %>
 	
-	<script>
-	  var msg="${alertMsg}";
-			
-	  if(msg!="") {
-		alert(msg);
-	  }
-	</script>
-	<c:remove var="alertMsg"/>
-	
 	<c:if test="${not empty loginUser and empty event}">
 	  <script>
 	    $(function() {

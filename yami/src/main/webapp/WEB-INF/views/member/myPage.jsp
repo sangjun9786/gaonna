@@ -67,6 +67,12 @@
 											<fmt:formatDate value="${pageScope.loginUser.enrollDate}" pattern="yyyy년 MM월 dd일"/>
 										</td>
 									</tr>
+									<tr>
+										<td class="fw-bold text-primary">
+											<i class="bi bi-point me-2"></i>포인트
+										</td>
+										<td class="border-start ps-3">${pageScope.loginUser.point}</td>
+									</tr>
 								</tbody>
 							</table>
 						</div>
