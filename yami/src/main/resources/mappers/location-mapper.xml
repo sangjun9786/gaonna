@@ -9,7 +9,7 @@
 		<result column="LOCATION_NO" property="locationNo"/>
 		<result column="LOCATION_DATE" property="locationDate"/>
 		<result column="ROAD_ADDRESS" property="roadAddress"/>
-		<result column="JINBUN_ADDRESS" property="jibunAddress"/>
+		<result column="JIBUN_ADDRESS" property="jibunAddress"/>
 		<result column="DETAIL_ADDRESS" property="detailAddress"/>
 		<result column="ZIP_CODE" property="zipCode"/>
 	</resultMap>
@@ -46,4 +46,54 @@
 	    insert into member_coords(USER_NO, COORD_NO)
 	    values(#{userNo}, #{coordNo})
 	</insert>
+	
+	<delete id="deleteCoord" parameterType="int">
+		delete from coords
+		where coord_no = #{coordNo}
+	</delete>
+	
+	<select id="selectLocation" parameterType="int" resultMap="locationResultMap">
+		select l.LOCATION_NO
+			,l.LOCATION_DATE
+			,l.ROAD_ADDRESS
+			,l.JIBUN_ADDRESS
+			,l.DETAIL_ADDRESS
+			,l.ZIP_CODE
+		from location l
+		left join member_location ml on(l.LOCATION_NO = ml.LOCATION_NO	)
+		left join member m on(m.user_no = ml.user_no)
+		where m.user_no = #{userNo}
+	</select>
+	
+	<delete id="deleteLocation" parameterType="int">
+		delete from location
+		where location_no = #{locationNo}
+	</delete>
+	
+	<insert id="insertLocationMe" parameterType="Location">
+		<selectKey keyProperty="locationNo" resultType="int" order="BEFORE">
+	        SELECT seq_location.nextval FROM dual
+	    </selectKey>
+		insert into location(
+					LOCATION_NO
+					,LOCATION_DATE
+					,ROAD_ADDRESS
+					,JIBUN_ADDRESS
+					,DETAIL_ADDRESS
+					,ZIP_CODE)
+		values(
+			#{locationNo}
+			,sysdate
+			,#{roadAddress}
+			,#{jibunAddress}
+			,#{detailAddress}
+			,#{zipCode})
+	</insert>
+	
+	<insert id="insertMemberLocation" parameterType="map">
+	    insert into member_location(USER_NO, LOCATION_NO)
+	    values(#{userNo}, #{locationNo})
+	</insert>
+	
+	
 </mapper>

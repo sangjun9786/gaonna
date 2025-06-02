@@ -1,8 +1,10 @@
 package com.gaonna.yami.member.controller;
 
+import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 import java.util.List;
 
+import org.apache.ibatis.annotations.Case;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Controller;
@@ -13,8 +15,10 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import com.gaonna.yami.admin.service.AdminService;
 import com.gaonna.yami.location.service.LocationService;
 import com.gaonna.yami.location.vo.Coord;
+import com.gaonna.yami.location.vo.Location;
 import com.gaonna.yami.member.common.TokenGenerator;
 import com.gaonna.yami.member.model.service.MemberService;
 import com.gaonna.yami.member.model.vo.Member;
@@ -27,6 +31,9 @@ public class MemberController {
 	public TokenGenerator tokenGenerator;
 	@Autowired
 	public LocationService locationService;
+	@Autowired
+	public AdminService adminService;
+	
 	
 	@Autowired
 	private BCryptPasswordEncoder bcrypt;
@@ -57,7 +64,7 @@ public class MemberController {
 				return errorPage(model, "필수 항목을 확인해 주세요.");
 			}
 
-			if(m.getPhone().equals("")) {
+			if(m.getPhone().equals("--")) {
 				//전화번호를 입력하지 않았을 경우 전화번호 비우기
 				m.setPhone(null);
 			}else if(!m.getPhone().matches("^\\d{3}-\\d{3,4}-\\d{4}$")) {
@@ -80,6 +87,7 @@ public class MemberController {
 			
 			//서비스로 보내고 겸사겸사 유저식별번호 따오기
 			int result = service.insertMember(m);
+			
 			
 			if(result>0) {
 				//토큰 생성기로 보내기
@@ -153,9 +161,14 @@ public class MemberController {
 	
 	//로그인
 	@PostMapping("login.me")
-	public String loginMember(HttpSession session, Model model
+	public String loginMember(HttpServletRequest request
+			,HttpSession oldSession, Model model
 			, String userId, String domain, String userPwd) {
 		try {
+			//혹시모를 세션 초기화
+			oldSession.invalidate();
+			HttpSession session = request.getSession(true);
+			
 			Member loginUser = service.loginMember(userId, domain, userPwd);
 			
 			if(loginUser != null) {
@@ -176,12 +189,21 @@ public class MemberController {
 				List<Coord> coords = locationService.selectUserDongne(loginUser.getUserNo());
 				session.setAttribute("coords", coords);
 				
-				return "redirect:/mypage.me";
+				//관리자면 관리 권한 조회
+				if(loginUser.getRoleType() != "N") {
+					loginUser.setRoleType(adminService
+							.selectRoleType(loginUser));
+					//('superAdmin', 'admin', 'viewer')
+				}
+				
+				
+				
+				return "redirect:/";
 				
 			}else{
 				//해당 유저 없음
 				session.setAttribute("alertMsg", "아이디와 비밀번호를 확인해 주세요.");
-				return "member/login";
+				return "redirect:/login.me";
 			}
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -193,8 +215,7 @@ public class MemberController {
 	@GetMapping("logout.me")
 	public String logout(HttpSession session ,Model model) {
 		try {
-			session.removeAttribute("loginUser");
-			session.removeAttribute("event");
+			session.invalidate();//세션 전체 초기화
 			return "redirect:/";
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -240,7 +261,7 @@ public class MemberController {
 			
 			if(service.updatePwd(m)>0) {
 				//수정 성공하면 로그인 세션 지우기
-				session.removeAttribute("loginUser");
+				session.invalidate();
 				session.setAttribute("alertMsg", "비밀번호가 변경되었습니다. 다시 로그인 해 주세요.");
 				return "redirect:/";
 			}else {
@@ -316,18 +337,101 @@ public class MemberController {
 		}
 	}
 	
+	
+	
+	//ajax로 우리동네 중복확인
+	@ResponseBody
+	@GetMapping("checkDongne.me")
+	public String checkDongne(HttpSession session, Model model,
+		String latitude, String longitude) {
+		try {
+			List<Coord> coords = (List)session.getAttribute("coords");
+			
+			//해당 위도, 경도에 해당하는 위치 추출
+			Coord currCoord = new Coord();
+			currCoord.setLongitude(longitude);
+			currCoord.setLatitude(latitude);
+			currCoord.setCoordAddress(locationService
+					.reverseGeocode(currCoord));
+			
+			//위치가 이미 존재하면 가세요라
+			for(Coord i : coords) {
+				//위치 판별은 coordAddress기준
+				if((i.getCoordAddress().replaceAll("\\s+", ""))
+						.equals(currCoord.getCoordAddress().replaceAll("\\s+", ""))) {
+					return "noPass";
+				}
+			}
+			
+			//중복 안 되면 session에 currCoord넣고 통과
+			session.setAttribute("currCoord",currCoord);
+			return "pass";
+			
+		} catch (Exception e) {
+			e.printStackTrace();
+			return "err";
+		}
+	}
+	
+	
 	//우리동네 추가하기
 	@GetMapping("insertDongne.me")
-	public String insertDongne(HttpSession session, Model model,
-			String isMain, String latitude, String longitude) {
+	public String insertDongne(HttpSession session, Model model,String isMain) {
 		try {
-			int result = service.insertDongne(session, model,
-					isMain, latitude, longitude);
+			//세션에 넣어둔 currCoord를 이용할거에요
+			int result = service.insertDongne(session, isMain);
 			if(result==0) {
 				throw new Exception();
 			}
 			
-			return "redirect:/dongne.me";
+			//세션 청소
+			session.removeAttribute("currCoord");
+			
+			return "member/dongne";
+		} catch (Exception e) {
+			e.printStackTrace();
+			return errorPage(model,"500 err");
+		}
+	}
+	
+	//우리동네 삭제
+	@PostMapping("deleteCoord.me")
+	public String deleteCoord(HttpSession session, Model model, 
+			int coordNo) {
+		
+		try {
+			int result = service.deleteCoord(session, coordNo);
+			
+			if(result==0) {
+				throw new Exception();
+			}
+			
+			//coord의 session반영
+			Member loginUser = (Member)session.getAttribute("loginUser");
+			List<Coord> coords = locationService.selectUserDongne(loginUser.getUserNo());
+			session.setAttribute("coords", coords);
+			
+			return "member/dongne";
+		} catch (Exception e) {
+			e.printStackTrace();
+			return errorPage(model,"500 err");
+		}
+	}
+	
+	//대표동네 설정하기
+	@PostMapping("updateMainCoord.me")
+	public String updateMainCoord(HttpSession session, Model model, int coordNo) {
+		try {
+			Member m = (Member)session.getAttribute("loginUser");
+			
+			if(service.updateMainCoord(m,coordNo)>0) {
+				//session업데이트
+				session.setAttribute("loginUsert", m);
+				
+				return "member/dongne";
+			}
+			
+			return errorPage(model,"500 err");
 		} catch (Exception e) {
 			e.printStackTrace();
 			return errorPage(model,"500 err");
@@ -335,11 +439,80 @@ public class MemberController {
 	}
 	
 	
-	//주소록 설정페이지로
+	
+	//배송지 페이지로
 	@GetMapping("deliveryAddress.me")
 	public String myDeliveryAddress(HttpSession session, Model model){
 		try {
+			//해당 유저의 주소록 불러오기
+			Member m = (Member)session.getAttribute("loginUser");
+			
+			List<Location> locations= locationService.selectLocation(m);
+			session.setAttribute("location", locations);
+			
 			return "member/deliveryAddress";
+		} catch (Exception e) {
+			e.printStackTrace();
+			return errorPage(model,"500 err");
+		}
+	}
+	
+	//배송지 추가하기 페이지로
+	@GetMapping("insertLocationForm.me")
+	public String insertLocation(Model model, String isMain){
+		try {
+			return "member/insertDeliveryAddress";
+		} catch (Exception e) {
+			e.printStackTrace();
+			return errorPage(model,"500 err");
+		}
+	}
+	
+	//배송지 삭제
+	@PostMapping("deleteLocation.me")
+	public String deleteLocation(HttpSession session, Model model, int locationNo) {
+		try {
+			Member m = (Member)session.getAttribute("loginUser");
+			
+			if(locationService.deleteUserLocation(session,m,locationNo)>0) {
+				//세션 업데이트
+				List<Location> locations= locationService.selectLocation(m);
+				session.setAttribute("location", locations);
+				return "member/deliveryAddress";
+			}
+			
+			return errorPage(model, "배송지를 삭제할 수 없습니다.");
+		} catch (Exception e) {
+			e.printStackTrace();
+			return errorPage(model,"500 err");
+		}
+	}
+	
+	//대표 배송지 변경
+	@PostMapping("updateMainlocation.me")
+	public String updateMainlocation(HttpSession session
+			,Model model, int locationNo) {
+		try {
+			Member m = (Member)session.getAttribute("loginUser");
+			
+			//이미 대표 배송지면 가세요라
+			if(m.getMainLocation() == locationNo) {
+				return errorPage(model,"이미 대표 배송지입니다.");
+			}
+			
+			//m에 대표 배송지 넣어두기
+			m.setMainLocation(locationNo);
+			
+			switch (locationService.updateMainlocation(m)){
+			case 0 :
+				return errorPage(model,"대표배송지 변경에 실패했습니다.");
+			case 1 :
+				session.setAttribute("loginUser", m);//session업데이트
+				return "member/deliveryAddress";
+			default :
+				return errorPage(model,"500 err");
+			}
+			
 		} catch (Exception e) {
 			e.printStackTrace();
 			return errorPage(model,"500 err");
@@ -356,7 +529,6 @@ public class MemberController {
 			return null;
 		}
 	}
-	
 	
 	//오류창
 	private String errorPage(Model model, String errMsg) {

@@ -318,7 +318,7 @@
 	       			+document.getElementById('phone2').value+"-"
 	       			+document.getElementById('phone3').value;
 		        
-		        document.getElementById('phone').innerHTML=phone;
+		        document.getElementById('phone').value=phone;
 		        
 		        setButtonState('loading');
 		        this.submit();

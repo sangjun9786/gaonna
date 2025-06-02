@@ -102,34 +102,28 @@ public class MemberServiceImpl implements MemberService{
 	}
 	
 	
-	@Transactional
 	@Override
-	public int insertDongne(HttpSession session, Model model
-			, String isMain, String latitude, String longitude) throws Exception {
+	public int insertDongne(HttpSession session, String isMain) throws Exception {
 		
+		//session의 currCoord, loginUser불러오기
+		Coord currCoord = (Coord)session.getAttribute("currCoord");
 		Member loginUser = (Member)session.getAttribute("loginUser");
 		
-		//이미 가지고 있는 좌표들이 5개 이상이면 불가능
+		//받아 온 값 유효성 검사
+		
+		//이미 가지고 있는 좌표들이 5개 이상이면 되겠냐?
 		List<Coord> coords = (List)session.getAttribute("coords");
 		if(coords.size()>=5) {
 			throw new Exception();
 		}
-		
-		//해당 위도, 경도에 해당하는 위치 추출
-		Coord currCoord = new Coord();
-		currCoord.setLongitude(longitude);
-		currCoord.setLatitude(latitude);
-		
-		currCoord.setCoordAddress(locationService.reverseGeocode(currCoord));
-		
-		//위치가 이미 존재하는 위치면 가세요라
+		//중복검사
 		for(Coord i : coords) {
-			//위치 판별은 coordAddress기준
 			if((i.getCoordAddress().replaceAll("\\s+", ""))
 					.equals(currCoord.getCoordAddress().replaceAll("\\s+", ""))) {
 				throw new Exception();
 			}
 		}
+		
 		
 		int result=0;
 		if(isMain.equals("Y")) {
@@ -149,6 +143,48 @@ public class MemberServiceImpl implements MemberService{
 		//coords 초기화
 		coords = locationService.selectUserDongne(loginUser.getUserNo());
 		session.setAttribute("coords", coords);
+		
+		return result;
+	}
+	
+	@Override
+	@Transactional
+	public int deleteCoord(HttpSession session, int coordNo) {
+		
+		Member loginUser = (Member)session.getAttribute("loginUser");
+		int result=1;
+		
+		
+		//coordNo가 대표이면 대표번호 삭제
+		if(coordNo == loginUser.getMainCoord()) {
+			result *= dao.deleteMainCoord(sqlSession, loginUser);
+			
+			if(result>0) {
+				//session반영
+				loginUser.setMainCoord(0);
+				session.setAttribute("loginUser", loginUser);
+			}
+		}
+		
+		//coord삭제
+		result *= locationService.deleteCoord(coordNo);
+		
+		return result;
+	}
+	
+	@Override
+	public int updateMainCoord(Member m, int coordNo) {
+		
+		//유효성 검사 -  coordNo가 대표 동네일 경우
+		if(coordNo == m.getMainCoord()) {
+			return 0;
+		}
+		
+		//m의 mainCoord를 받은 coordNo로 바꿔치기
+		m.setMainCoord(coordNo);
+		
+		//db업데이트
+		int result = dao.updateMainCoord(sqlSession, m);
 		
 		return result;
 	}

@@ -129,7 +129,7 @@
         </li>
         <c:if test="${loginUser.roleType != 'N'}">
           <li class="nav-item">
-            <a class="nav-link" href="${root}/adminpage.ad">운영실</a>
+            <a class="nav-link" href="${root}/adminPage.ad">운영실</a>
           </li>
         </c:if>
       </c:otherwise>
