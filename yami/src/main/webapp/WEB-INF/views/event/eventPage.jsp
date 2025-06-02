@@ -97,8 +97,6 @@
 <body>
 	<%@include file="/WEB-INF/views/common/header.jsp" %>
 	
-	
-	
 	<c:if test="${not empty loginUser and empty event}">
 	  <script>
 	    $(function() {
