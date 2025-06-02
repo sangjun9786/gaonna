@@ -119,7 +119,7 @@
 		values(#{userNo}, #{roleType})
 	</insert>
 	
-	<select id="searchMemberAll" resultMap="Member">
+	<select id="searchMemberAll" resultMap="memberResultMap">
 		select * 
 		from(
 			select USER_NO
@@ -163,7 +163,7 @@
 	</select>
 	
 	
-	<select id="searchMember" resultMap="Member">
+	<select id="searchMember" resultMap="memberResultMap">
 		select * 
 		from(
 			select USER_NO
@@ -191,21 +191,22 @@
 						,MAIN_COORD
 						,MAIN_LOCATION
 				from member
-				where 
-				<choose>
-					<when test="searchType = no">
-					user_no = #{searchKeyword}
-					</when>
-					<when test="searchType = id">
-					user_id = #{searchKeyword}
-					</when>
-					<when test="searchType = name">
-					user_name = #{searchKeyword}
-					</when>
-					<when test="searchType = phone">
-					phone = #{searchKeyword}
-					</when>
-				</choose>
+				<where>
+					<choose>
+						<when test="searchType == 'no'">
+						user_no = #{searchKeyword}
+						</when>
+						<when test="searchType == 'id'">
+						user_id like '%' || #{searchKeyword} ||'%'
+						</when>
+						<when test="searchType == 'name'">
+						user_name like '%' || #{searchKeyword} ||'%'
+						</when>
+						<when test="searchType == 'phone'">
+						phone = #{searchKeyword}
+						</when>
+					</choose>
+				</where>
 				order by USER_NO
 				)
 			where rownum &lt;= #{endRow}
@@ -213,5 +214,9 @@
 		where rn &gt;= #{startRow}
 	</select>
 	
+	<select id="countMember" resultType="java.lang.Integer">
+		select count(*) AS totalCount
+		from member
+	</select>
 	
 </mapper>

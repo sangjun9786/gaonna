@@ -23,5 +23,8 @@ public interface AdminService {
 
 	//ajax 회원 조회
 	List<Member> searchMember(String searchType, String searchKeyword, int searchCount, int page);
+
+	//ajax 회원 수 조회
+	String countMember();
 	
 }

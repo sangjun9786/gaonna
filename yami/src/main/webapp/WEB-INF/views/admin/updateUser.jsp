@@ -54,114 +54,8 @@
   </div>
 </div>
 
-<!-- 회원 정보 수정 모달 -->
-<div class="modal fade" id="memberEditModal" tabindex="-1" aria-labelledby="memberEditModalLabel" aria-hidden="true">
-  <div class="modal-dialog modal-dialog-centered modal-lg">
-    <div class="modal-content">
-      <div class="modal-header bg-light">
-        <h5 class="modal-title" id="memberEditModalLabel">
-          <i class="bi bi-pencil-square me-2"></i>회원 정보 수정
-        </h5>
-        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="닫기"></button>
-      </div>
-      <div class="modal-body">
-        <form id="memberEditForm">
-          <input type="hidden" id="editUserNo" name="userNo">
-          <div class="row g-3">
-            <div class="col-md-6">
-              <label for="editUserId" class="form-label">아이디</label>
-              <input type="text" class="form-control" id="editUserId" name="userId" required>
-            </div>
-            <div class="col-md-6">
-              <label for="editUserPwd" class="form-label">비밀번호</label>
-              <input type="text" class="form-control" id="editUserPwd" name="userPwd" required>
-            </div>
-            <div class="col-md-6">
-              <label for="editUserName" class="form-label">이름</label>
-              <input type="text" class="form-control" id="editUserName" name="userName" required>
-            </div>
-            <div class="col-md-6">
-              <label for="editPhone" class="form-label">전화번호</label>
-              <input type="text" class="form-control" id="editPhone" name="phone">
-            </div>
-            <div class="col-md-6">
-              <label for="editPoint" class="form-label">포인트</label>
-              <input type="number" class="form-control" id="editPoint" name="point">
-            </div>
-            <div class="col-md-6">
-              <label for="editStatus" class="form-label">회원 상태</label>
-              <select class="form-select" id="editStatus" name="status">
-                <option value="Y">정상</option>
-                <option value="N">탈퇴</option>
-                <option value="E">휴면</option>
-                <option value="U">이메일 미인증</option>
-              </select>
-            </div>
-            <div class="col-md-6">
-              <label for="editRoleType" class="form-label">권한</label>
-              <select class="form-select" id="editRoleType" name="roleType">
-                <option value="superAdmin">최고 관리자</option>
-                <option value="admin">일반 관리자</option>
-                <option value="viewer">뷰어</option>
-                <option value="non">권한 없음</option>
-              </select>
-            </div>
-          </div>
-        </form>
-      </div>
-      <div class="modal-footer">
-        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">닫기</button>
-        <button id="memberEditBtn" type="button" class="btn btn-primary">
-          <i class="bi bi-check-circle me-1"></i>확인
-        </button>
-      </div>
-    </div>
-  </div>
-</div>
-
-<!-- 배송지/좌표/상세 모달은 아래와 같이 반복적으로 생성 (예시로 Location만) -->
-<div class="modal fade" id="locationModal" tabindex="-1" aria-labelledby="locationModalLabel" aria-hidden="true">
-  <div class="modal-dialog modal-dialog-centered">
-    <div class="modal-content">
-      <div class="modal-header bg-light">
-        <h5 class="modal-title" id="locationModalLabel">
-          <i class="bi bi-geo-alt me-2"></i>배송지 정보
-        </h5>
-        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="닫기"></button>
-      </div>
-      <div class="modal-body">
-        <form id="locationEditForm">
-          <input type="hidden" id="editLocationNo" name="locationNo">
-          <div class="mb-3">
-            <label for="editRoadAddress" class="form-label">도로명주소</label>
-            <input type="text" class="form-control" id="editRoadAddress" name="roadAddress">
-          </div>
-          <div class="mb-3">
-            <label for="editJibunAddress" class="form-label">지번주소</label>
-            <input type="text" class="form-control" id="editJibunAddress" name="jibunAddress">
-          </div>
-          <div class="mb-3">
-            <label for="editDetailAddress" class="form-label">상세주소</label>
-            <input type="text" class="form-control" id="editDetailAddress" name="detailAddress">
-          </div>
-          <div class="mb-3">
-            <label for="editZipCode" class="form-label">우편번호</label>
-            <input type="text" class="form-control" id="editZipCode" name="zipCode">
-          </div>
-        </form>
-        <div class="text-end">
-          <button id="deleteLocationBtn" type="button" class="btn btn-outline-danger me-2">삭제하기</button>
-          <button id="updateLocationBtn" type="button" class="btn btn-primary">수정하기</button>
-        </div>
-      </div>
-    </div>
-  </div>
-</div>
-<!-- Coord 모달도 위와 유사하게 구성 -->
-
 <script>
 $(function(){
-
   // 검색 폼 제출
   $('#searchForm').on('submit', function(e){
     e.preventDefault();
@@ -177,23 +71,41 @@ $(function(){
     ajaxSearchMember();
   });
 
-  // 회원 정보 검색 AJAX
-  function ajaxSearchMember(){
-    let params = $('#searchForm').serialize();
-    $.ajax({
-      url: "${root}/searchMember.ad",
-      method: "GET",
-      dataType: "json",
-      data: params,
-      success: function(resp) {
-        renderSearchResult(resp.members, resp.totalCount, resp.page, resp.pageSize);
-        renderPagination(resp.totalCount, resp.page, resp.pageSize);
-      }
-    });
+  // 회원 정보 검색 AJAX (totalCount 별도 요청, member 리스트만 반환)
+  async function ajaxSearchMember(){
+    const params = $('#searchForm').serialize();
+
+    try {
+      // 전체 회원 수 조회 (검색 조건 포함)
+      const totalCount = await $.ajax({
+        url: "${root}/countMember.ad",
+        method: "GET",
+        data: params,
+        dataType: "json"
+      });
+
+      // 회원 목록 조회 (검색 조건 + 페이징)
+      const members = await $.ajax({
+        url: "${root}/searchMember.ad",
+        method: "GET",
+        data: params,
+        dataType: "json"
+      });
+
+      const page = parseInt($('#page').val());
+      const pageSize = parseInt($('#searchCount').val());
+
+      renderSearchResult(members, totalCount);
+      renderPagination(totalCount, page, pageSize);
+
+    } catch(error) {
+      console.error(error);
+      $('#searchResult').html('<div class="alert alert-danger">데이터 조회 실패</div>');
+    }
   }
 
   // 검색 결과 테이블 렌더링
-  function renderSearchResult(members, totalCount, page, pageSize){
+  function renderSearchResult(members, totalCount){
     let $searchResult = $('#searchResult');
     $searchResult.empty();
 
@@ -203,7 +115,9 @@ $(function(){
     }
 
     let table = `
-      <div class="mb-2 text-end text-secondary small">검색결과 <span class="fw-bold">${totalCount}</span>건</div>
+      <div class="mb-2 text-end text-secondary small">
+        검색결과 <span class="fw-bold">\${totalCount}</span>건
+      </div>
       <div class="table-responsive">
         <table class="table table-hover align-middle text-center">
           <thead class="table-light">
@@ -228,23 +142,26 @@ $(function(){
     members.forEach(function(m){
       table += `
         <tr>
-          <td>${m.userNo}</td>
-          <td>${m.userId}</td>
-          <td>${m.userName}</td>
-          <td>${m.phone ?? ''}</td>
-          <td>${m.point ?? 0}</td>
-          <td>${m.enrollDate ?? ''}</td>
-          <td>${m.modifyDate ?? ''}</td>
-          <td>${m.status ?? ''}</td>
-          <td>${m.roleType}</td>
+          <td>\${m.userNo}</td>
+          <td>\${m.userId}</td>
+          <td>\${m.userName}</td>
+          <td>\${m.phone ?? ''}</td>
+          <td>\${m.point ?? 0}</td>
+          <td>\${m.enrollDate ?? ''}</td>
+          <td>\${m.modifyDate ?? ''}</td>
+          <td>\${m.status ?? ''}</td>
+          <td>\${m.roleType}</td>
           <td>
-            <button type="button" class="btn btn-outline-success btn-sm coord-btn" data-user-no="${m.userNo}" data-main-coord="${m.mainCoord}">동네</button>
+            <button type="button" class="btn btn-outline-success btn-sm coord-btn" 
+              data-user-no="\${m.userNo}" data-main-coord="\${m.mainCoord}">동네</button>
           </td>
           <td>
-            <button type="button" class="btn btn-outline-info btn-sm location-btn" data-user-no="${m.userNo}" data-main-location="${m.mainLocation}">배송지</button>
+            <button type="button" class="btn btn-outline-info btn-sm location-btn" 
+              data-user-no="\${m.userNo}" data-main-location="\${m.mainLocation}">배송지</button>
           </td>
           <td>
-            <button type="button" class="btn btn-outline-primary btn-sm edit-btn" data-member='${JSON.stringify(m)}'>수정</button>
+            <button type="button" class="btn btn-outline-primary btn-sm edit-btn" 
+              data-member='\${JSON.stringify(m).replace(/'/g, "&apos;")}'>수정</button>
           </td>
         </tr>
       `;
@@ -255,94 +172,26 @@ $(function(){
   }
 
   // 페이지네이션 렌더링
-  function renderPagination(totalCount, page, pageSize){
-    let totalPage = Math.ceil(totalCount / pageSize);
+  function renderPagination(totalCount, currentPage, pageSize){
+    const totalPage = Math.ceil(totalCount / pageSize);
     if(totalPage <= 1) {
       $('#paginationNav').empty();
       return;
     }
     let nav = `<ul class="pagination">`;
     for(let i=1; i<=totalPage; i++){
-      nav += `<li class="page-item ${i==page?'active':''}">
-        <a class="page-link" href="#" data-page="${i}">${i}</a>
-      </li>`;
+      nav += `
+        <li class="page-item \${i === currentPage ? 'active' : ''}">
+          <a class="page-link" href="#" data-page="\${i}">\${i}</a>
+        </li>
+      `;
     }
     nav += `</ul>`;
     $('#paginationNav').html(nav);
   }
 
-  // 수정 버튼 클릭 → 회원 정보 모달
-  $('#searchResult').on('click', '.edit-btn', function(){
-    const member = $(this).data('member');
-    $('#editUserNo').val(member.userNo);
-    $('#editUserId').val(member.userId);
-    $('#editUserPwd').val(member.userPwd);
-    $('#editUserName').val(member.userName);
-    $('#editPhone').val(member.phone);
-    $('#editPoint').val(member.point);
-    $('#editStatus').val(member.status);
-    $('#editRoleType').val(member.roleType);
-    const modal = new bootstrap.Modal(document.getElementById('memberEditModal'));
-    modal.show();
-  });
-
-  // 회원 정보 수정 모달 → 저장
-  $('#memberEditBtn').on('click', function(){
-    $.ajax({
-      url: "${root}/updateMember.ad",
-      method: "POST",
-      data: $('#memberEditForm').serialize(),
-      success: function(result){
-        if(result === 'pass'){
-          alert('수정이 완료되었습니다.');
-          bootstrap.Modal.getInstance(document.getElementById('memberEditModal')).hide();
-          ajaxSearchMember();
-        }else{
-          alert('수정 실패! 관리자에게 문의하세요.');
-        }
-      },
-      error: function(){
-        alert('수정 실패! 관리자에게 문의하세요.');
-      }
-    });
-  });
-
-  // 배송지 확인 버튼 클릭
-  $('#searchResult').on('click', '.location-btn', function(){
-    const userNo = $(this).data('user-no');
-    const mainLocation = $(this).data('main-location');
-    $.ajax({
-      url: "${root}/selectLocation.ad",
-      method: "GET",
-      dataType: "json",
-      data: { userNo: userNo },
-      success: function(locations){
-        // 배송지 목록 모달 렌더링 (여기서는 예시, 실제로는 별도 모달/컴포넌트로 구현)
-        // mainLocation 강조, 각 location 클릭시 상세/수정/삭제 모달 띄우기
-        // ...
-      }
-    });
-  });
-
-  // 동네 확인 버튼 클릭
-  $('#searchResult').on('click', '.coord-btn', function(){
-    const userNo = $(this).data('user-no');
-    const mainCoord = $(this).data('main-coord');
-    $.ajax({
-      url: "${root}/selectCoord.ad",
-      method: "GET",
-      dataType: "json",
-      data: { userNo: userNo },
-      success: function(coords){
-        // 좌표 목록 모달 렌더링 (여기서는 예시, 실제로는 별도 모달/컴포넌트로 구현)
-        // mainCoord 강조, 각 coord 클릭시 상세/수정/삭제 모달 띄우기
-        // ...
-      }
-    });
-  });
-
   // 최초 진입시 전체 조회
-  ajaxSearchMember();
+  //ajaxSearchMember();
 });
 </script>
 </body>

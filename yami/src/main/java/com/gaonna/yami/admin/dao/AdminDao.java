@@ -51,4 +51,9 @@ public class AdminDao {
 		return sqlSession.selectList("adminMapper.searchMember", mapping);
 	}
 
+	public String countMember(SqlSessionTemplate sqlSession) {
+		Integer count = sqlSession.selectOne("adminMapper.countMember");
+		return count != null ? count.toString() : "0";
+	}
+
 }

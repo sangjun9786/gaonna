@@ -105,4 +105,9 @@ public class AdminServiceImpl implements AdminService{
 		
 		return result;
 	}
+	
+	@Override
+	public String countMember() {
+		return dao.countMember(sqlSession);
+	}
 }
