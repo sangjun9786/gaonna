@@ -215,20 +215,21 @@ $('#searchResult').on('click', '.edit-btn', function(){
 
     // 수정 모달 form submit
 $('#adminEdit').on('click', function(){
-
+console.log("뭐요");
     $.ajax({
         url: "${root}/updateAdmin.ad",
         method: "POST",
         data: $("#adminEditModal").find("input, select").serialize(),
         success: function(result) {
+        	console.log(result);
         	if(result == 'pass'){
 		         alert('수정이 완료되었습니다.');
 		         bootstrap.Modal.getInstance(document.getElementById('adminEditModal')).hide();
 		         ajaxSearchAdmin(); // 결과 재조회
 		         
-        	}else if(result ="noRole"){
+        	}else if(result =="noRole"){
         		alert('잘못된 접근입니다.');
-        	}else if(result ="superAdmin"){
+        	}else if(result =="superAdmin"){
         		alert('0번 관리자의 권한은 수정할 수 없습니다.');
         	}else{
         		alert('수정 실패! 관리자에게 문의하세요.');

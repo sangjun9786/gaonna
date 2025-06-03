@@ -188,4 +188,9 @@ public class MemberServiceImpl implements MemberService{
 		
 		return result;
 	}
+	
+	@Override
+	public int selectUserNo(Member m) {
+		return dao.selectUserNo(sqlSession,m);
+	}
 }

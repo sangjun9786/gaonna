@@ -4,6 +4,11 @@
 <!DOCTYPE html>
 <html>
 <head>
+	<link href="${pageContext.request.contextPath}/webjars/bootstrap/5.3.5/css/bootstrap.min.css" rel="stylesheet">
+	<script src="${pageContext.request.contextPath}/webjars/bootstrap/5.3.5/js/bootstrap.bundle.min.js"></script>
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+	<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+	
 	<meta charset="UTF-8"/>
 	<title>YAMI</title>
 	<style>
@@ -33,25 +38,123 @@
 </style>
 </head>
 <body>
+<c:set var="root" value="${pageContext.request.contextPath}"/>
+<c:set var="loginUser" value="${sessionScope.loginUser}"/>
 
-<%@include file="/WEB-INF/views/common/header.jsp" %>
-<c:choose>
-	<c:when test="${empty sessionScope.loginUser}">
-		<a href="${pageScope.root}/insert.me">회원가입</a>
-		<br>
-		<a href="${pageScope.root}/login.me">로그인</a>
-	</c:when>
-	<c:otherwise>
-		${sessionScope.loginUser.userName}님 안녕하세요
-		<br>
-		<a href="${pageScope.root}/mypage.me">마이페이지</a>
-		<c:if test="${sessionScope.loginUser.roleType != 'N'}">
-			<br>
-			<a href="${pageScope.root}/adminPage.ad">운영실</a>
-		</c:if>
-		<a href="${pageScope.root}/logout.me">로그아웃</a>
-	</c:otherwise>
-</c:choose>
+<div class="container min-vh-100 d-flex flex-column justify-content-center align-items-center">
+  <!-- 중앙 검색창 -->
+  <div class="w-100" style="max-width: 500px;">
+    <form action="${root}/search" method="get" class="input-group mb-4">
+      <input type="text" class="form-control form-control-lg" name="keyword" placeholder="검색어를 입력하세요" aria-label="Search">
+      <button class="btn btn-primary btn-lg" type="submit">
+        <i class="bi bi-search"></i>
+      </button>
+    </form>
+  </div>
+
+
+  <!-- 중앙 메뉴 영역: 로그인/회원가입 버튼만 표시 -->
+<div class="center-menu d-flex justify-content-center mb-4">
+  <ul class="navbar-nav d-flex flex-row align-items-center">
+    <c:choose>
+      <c:when test="${empty loginUser}">
+        <li class="nav-item">
+          <a class="nav-link" href="${root}/login.me">Login</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="${root}/insert.me">Sign up</a>
+        </li>
+      </c:when>
+      <c:otherwise>
+        <li class="nav-item">
+          <a class="nav-link" href="${root}/mypage.me">My Page</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="${root}/logout.me">Log out</a>
+        </li>
+        <c:if test="${loginUser.roleType != 'N'}">
+          <li class="nav-item">
+            <a class="nav-link" href="${root}/adminPage.ad">운영실</a>
+          </li>
+        </c:if>
+      </c:otherwise>
+    </c:choose>
+  </ul>
+</div>
+
+
+  <!-- 서비스 카드: 아이콘 + 링크 -->
+  <div class="row row-cols-2 row-cols-md-4 g-3 mb-4 justify-content-center" style="max-width: 800px;">
+    <div class="col">
+      <a href="${root}/productList.pro" class="card text-center h-100 shadow-sm text-decoration-none">
+        <div class="card-body">
+            <i class="bi bi-bag fs-1 text-primary"></i>
+            <h6 class="card-title mt-2 mb-0">Resell</h6>
+        </div>
+      </a>
+    </div>
+    <div class="col">
+      <a href="#" class="text-decoration-none">
+        <div class="card text-center h-100 shadow-sm">
+          <div class="card-body">
+            <i class="bi bi-geo-alt fs-1 text-success"></i>
+            <h6 class="card-title mt-2 mb-0">Location</h6>
+          </div>
+        </div>
+      </a>
+    </div>
+    <div class="col">
+      <a href="#" class="text-decoration-none">
+        <div class="card text-center h-100 shadow-sm">
+          <div class="card-body">
+            <i class="bi bi-star fs-1 text-warning"></i>
+            <h6 class="card-title mt-2 mb-0">Recommend</h6>
+          </div>
+        </div>
+      </a>
+    </div>
+    <div class="col">
+      <a href="#" class="text-decoration-none">
+        <div class="card text-center h-100 shadow-sm">
+          <div class="card-body">
+            <i class="bi bi-question-circle fs-1 text-info"></i>
+            <h6 class="card-title mt-2 mb-0">QnA</h6>
+          </div>
+        </div>
+      </a>
+    </div>
+    <div class="col">
+      <a href="#" class="text-decoration-none">
+        <div class="card text-center h-100 shadow-sm">
+          <div class="card-body">
+            <i class="bi bi-megaphone fs-1 text-danger"></i>
+            <h6 class="card-title mt-2 mb-0">Notice</h6>
+          </div>
+        </div>
+      </a>
+    </div>
+    <div class="col">
+      <a href="${root}/event.ev" class="text-decoration-none">
+        <div class="card text-center h-100 shadow-sm">
+          <div class="card-body">
+            <i class="bi bi-calendar-event fs-1 text-secondary"></i>
+            <h6 class="card-title mt-2 mb-0">Event</h6>
+          </div>
+        </div>
+      </a>
+    </div>
+    <div class="col">
+      <a href="#" class="text-decoration-none">
+        <div class="card text-center h-100 shadow-sm">
+          <div class="card-body">
+            <i class="bi bi-exclamation-triangle fs-1 text-warning"></i>
+            <h6 class="card-title mt-2 mb-0">Report</h6>
+          </div>
+        </div>
+      </a>
+    </div>
+  </div>
+</div>
 
 <hr>
 <a href="${root}/lab">실험실</a>
@@ -63,16 +166,12 @@
 
 
 
-
-
-
-<script type="text/javascript">
-
-
+<script>
+	let msg="${alertMsg}";
+	if(msg!="") {
+		alert(msg);
+	}
 </script>
-
-
-
 
 <%---------------콘솔 나와바리--------------------%>
 

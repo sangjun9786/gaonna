@@ -35,6 +35,7 @@ public class EmailServiceImpl implements EmailService{
 	private Properties prop = new Properties();
 	private String insertMeContent;
 	private String updateIdContent;
+	private String findPwdContent;
 	public EmailServiceImpl() {
 		try {
 			//제목 저장소 연결
@@ -49,9 +50,13 @@ public class EmailServiceImpl implements EmailService{
 			ClassPathResource insertMe = new ClassPathResource("emailTemplates/insertMeContent.html");
 			insertMeContent = new String(Files.readAllBytes(insertMe.getFile().toPath()), StandardCharsets.UTF_8);
 			
-			//회원가입
+			//아이디 수정
 			ClassPathResource updateId = new ClassPathResource("emailTemplates/updateIdContent.html");
 			updateIdContent = new String(Files.readAllBytes(updateId.getFile().toPath()), StandardCharsets.UTF_8);
+			
+			//비밀번호 찾기
+			ClassPathResource findPwd = new ClassPathResource("emailTemplates/findPwdContent.html");
+			findPwdContent = new String(Files.readAllBytes(findPwd.getFile().toPath()), StandardCharsets.UTF_8);
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -161,6 +166,39 @@ public class EmailServiceImpl implements EmailService{
 	        message.setSubject(prop.getProperty("updateIdSubject"));
 
 	        String content = updateIdContent
+	        	    .replace("{{TOKEN_NO}}", String.valueOf(mt.getTokenNo()))
+	        	    .replace("{{TOKEN}}", mt.getToken());
+	        
+			message.setText(content, true);
+			mailSender.send(mimeMessage);
+			
+			return 1; //정상 작동
+		}catch (Exception e) {
+			e.printStackTrace();
+			return 0;
+		}
+	}
+	
+	@Override
+	public int findPwdToken(Member m, String token) {
+		try {
+	    	MemberToken mt = new MemberToken(m.getUserNo(),token);
+	    	
+	    	//토큰 데이터 저장
+	    	int result = insertToken(mt);
+	    	
+	    	//데이터 저장 성공 및 추출 실패하면 메일 안 보내기
+	    	if(result==0 || mt.getTokenNo()==0) {
+	    		return result;
+	    	}
+	    	
+	    	MimeMessage mimeMessage = mailSender.createMimeMessage();
+	    	MimeMessageHelper message = new MimeMessageHelper(mimeMessage, true, "UTF-8");
+	    	
+	        message.setTo(m.getUserId());
+	        message.setSubject(prop.getProperty("findPwdSubject"));
+
+	        String content = findPwdContent
 	        	    .replace("{{TOKEN_NO}}", String.valueOf(mt.getTokenNo()))
 	        	    .replace("{{TOKEN}}", mt.getToken());
 	        

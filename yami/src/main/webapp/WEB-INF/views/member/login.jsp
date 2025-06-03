@@ -57,6 +57,23 @@
                                     <span class="validation-message">모든 필수 항목을 입력하세요</span>
                                 </button>
                             </div>
+                            <div class="mt-3 d-flex flex-column flex-md-row align-items-md-center justify-content-between">
+							    <div class="form-check mb-2 mb-md-0">
+							        <input class="form-check-input" type="checkbox" value="Y" id="saveLoginInfo" name="saveLoginInfo">
+							        <label class="form-check-label" for="saveLoginInfo">
+							            로그인 정보 저장하기
+							        </label>
+							    </div>
+							    <div class="form-check mb-2 mb-md-0 ms-md-3">
+							        <input class="form-check-input" type="checkbox" value="Y" id="autoLogin" name="autoLogin">
+							        <label class="form-check-label" for="autoLogin">
+							            자동 로그인
+							        </label>
+							    </div>
+							    <button type="button" class="btn btn-link p-0 ms-md-3" onclick="location.href='${root}/findPwd.me'">
+							        비밀번호 찾기
+							    </button>
+							</div>
                         </form>
                     </div>
                 </div>

@@ -12,6 +12,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.gaonna.yami.admin.dao.AdminDao;
+import com.gaonna.yami.location.vo.Coord;
+import com.gaonna.yami.location.vo.Location;
 import com.gaonna.yami.member.model.vo.Member;
 
 @Service
@@ -47,7 +49,6 @@ public class AdminServiceImpl implements AdminService{
 		m.setUserPwd(bcrypt.encode(m.getUserPwd()));
 		
 		int result = 1;
-		
 		//관리자 정보 수정
 		result *= dao.updateAdmin(sqlSession,m);
 		
@@ -107,7 +108,26 @@ public class AdminServiceImpl implements AdminService{
 	}
 	
 	@Override
-	public String countMember() {
-		return dao.countMember(sqlSession);
+	public String countMember(String searchType, String searchKeyword) {
+		
+		Map<String, String> mapping = new HashMap<>();
+		mapping.put("searchType", searchType);
+		mapping.put("searchKeyword", searchKeyword);
+		
+		return dao.countMember(sqlSession,mapping);
+	}
+	
+	@Override
+	public int updateUser(Member m) {
+		return dao.updateUser(sqlSession,m);
+	}
+	
+	@Override
+	public List<Coord> userDongne(int userNo) {
+		return dao.userDongne(sqlSession, userNo);
+	}
+	@Override
+	public List<Location> userLocation(int userNo) {
+		return dao.userLocation(sqlSession, userNo);
 	}
 }

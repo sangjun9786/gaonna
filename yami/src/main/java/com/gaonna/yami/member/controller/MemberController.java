@@ -57,7 +57,7 @@ public class MemberController {
 			, Member m, String domain) {
 		try {
 			//---------유효성 검사---------//
-			if(!(m.getUserId()+"@"+domain).matches("^[a-zA-Z0-9]{1,30}$") ||
+			if(!(m.getUserId()+domain).matches("^[a-zA-Z0-9.]{1,30}$") ||
 					!m.getUserPwd().matches("^[a-zA-Z0-9]{4,30}$") ||
 					m.getUserName().isEmpty()
 					) {
@@ -190,13 +190,11 @@ public class MemberController {
 				session.setAttribute("coords", coords);
 				
 				//관리자면 관리 권한 조회
-				if(loginUser.getRoleType() != "N") {
+				if(!loginUser.getRoleType().equals("N")) {
 					loginUser.setRoleType(adminService
 							.selectRoleType(loginUser));
 					//('superAdmin', 'admin', 'viewer')
 				}
-				
-				
 				
 				return "redirect:/";
 				
@@ -262,7 +260,7 @@ public class MemberController {
 			if(service.updatePwd(m)>0) {
 				//수정 성공하면 로그인 세션 지우기
 				session.invalidate();
-				session.setAttribute("alertMsg", "비밀번호가 변경되었습니다. 다시 로그인 해 주세요.");
+				model.addAttribute("alertMsg", "비밀번호가 변경되었습니다. 다시 로그인 해 주세요.");
 				return "redirect:/";
 			}else {
 				return errorPage(model,"500 err");
@@ -519,6 +517,47 @@ public class MemberController {
 		}
 	}
 	
+	
+	//비밀번호 찾기 페이지로 이동
+	@GetMapping("findPwd.me")
+	public String GoFindPwd(){
+		return "member/findPwd";
+	}
+	
+	//비밀번호 찾기
+	@PostMapping("findPwd.me")
+	public String findPwd(HttpSession session, Model model
+			, String userId, String domain){
+		try {
+			//입력받은 아이디와 도메인을 이메일 형식으로 변경
+			userId = userId+"@"+domain;
+			
+			//아이디가 존재하는지 확인
+			int checkId = service.checkUserId(userId);
+			
+			//분명 프론트에서 걸려져야 할 없는아이디를 들고오는 놈은 에러페이지로 가세요라
+			if(checkId==0) {
+				return errorPage(model,"잘못된 아이디입니다.");
+			}
+			
+			Member m = new Member();
+			m.setUserId(userId);
+			m.setUserNo(service.selectUserNo(m));
+			
+			//토큰 생성기로 보내기
+			int result = tokenGenerator.findPwdToken(m);
+			if(result>0) {
+				session.setAttribute("alertMsg", "이메일을 확인해 주세요.");
+				return "redirect:/";
+			}else {
+				return errorPage(model,"이메일 송신이 실패하였습니다.");
+			}
+			
+		} catch (Exception e) {
+			e.printStackTrace();
+			return errorPage(model,"500 err");
+		}
+	}
 	
 	//유저 식별번호로 유저 아이디 조회
 	public String selectUserId(int userNo) {

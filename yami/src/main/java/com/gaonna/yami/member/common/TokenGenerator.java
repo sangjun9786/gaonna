@@ -70,4 +70,11 @@ public class TokenGenerator {
     	String token = generateToken();
     	return emailService.updateEmailToken(m,token);
 	}
+
+	//비밀번호 찾기
+	public int findPwdToken(Member m) {
+		emailService.deleteToken(m);
+		String token = generateToken();
+		return emailService.findPwdToken(m,token);
+	}
 }

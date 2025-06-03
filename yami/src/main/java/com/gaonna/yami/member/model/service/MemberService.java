@@ -43,5 +43,8 @@ public interface MemberService {
 
 	//대표 동네 바꾸기
 	int updateMainCoord(Member m, int coordNo);
+
+	//유저 아이디로 회원식별번호 알아내기
+	int selectUserNo(Member m);
 	
 }

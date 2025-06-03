@@ -11,12 +11,15 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.gaonna.yami.admin.service.AdminService;
 import com.gaonna.yami.location.service.LocationService;
 import com.gaonna.yami.member.model.service.MemberService;
 import com.gaonna.yami.location.vo.Coord;
+import com.gaonna.yami.location.vo.Location;
 import com.gaonna.yami.member.model.vo.Member;
 import com.google.gson.Gson;
 
@@ -139,9 +142,7 @@ public class AdminController {
 			
 			if(loginUser.getUserNo() == m.getUserNo()) {
 				//자기가 자기 자신을 고쳤으면 로그아웃
-				session.invalidate();
 				return "pass";
-				
 			}else if(result==0) {
 				return "noPass";
 			}
@@ -215,13 +216,67 @@ public class AdminController {
 	//ajax 회원 수 세기
 	@ResponseBody
 	@GetMapping("countMember.ad")
-	public String countMember() {
+	public String countMember(String searchType ,String searchKeyword) {
 		try {
-			return service.countMember();
+			return service.countMember(searchType, searchKeyword);
 		} catch (Exception e) {
 			e.printStackTrace();
 			return "";
 		}
 	}
+	
+	
+	//ajax 회원 정보 수정
+	@ResponseBody
+	@PostMapping("updateUser.ad")
+	public String updateUser(HttpSession session
+			,@RequestBody String json) {
+		Member loginUser= (Member)session.getAttribute("loginUser");
+		if(!loginUser.getRoleType().equals("superAdmin")
+				&& !loginUser.getRoleType().equals("admin")) {
+			//권한 확인
+			return "noPass";
+		}
+		
+		Member m = new Gson().fromJson(json, Member.class);
+		
+		if(service.updateUser(m)>0) {
+			return "pass";
+		}else {
+			return "noPass";
+		}
+		
+	}
+	
+	//ajax 회원 동네 조회
+	@ResponseBody
+	@GetMapping("userDongne.ad")
+	public List<Coord> userDongne(String userNo) {
+		try {
+			int userNoToInt = Integer.parseInt(userNo);
+			List<Coord> coords = service.userDongne(userNoToInt);
+			return coords;
+			
+		} catch (Exception e) {
+			e.printStackTrace();
+			return null;
+		}
+	}
+	
+	//ajax 회원 배송지 조회
+	@ResponseBody
+	@GetMapping("userLocation.ad")
+	public List<Location> userLocation(String userNo) {
+		try {
+			int userNoToInt = Integer.parseInt(userNo);
+			List<Location> Location = service.userLocation(userNoToInt);
+			return Location;
+			
+		} catch (Exception e) {
+			e.printStackTrace();
+			return null;
+		}
+	}
+	
 	
 }

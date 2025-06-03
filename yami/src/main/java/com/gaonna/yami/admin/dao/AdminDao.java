@@ -6,6 +6,8 @@ import java.util.Map;
 import org.mybatis.spring.SqlSessionTemplate;
 import org.springframework.stereotype.Repository;
 
+import com.gaonna.yami.location.vo.Coord;
+import com.gaonna.yami.location.vo.Location;
 import com.gaonna.yami.member.model.vo.Member;
 
 @Repository
@@ -51,9 +53,21 @@ public class AdminDao {
 		return sqlSession.selectList("adminMapper.searchMember", mapping);
 	}
 
-	public String countMember(SqlSessionTemplate sqlSession) {
-		Integer count = sqlSession.selectOne("adminMapper.countMember");
+	public String countMember(SqlSessionTemplate sqlSession, Map<String, String> mapping) {
+		Integer count = sqlSession.selectOne("adminMapper.countMember", mapping);
 		return count != null ? count.toString() : "0";
+	}
+
+	public int updateUser(SqlSessionTemplate sqlSession, Member m) {
+		return sqlSession.update("adminMapper.updateUser", m);
+	}
+
+	public List<Coord> userDongne(SqlSessionTemplate sqlSession, int userNo) {
+		return sqlSession.selectList("adminMapper.userDongne", userNo);
+	}
+
+	public List<Location> userLocation(SqlSessionTemplate sqlSession, int userNo) {
+		return sqlSession.selectList("adminMapper.userLocation", userNo);
 	}
 
 }

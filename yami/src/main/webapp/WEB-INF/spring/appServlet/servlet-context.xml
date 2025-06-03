@@ -34,6 +34,8 @@
 	        <mvc:exclude-mapping path="/checkUserId.me"/>
 	        <mvc:exclude-mapping path="/confirmEmailInsert.me"/>
 	        <mvc:exclude-mapping path="/login.me"/>
+	        <mvc:exclude-mapping path="/findPwd.me"/>
+	        <mvc:exclude-mapping path="/findPwdEmail.me"/>
 	        
 	        <!-- 인터셉터 경로 -->
 	        <bean class="com.gaonna.yami.common.MemberInterceptor"/>
