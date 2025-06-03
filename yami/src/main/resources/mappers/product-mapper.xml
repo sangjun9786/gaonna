@@ -18,5 +18,80 @@
         )
         WHERE rnum BETWEEN #{startRow} AND #{endRow}
     </select>
+	
+	<!-- 상세 페이지 -->
+	<select id="selectProductDetail" resultMap="productResultMap">
+	    SELECT 
+	        PRODUCT_NO,
+	        CATEGORY_NO,
+	        SCORE,
+	        USER_ID,
+	        PRICE,
+	        UPLOAD_DATE,
+	        PRODUCT_COUNT,
+	        PRODUCT_TITLE,
+	        PRODUCT_CONTENT,
+	        STATUS
+	    FROM PRODUCT_BOARD
+	    WHERE PRODUCT_NO = #{productNo}
+	</select>
+	
+	<!-- 상품게시글 번호 추출 -->
+	<select id="selectProductNo" resultType="_int" >
+		SELECT SEQ_PRODUCT_NO.NEXTVAL
+		FROM DUAL
+	</select>
+	
+	
+	<!-- 상품게시글용 등록 -->
+	<insert id="insertAtProduct" parameterType="Product">
+	INSERT INTO PRODUCT_BOARD	(PRODUCT_NO
+							  	,CATEGORY_NO
+						  	    ,USER_ID
+						  	    ,PRICE
+       						    ,PRODUCT_TITLE
+       						    ,PRODUCT_CONTENT
+							 	)
+						VALUES (
+							    #{productNo}
+							   ,#{categoryNo}
+							   ,#{userId}
+							   ,#{price}
+							   ,#{productTitle}
+							   ,#{productContent}
+							   )
+	</insert>
 
+	<!-- 상품 사진 정보 등록 -->
+	<insert id="insertAttachment">
+		INSERT INTO ATTATCHMENT (FILE_NO
+							    ,PRODUCT_NO
+							    ,ORIGIN_NAME
+							    ,CHANGE_NAME
+							    ,FILE_PATH
+							    ,FILE_LEVEL
+							    )
+					VALUES(
+						   SEQ_FNO.NEXTVAL
+						   ,#{productBno}
+						   ,#{originName}
+						   ,#{changeName}
+						   ,#{filePath}
+						   ,#{fileLevel}
+							)
+
+	</insert>
+
+	<resultMap id="productResultMap" type="Product">
+	    <id property="productNo" column="PRODUCT_NO"/>
+	    <result property="categoryNo" column="CATEGORY_NO"/>
+	    <result property="score" column="SCORE"/>
+	    <result property="userId" column="USER_ID"/>
+	    <result property="price" column="PRICE"/>
+	    <result property="uploadDate" column="UPLOAD_DATE"/>
+	    <result property="productCount" column="PRODUCT_COUNT"/>
+	    <result property="productTitle" column="PRODUCT_TITLE"/>
+	    <result property="productContent" column="PRODUCT_CONTENT"/>
+	    <result property="status" column="STATUS"/>
+	</resultMap>
 </mapper>
