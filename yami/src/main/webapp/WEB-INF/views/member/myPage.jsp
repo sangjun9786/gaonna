@@ -109,23 +109,28 @@
 						</h4>
 					</div>
 					<div class="card-body">
-						<div class="row g-3">
-							<div class="col-md-4">
-								<a href='${root}/boared.me' class="btn btn-outline-success w-100 d-flex align-items-center justify-content-center">
-									<i class="bi bi-file-text me-2"></i>내가 쓴 게시글
-								</a>
-							</div>
-							<div class="col-md-4">
-								<a href='${root}/reply.me' class="btn btn-outline-success w-100 d-flex align-items-center justify-content-center">
-									<i class="bi bi-chat-dots me-2"></i>내가 쓴 댓글
-								</a>
-							</div>
-							<div class="col-md-4">
-								<a href='${root}/block.me' class="btn btn-outline-success w-100 d-flex align-items-center justify-content-center">
-									<i class="bi bi-shield-x me-2"></i>차단 관리
-								</a>
-							</div>
-						</div>
+					  <div class="row row-cols-2 g-3">
+					    <div class="col">
+					      <a href='${root}/wishlist.co' class="btn btn-outline-success w-100 d-flex align-items-center justify-content-center">
+					        <i class="bi bi-file-text me-2"></i>찜
+					      </a>
+					    </div>
+					    <div class="col">
+					      <a href='${root}/chat.co' class="btn btn-outline-success w-100 d-flex align-items-center justify-content-center">
+					        <i class="bi bi-shield-x me-2"></i>채팅
+					      </a>
+					    </div>
+					    <div class="col">
+					      <a href='${root}/boared.co' class="btn btn-outline-success w-100 d-flex align-items-center justify-content-center">
+					        <i class="bi bi-file-text me-2"></i>게시글
+					      </a>
+					    </div>
+					    <div class="col">
+					      <a href='${root}/reply.co' class="btn btn-outline-success w-100 d-flex align-items-center justify-content-center">
+					        <i class="bi bi-chat-dots me-2"></i>댓글
+					      </a>
+					    </div>
+					  </div>
 					</div>
 				</div>
 				

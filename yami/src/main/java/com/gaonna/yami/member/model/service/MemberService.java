@@ -2,8 +2,6 @@ package com.gaonna.yami.member.model.service;
 
 import javax.servlet.http.HttpSession;
 
-import org.springframework.ui.Model;
-
 import com.gaonna.yami.member.model.vo.Member;
 
 public interface MemberService {

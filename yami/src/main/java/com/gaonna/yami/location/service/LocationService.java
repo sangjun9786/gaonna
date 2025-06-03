@@ -7,7 +7,6 @@ import javax.servlet.http.HttpSession;
 import com.gaonna.yami.location.vo.Coord;
 import com.gaonna.yami.location.vo.Location;
 import com.gaonna.yami.member.model.vo.Member;
-import com.google.gson.JsonElement;
 
 public interface LocationService {
 

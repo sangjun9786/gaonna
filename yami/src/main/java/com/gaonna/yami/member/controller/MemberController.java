@@ -4,7 +4,6 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 import java.util.List;
 
-import org.apache.ibatis.annotations.Case;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Controller;
@@ -558,6 +557,7 @@ public class MemberController {
 			return errorPage(model,"500 err");
 		}
 	}
+	
 	
 	//유저 식별번호로 유저 아이디 조회
 	public String selectUserId(int userNo) {

@@ -28,6 +28,7 @@
 	        <!-- 적용할 패턴 -->
 	        <mvc:mapping path="/*.me"/>
 	        <mvc:mapping path="/*.lo"/>
+	        <mvc:mapping path="/*.co"/>
 	        
 	        <!-- 제외할 패턴 -->
 	        <mvc:exclude-mapping path="/insert.me"/>
