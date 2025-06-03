@@ -5,4 +5,5 @@
 <properties>
 	<entry key="insertMeSubject">YAMI 회원가입</entry>
 	<entry key="updateIdSubject">YAMI 이메일 주소 변경</entry>
+	<entry key="findPwdSubject">YAMI 비밀번호 변경</entry>
 </properties>

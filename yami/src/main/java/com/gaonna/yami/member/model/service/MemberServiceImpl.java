@@ -10,7 +10,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.ui.Model;
 
 import com.gaonna.yami.location.service.LocationService;
 import com.gaonna.yami.location.vo.Coord;
@@ -187,5 +186,10 @@ public class MemberServiceImpl implements MemberService{
 		int result = dao.updateMainCoord(sqlSession, m);
 		
 		return result;
+	}
+	
+	@Override
+	public int selectUserNo(Member m) {
+		return dao.selectUserNo(sqlSession,m);
 	}
 }
