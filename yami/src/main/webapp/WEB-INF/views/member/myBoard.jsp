@@ -21,9 +21,7 @@
             <div class="col-md-3">
               <select class="form-select" id="searchType1" name="searchType" required>
                 <option value="boardAll">전체 판매 게시판</option>
-                <!-- AJAX로 카테고리 옵션 추가 -->
-                <option value="question">질문게시판</option>
-                <option value="report">신고게시판</option>
+                <!-- AJAX로 카테고리 옵션 추가됨 -->
               </select>
             </div>
             <div class="col-md-2">
@@ -164,17 +162,18 @@ $(function(){
           <div class="card h-100 shadow-sm position-relative">
             <div class="card-body">
               <div class="d-flex justify-content-between align-items-center mb-2">
-                <h5 class="card-title mb-0 text-truncate" style="max-width: 70%;">${title}</h5>
-                <span class="badge bg-secondary ms-2">${board.price.toLocaleString()}원</span>
+                <h5 class="card-title mb-0 text-truncate" style="max-width: 70%;">\${title}</h5>
+                <span class="badge bg-secondary ms-2">\${board.price.toLocaleString()}원</span>
               </div>
-              <p class="card-text text-truncate" style="max-width: 100%;">${content}</p>
+              <p class="card-text text-truncate" style="max-width: 100%;">\${content}</p>
             </div>
             <div class="card-footer small text-muted d-flex justify-content-between align-items-center">
-              <span>${board.categoryName}</span>
-              <span>${board.uploadDate}</span>
-              <span class="ms-2">${board.status}</span>
+              <span>\${board.categoryName}</span>
+              <span>\${board.uploadDate}</span>
+              <span class="ms-2">\${board.status}</span>
             </div>
-            <a href="${root}/board.pro?productNo=${board.productNo}" class="stretched-link"></a>
+            <%--여기 링크 확인 필수--%>
+            <a href="${root}/board.pro?productNo=\${board.productNo}" class="stretched-link"></a>
           </div>
         </div>
       `;
@@ -192,8 +191,8 @@ $(function(){
     let nav = `<ul class="pagination">`;
     for(let i=1; i<=totalPage; i++){
       nav += `
-        <li class="page-item ${i === currentPage ? 'active' : ''}">
-          <a class="page-link" href="#" data-page="${i}">${i}</a>
+        <li class="page-item \${i === currentPage ? 'active' : ''}">
+          <a class="page-link" href="#" data-page="\${i}">\${i}</a>
         </li>
       `;
     }

@@ -26,14 +26,48 @@
 	
 	<!-- ajax - 게시글 수 조회 -->
 	<select id="countMyBoard" resultType="int" parameterType="SearchForm">
+	<bind name="searchPattern" value="'%' + searchKeyword + '%'" />
 		select count(*)
 		from PRODUCT_BOARD
 		where user_no = #{userNo}
+		<choose>
+        <!-- 검색 타입1이 'all'이 아닌 경우 -->
+			<when test="searchType1 != 'all'">
+				and CATEGORY_NO = #{searchType1}
+				<choose>
+					<when test="searchType2 == 'title'">
+						and PRODUCT_TITLE LIKE #{searchPattern}
+					</when>
+					<when test="searchType2 == 'content'">
+						and PRODUCT_CONTENT LIKE #{searchPattern}
+					</when>
+					<otherwise>
+						and (PRODUCT_TITLE LIKE #{searchPattern} 
+							OR PRODUCT_CONTENT LIKE #{searchPattern})
+					</otherwise>
+				</choose>
+			</when>
+			<!-- 검색 타입1이 'all'인 경우 -->
+			<otherwise>
+				<choose>
+					<when test="searchType2 == 'title'">
+                         and PRODUCT_TITLE LIKE #{searchPattern}
+					</when>
+					<when test="searchType2 == 'content'">
+                         and PRODUCT_CONTENT LIKE #{searchPattern}
+					</when>
+					<otherwise>
+                         and (PRODUCT_TITLE LIKE #{searchPattern} 
+                              OR PRODUCT_CONTENT LIKE #{searchPattern})
+					</otherwise>
+				</choose>
+			</otherwise>
+		</choose>
 	</select>
 	
 	<!-- ajax - 판매 게시글 조회 -->
 	<select id="selectMyBoard" resultMap="boardCoResultMap" parameterType="SearchForm">
-		<bind name="searchPattern" value="'%' + searchKeyword + '%'" />
+	<bind name="searchPattern" value="'%' + searchKeyword + '%'" />
 		select *
 		from(
 			select PRODUCT_NO
@@ -99,6 +133,16 @@
 			where rownum &lt;= #{endRow}
 			)
 		where rn &gt;= #{startRow}
+	</select>
+	
+	<!-- ajax - 댓글 수 조회 -->
+	<select id="countMyReply" resultType="int" parameterType="SearchForm">
+		select count(*)
+		from REPLY
+		where user_no = #{userNo}
+		<if test="searchType1 != 'all'">
+			and CATEGORY_NO = #{searchType1}
+		</if>
 	</select>
 	
 </mapper>

@@ -7,6 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.gaonna.yami.composite.dao.CompositeDao;
+import com.gaonna.yami.composite.vo.BoardCo;
 import com.gaonna.yami.composite.vo.Category;
 import com.gaonna.yami.composite.vo.SearchForm;
 
@@ -31,17 +32,15 @@ public class CompositeServiceImpl implements CompositeService{
 	
 	//ajax - 게시글 조회
 	@Override
-	public List<?> searchMyBoard(SearchForm searchForm) {
+	public List<BoardCo> searchMyBoard(SearchForm searchForm) {
 		//searchForm 정상화
 		searchForm.normalize();
-		
-		switch(searchForm.getSearchType1()) {
-		case "question" : //질문게시판
-			return dao.selectMyQuestion(sqlSession,searchForm);
-		case "report" : //신고게시판
-			return dao.selectMyReport(sqlSession,searchForm);
-		default : //이도 저도 아니면 그냥 게시판
-			return dao.selectMyBoard(sqlSession,searchForm);
-		}
+		return dao.selectMyBoard(sqlSession,searchForm);
+	}
+	
+	//ajax - 댓글 수 조회
+	@Override
+	public int countMyReply(SearchForm searchForm) {
+		return dao.countMyReply(sqlSession, searchForm);
 	}
 }

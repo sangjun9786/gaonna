@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.gaonna.yami.composite.service.CompositeService;
+import com.gaonna.yami.composite.vo.BoardCo;
 import com.gaonna.yami.composite.vo.Category;
 import com.gaonna.yami.composite.vo.SearchForm;
 import com.gaonna.yami.member.model.vo.Member;
@@ -86,7 +87,7 @@ public class CompositeController {
 			//loginUser의 userNo따서 searchForm에 넣기
 			searchForm.setUserNo(((Member)session
 					.getAttribute("loginUser")).getUserNo());
-			List<?> result = service.searchMyBoard(searchForm);
+			List<BoardCo> result = service.searchMyBoard(searchForm);
 			return new Gson().toJson(result);
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -95,7 +96,21 @@ public class CompositeController {
 	}
 	
 	
-	
+	//ajax - 댓글 수 조회
+	@ResponseBody
+	@PostMapping("countMyReply.co")
+	public int countMyReply(HttpSession session,Model model
+			,SearchForm searchForm) {
+		try {
+			//loginUser의 userNo따서 searchForm에 넣기
+			searchForm.setUserNo(((Member)session
+					.getAttribute("loginUser")).getUserNo());
+			return service.countMyReply(searchForm);
+		} catch (Exception e) {
+			e.printStackTrace();
+			return 0;
+		}
+	}
 	
 	
 	

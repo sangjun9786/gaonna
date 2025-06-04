@@ -2,6 +2,7 @@ package com.gaonna.yami.composite.service;
 
 import java.util.List;
 
+import com.gaonna.yami.composite.vo.BoardCo;
 import com.gaonna.yami.composite.vo.Category;
 import com.gaonna.yami.composite.vo.SearchForm;
 
@@ -14,6 +15,9 @@ public interface CompositeService {
 	int countMyBoard(SearchForm searchForm);
 
 	//ajax - 게시글 조회
-	List<?> searchMyBoard(SearchForm searchForm);
+	List<BoardCo> searchMyBoard(SearchForm searchForm);
+
+	//ajax - 댓글 수 조회
+	int countMyReply(SearchForm searchForm);
 	
 }
