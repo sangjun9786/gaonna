@@ -112,20 +112,7 @@ public class CompositeController {
 	
 	
 	
-	
-	
-	@GetMapping("mainSearch")
-	public String mainSearch(HttpSession session, String keyword) {
-		try {
-			//session에 키워드 데이터 넣기
-			session.setAttribute("mainSearchKeyword", keyword);
-			return "common/mainSearch";
-		} catch (Exception e) {
-			e.printStackTrace();
-			return "common/errorPage";
-		}
-	}
-	
+
 	
 	
 }

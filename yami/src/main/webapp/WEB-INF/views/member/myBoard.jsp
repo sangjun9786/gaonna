@@ -7,162 +7,203 @@
 <title>나의 게시글</title>
 </head>
 <body>
-	<%@include file="/WEB-INF/views/common/header.jsp" %>
-	
-	
-	<div>
-		작성한 게시글
-	</div>
-	
-	<form id="searchForm">
-		검색 범위
-		<select id="searchType1" name="searchType" required>
-			<option value="boardAll">전체 판매 게시판</option>
-			
-			<%--
-			여기에 selectCategory.co로 ajax요청을 보내서 데이터를 받아옴
-			질문게시판 앞에 추가하는 로직이라
-			게시판 순서 변경에 주의
-			--%>
-			
-			<option value="question">질문게시판</option>
-			<option value="report">신고게시판</option>
-		</select>
-		
-		<select id="searchType2" name="searchType" required>
-			<option value="all">전체</option>
-			<option value="title">제목</option>
-			<option value="content">내용</option>
-		</select>
-		
-		<input type="text" id="searchKeyword" name="searchKeyword" placeholder="검색어를 입력해주세요"/>
-		
-		표시할 게시글 수 :
-		<select id="searchCount" name="searchCount" required>
-			<option value="10">10개</option>
-			<option value="30">30개</option>
-			<option value="50">50개</option>
-			<option value="100">100개</option>
-		</select>
-		
-		<%--페이지 바에 따른 이동할 페이지--%>
-		<input type="hidden" id="page" name="page" value="1">
+<%@include file="/WEB-INF/views/common/header.jsp"%>
 
-		<%-- 검색된 게시글 수를 여기 값으로 넣기 --%>
-		<input type="hidden" id="resultCount" name='resultCount'>
-		
-		<button type="submit" id="searchBoard">검색</button>
-		
-	</form>
-	
-	<div>
-		<%-- 검색된 게시글 수를 여기에 표시 --%>
-	</div>
-	
-	<div>
-		<%--
-		검색된 게시글 리스트를 여기에 표시
-		searchType에 따라 다른 객체 컬랙션이 넘어온다
-		searchType이 question, report일 경우를 제외한 모든 상황 : 
-		public class Product {
-				private int productNo;
-				private int categoryNo;
-				private double score;
-				private int price;
-				private Date uploadDate;
-				private int productCount;
-				private String productTitle;
-				private String productContent;
-				private String status;
-		}위 객체를 받아옴
-		카드 형식으로 페이지당 searchCount수 만큼 표시
-		카드에는 제목 최대 10글자(그 이상은 ...으로 표시)
-		내용 최대 30글자(그 이상 ...으로 표시)
-		카드를 누르면 ${root}/board.pro?productNo='누른 카드의productNo' get요청
-		
-		
-		searchType이 question : 
-		
-		searchType이 report :
-		
-		
-		
-		
-		--%>
-	
-	
-	</div>
+<div class="container py-5">
+  <div class="row justify-content-center">
+    <div class="col-md-11 col-lg-10">
+      <div class="card shadow-lg mb-4">
+        <div class="card-header bg-primary text-white">
+          <h4 class="mb-0"><i class="bi bi-pencil-square me-2"></i>나의 게시글</h4>
+        </div>
+        <div class="card-body">
+          <form id="searchForm" class="row g-3 align-items-center" autocomplete="off">
+            <div class="col-md-3">
+              <select class="form-select" id="searchType1" name="searchType" required>
+                <option value="boardAll">전체 판매 게시판</option>
+                <!-- AJAX로 카테고리 옵션 추가 -->
+                <option value="question">질문게시판</option>
+                <option value="report">신고게시판</option>
+              </select>
+            </div>
+            <div class="col-md-2">
+              <select class="form-select" id="searchType2" name="searchType" required>
+                <option value="all">전체</option>
+                <option value="title">제목</option>
+                <option value="content">내용</option>
+              </select>
+            </div>
+            <div class="col-md-3">
+              <input type="text" class="form-control" id="searchKeyword" name="searchKeyword" placeholder="검색어를 입력해주세요"/>
+            </div>
+            <div class="col-md-2">
+              <select class="form-select" id="searchCount" name="searchCount" required>
+                <option value="10">10개</option>
+                <option value="30">30개</option>
+                <option value="50">50개</option>
+                <option value="100">100개</option>
+              </select>
+            </div>
+            <input type="hidden" id="page" name="page" value="1">
+            <input type="hidden" id="resultCount" name="resultCount">
+            <div class="col-md-2">
+              <button type="submit" class="btn btn-success w-100" id="searchBoard">
+                <i class="bi bi-search"></i> 검색
+              </button>
+            </div>
+          </form>
+        </div>
+      </div>
 
+      <div class="mb-3 text-end text-secondary small">
+        <span id="boardResultCount">검색결과 <span class="fw-bold">0</span>건</span>
+      </div>
 
-	<div>
-		<%--페이지 바 --%>
-		
-	</div>
+      <!-- 게시글 카드 리스트 -->
+      <div id="boardList" class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4 mb-4">
+        <!-- JS로 카드 동적 생성 -->
+        <div class="col">
+          <div class="alert alert-info mb-0">검색 결과가 이곳에 표시됩니다.</div>
+        </div>
+      </div>
 
-	
-<script type="text/javascript">
+      <!-- 페이지네이션 -->
+      <nav id="paginationNav" class="mt-4 d-flex justify-content-center"></nav>
+    </div>
+  </div>
+</div>
+
+<script>
 $(function(){
-	//category긁어 와 검색할 게시판에 넣기
-	$.ajax({
-		url: '${root}/selectCategory.co',
-		method: 'POST',
-		data: {},
-		dataType: "json",
-		success: function(result) {
-			//질문게시판 앞에 추가
-            let $questionOption = $('#searchType option[value="question"]');
-            $.each(result, function(idx, category){
-                $('<option>', {
-                    value: category.categoryNo,
-                    text: category.categoryName
-                }).insertBefore($questionOption);
-            });
-        },
-        error: function() {
-            alert('카테고리 정보를 불러오지 못했습니다.');
-        }
-	});
-	
-	//버튼 이벤트 핸들러
-	document.getElementById("searchBoard").addEventListener("click", searchBoard);
-	
-	function searchBoard(){
-		let params = $('#searchForm').serialize();
-		
-		//게시판 수 검색
-		$.ajax({
-			url: '${root}/countMyBoard.co',
-			method: 'POST',
-			data: params,
-			success: function(result) {
-				//int형으로 받아온 데이터를 검색된 게시글 수에 넣어둠
-	        },
-	        error: function() {
-	        	//검색결과에 '서버와 통신할 수 없습니다'표시
-	        }
-		});
-		
-		//게시판 검색
-		$.ajax({
-			url: '${root}/searchMyBoard.co',
-			method: 'POST',
-			data: params,//searchType은 문자열로 넘기기
-			dataType: "json",
-			success: function(result) {
-				/*
-				받아온 데이터 동적으로 생성
-				*/
-	        },
-	        error: function() {
-	            //검색결과에 '서버와 통신할 수 없습니다'표시
-	        }
-		});
-	}
-	
-	searchBoard();//현 주소로 접속할 때 게시글 조회
-});
+  // 카테고리 옵션 동적 추가
+  $.ajax({
+    url: '${root}/selectCategory.co',
+    method: 'POST',
+    dataType: "json",
+    success: function(result) {
+      let $questionOption = $('#searchType1 option[value="question"]');
+      $.each(result, function(idx, category){
+        $('<option>', {
+          value: category.categoryNo,
+          text: category.categoryName
+        }).insertBefore($questionOption);
+      });
+    },
+    error: function() {
+      alert('카테고리 정보를 불러오지 못했습니다.');
+    }
+  });
 
+  // 검색 폼 제출
+  $('#searchForm').on('submit', function(e){
+    e.preventDefault();
+    $('#page').val(1); // 검색시 항상 첫페이지
+    searchBoard();
+  });
+
+  // 페이지네이션 클릭
+  $('#paginationNav').on('click', '.page-link', function(e){
+    e.preventDefault();
+    const page = $(this).data('page');
+    $('#page').val(page);
+    searchBoard();
+  });
+
+  // 게시글 검색 및 렌더링
+  async function searchBoard(){
+    const params = $('#searchForm').serialize();
+
+    try {
+      // 게시글 수 조회
+      const totalCount = await $.ajax({
+        url: '${root}/countMyBoard.co',
+        method: 'POST',
+        data: params,
+        dataType: 'json'
+      });
+      $('#resultCount').val(totalCount);
+      $('#boardResultCount .fw-bold').text(totalCount);
+
+      // 게시글 리스트 조회
+      const boardList = await $.ajax({
+        url: '${root}/searchMyBoard.co',
+        method: 'POST',
+        data: params,
+        dataType: "json"
+      });
+
+      const page = parseInt($('#page').val());
+      const pageSize = parseInt($('#searchCount').val());
+
+      renderBoardList(boardList, totalCount);
+      renderPagination(totalCount, page, pageSize);
+
+    } catch(error) {
+      $('#boardList').html('<div class="col"><div class="alert alert-danger">데이터 조회 실패</div></div>');
+    }
+  }
+
+  // 게시글 카드 렌더링
+  function renderBoardList(boardList, totalCount){
+    let $boardList = $('#boardList');
+    $boardList.empty();
+
+    if(!boardList || boardList.length === 0){
+      $boardList.html('<div class="col"><div class="alert alert-warning mb-0">검색 결과가 없습니다.</div></div>');
+      return;
+    }
+
+    $.each(boardList, function(idx, board){
+      // 제목 10글자, 내용 30글자 제한
+      let title = board.productTitle.length > 10 ? board.productTitle.substring(0,10) + '...' : board.productTitle;
+      let content = board.productContent.length > 30 ? board.productContent.substring(0,30) + '...' : board.productContent;
+
+      // 카드 HTML
+      let cardHtml = `
+        <div class="col">
+          <div class="card h-100 shadow-sm position-relative">
+            <div class="card-body">
+              <div class="d-flex justify-content-between align-items-center mb-2">
+                <h5 class="card-title mb-0 text-truncate" style="max-width: 70%;">${title}</h5>
+                <span class="badge bg-secondary ms-2">${board.price.toLocaleString()}원</span>
+              </div>
+              <p class="card-text text-truncate" style="max-width: 100%;">${content}</p>
+            </div>
+            <div class="card-footer small text-muted d-flex justify-content-between align-items-center">
+              <span>${board.categoryName}</span>
+              <span>${board.uploadDate}</span>
+              <span class="ms-2">${board.status}</span>
+            </div>
+            <a href="${root}/board.pro?productNo=${board.productNo}" class="stretched-link"></a>
+          </div>
+        </div>
+      `;
+      $boardList.append(cardHtml);
+    });
+  }
+
+  // 페이지네이션 렌더링
+  function renderPagination(totalCount, currentPage, pageSize){
+    const totalPage = Math.ceil(totalCount / pageSize);
+    if(totalPage <= 1) {
+      $('#paginationNav').empty();
+      return;
+    }
+    let nav = `<ul class="pagination">`;
+    for(let i=1; i<=totalPage; i++){
+      nav += `
+        <li class="page-item ${i === currentPage ? 'active' : ''}">
+          <a class="page-link" href="#" data-page="${i}">${i}</a>
+        </li>
+      `;
+    }
+    nav += `</ul>`;
+    $('#paginationNav').html(nav);
+  }
+
+  // 최초 진입시 전체 조회
+  searchBoard();
+});
 </script>
-	
 </body>
 </html>

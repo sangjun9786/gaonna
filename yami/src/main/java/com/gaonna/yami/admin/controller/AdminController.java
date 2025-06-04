@@ -203,7 +203,6 @@ public class AdminController {
 		try {
 			List<Member> result = service.searchMember(searchType
 					,searchKeyword, searchCount, page);
-			
 			String json = new Gson().toJson(result);
 			
 			return json;

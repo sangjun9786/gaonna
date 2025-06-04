@@ -9,17 +9,13 @@
 		<result column="CATEGORY_NO" property="categoryNo"/>
 		<result column="CATEGORY_NAME" property="categoryName"/>
 	</resultMap>
-	<resultMap id="productResultMap" type="Product">
+	<resultMap id="boardCoResultMap" type="BoardCo">
 	    <id property="productNo" column="PRODUCT_NO"/>
-	    <result property="categoryNo" column="CATEGORY_NO"/>
-	    <result property="score" column="SCORE"/>
-	    <result property="userNo" column="USER_NO"/>
-	    <result property="price" column="PRICE"/>
+	    <result property="categoryName" column="CATEGORY_NAME"/>
 	    <result property="uploadDate" column="UPLOAD_DATE"/>
-	    <result property="productCount" column="PRODUCT_COUNT"/>
 	    <result property="productTitle" column="PRODUCT_TITLE"/>
 	    <result property="productContent" column="PRODUCT_CONTENT"/>
-	    <result property="status" column="STATUS"/>
+	    <result property="replyCount" column="REPLY_COUNT"/>
 	</resultMap>
 	
 	<!-- ajax - 카테고리 조회 -->
@@ -36,34 +32,31 @@
 	</select>
 	
 	<!-- ajax - 판매 게시글 조회 -->
-	<select id="selectMyBoard" resultMap="productResultMap" parameterType="SearchForm">
+	<select id="selectMyBoard" resultMap="boardCoResultMap" parameterType="SearchForm">
 		<bind name="searchPattern" value="'%' + searchKeyword + '%'" />
 		select *
 		from(
 			select PRODUCT_NO
 					,CATEGORY_NAME
-					,SCORE
-					,USER_NO
 					,PRICE
 					,UPLOAD_DATE
-					,PRODUCT_COUNT
 					,PRODUCT_TITLE
 					,PRODUCT_CONTENT
 					,STATUS
+					,COUNT_REPLY
 					,rownum as rn
 			from (select
-					PRODUCT_NO
-					,CATEGORY_NAME
-					,SCORE
-					,USER_NO
-					,PRICE
-					,UPLOAD_DATE
-					,PRODUCT_COUNT
-					,PRODUCT_TITLE
-					,PRODUCT_CONTENT
-					,STATUS
+					pb.PRODUCT_NO
+					,c.CATEGORY_NAME
+					,pb.PRICE
+					,pb.UPLOAD_DATE
+					,pb.PRODUCT_TITLE
+					,pb.PRODUCT_CONTENT
+					,pb.STATUS
+					,count(r.REPLY_NO) as COUNT_REPLY
 				from PRODUCT_BOARD pb
-				join CATEGORY using (CATEGORY_NO)
+				left join CATEGORY c on (c.CATEGORY_NO=pb.CATEGORY_NO)
+				left join REPLY r on(r.PRODUCT_NO = pb.PRODUCT_NO)
 				where user_no = #{userNo}
 				<choose>
 	                <!-- 검색 타입1이 'all'이 아닌 경우 -->
@@ -99,6 +92,9 @@
 					</otherwise>
 				</choose>
 				order by UPLOAD_DATE desc
+				group by pb.PRODUCT_NO, c.CATEGORY_NAME, pb.PRICE,
+                     pb.UPLOAD_DATE, pb.PRODUCT_TITLE, 
+                     pb.PRODUCT_CONTENT, pb.STATUS
 				)
 			where rownum &lt;= #{endRow}
 			)

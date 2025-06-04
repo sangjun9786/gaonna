@@ -1,5 +1,7 @@
 package com.gaonna.yami.composite.vo;
 
+import java.util.Date;
+
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -7,14 +9,13 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 @Data
-public class ProductBoard {
+public class BoardCo {
 	private int productNo;
-	private int categoryNo;
-	private double score;
+	private String categoryName; //category에서 추출
 	private int price;
-	private String uploadDate; //업로드 날짜. Date 형변환
-	private int productCount; //조회수
+	private Date uploadDate;
 	private String productTitle;
 	private String productContent;
 	private String status;
+	private int replyCount; //댓글 수, reply에서 추출
 }
