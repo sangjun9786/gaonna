@@ -77,25 +77,43 @@
 <body>
 <%@include file="/WEB-INF/views/common/header.jsp" %>
 
+<%-- <c:if test="${empty cate}"> --%>
+<!--   <script> -->
+<!--      $(function() { -->
+<%--        location.href = "${root}/get.ca"; --%>
+<!--      }); -->
+<!--   </script> -->
+<%-- </c:if> --%>
+
 <div class="container-main">
     <!-- 사이드바 -->
     <div class="sidebar">
     <button>게시글 작성</button>
-    <h4>위치</h4>
-    <ul>
-        <li><input type="checkbox"> 강남구</li>
-        <li><input type="checkbox"> 역삼동</li>
-        <li><input type="checkbox"> 청담동</li>
-        <li><input type="checkbox"> 당산동</li>
-    </ul>
+<!--         <h4>위치</h4> -->
+<%--         <a href="${root }/filter.bo?location=${loca.locationNo }&category=${cate.categoryNo}"> --%>
+<!--         	<input type="radio" name="loca" value="all" checked> -->
+<!--         	<label>전체</label> <br> -->
+<%--         	<c:forEach var="item" items="${loca }"> --%>
+<!--         		<input type="radio" name="loca" value="item.locationNo"> -->
+<!--         		<label>item.locationName</label> <br> -->
+<%--         	</c:forEach> --%>
+<!--         </a> -->
 
-    <h4>카테고리</h4>
-    <ul>
-        <li><input type="checkbox"> 패션잡화</li>
-        <li><input type="checkbox"> 전자기기</li>
-        <li><input type="checkbox"> 가전/주방</li>
-    </ul>
-</div>
+<!--         <h4>카테고리</h4> -->
+<%--         <a href="${root }/filter.bo?location=${loca.locationNo }&category=${cate.categoryNo}"> --%>
+<!--         	<input type="radio" name="cate" value="all" checked> -->
+<!--         	<label>전체</label> <br> -->
+<%--         	<c:forEach var="item" items="${cate }"> --%>
+<!--         		<input type="radio" name="cate" value="item.categoryNo"> -->
+<!--         		<label>item.categoryName</label> <br> -->
+<%--         	</c:forEach> --%>
+<!--         </a> -->
+		
+    </div>
+	
+	<script>
+		
+	</script>
 	
     <!-- 상품 리스트 -->
     <div class="content">

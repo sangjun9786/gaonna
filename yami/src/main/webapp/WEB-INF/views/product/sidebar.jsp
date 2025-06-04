@@ -37,36 +37,19 @@
 <div class="sidebar">
     <!-- 글작성 버튼 -->
     <a href="${pageContext.request.contextPath}/productEnrollForm.pr" class="write-btn">글작성</a>
-    <c:if test="${empty cate}">
-  		<script>
-	  	  $(function() {
-		     location.href = "${root}/get.ca";
-		  });
-	  </script>
-	</c:if>
-<%-- 	<c:if test="${not empty loginUser and empty loca}"> --%>
-<!-- 		<script> -->
-// 			$(function() {
-// 		       location.href = "${root}/get.lo";
-// 		    });
-<!-- 		</script> -->
-<%-- 	</c:if> --%>
-    <h4>위치</h4>
-<!--     <input type="radio" name="location" value="0" checked> -->
-<!--     <label>전체</label> <br> -->
-<%--     <c:forEach var="item" items="${loca }"> --%>
-<%--         <input type="radio" name="location" value=${item.locationNo }> --%>
-<%--         <label>${item.locationName }</label> <br> --%>
-<%--     </c:forEach> --%>
     
+    <h4>위치</h4>
+    <ul>
+        <li><input type="checkbox"> 강남구</li>
+        <li><input type="checkbox"> 역삼동</li>
+        <li><input type="checkbox"> 청담동</li>
+        <li><input type="checkbox"> 당산동</li>
+    </ul>
+
     <h4>카테고리</h4>
-    <input type="radio" name="category" value="0" checked>
-    <label>전체</label> <br>
-    <c:forEach var="item" items="${sessionScope.cate }">
-        <input type="radio" name="category" value=${item.categoryNo }>
-        <label>${item.categoryName }</label> <br>
-    </c:forEach>
-	<h4>가격</h4>
-	<input type="number" name="price1"> ~ <input type="number" name="price2">
-	
+    <ul>
+        <li><input type="checkbox"> 패션잡화</li>
+        <li><input type="checkbox"> 전자기기</li>
+        <li><input type="checkbox"> 가전/주방</li>
+    </ul>
 </div>

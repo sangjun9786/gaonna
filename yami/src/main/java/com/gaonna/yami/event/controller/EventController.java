@@ -29,7 +29,8 @@ public class EventController {
 		
 		if(event != null) {
 			session.setAttribute("event", event);
-			return "redirect:/event.ev";
+			model.addAttribute("event", event);
+			return "event/eventPage";
 		}else {
 			session.setAttribute("alertMsg", "이벤트 테이블 조회 실패");
 			return "event/eventPage";

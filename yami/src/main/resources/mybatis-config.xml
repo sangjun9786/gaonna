@@ -17,7 +17,6 @@
 		<typeAlias type="com.gaonna.yami.product.vo.Product" alias="Product"/>
 		<typeAlias alias="Category" type="com.gaonna.yami.product.vo.Category"/>
 		<typeAlias type="com.gaonna.yami.product.vo.Attachment" alias="Attachment"/>
-
 	</typeAliases>
 	
 </configuration>
