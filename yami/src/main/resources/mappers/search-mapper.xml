@@ -14,8 +14,4 @@
 	    SELECT CATEGORY_NO, CATEGORY_NAME FROM CATEGORY
 	</select>
 	
-	<select id="testQuery" resultType="String">
-    	SELECT 'OK' FROM DUAL
-	</select>
-	
 </mapper>

@@ -30,16 +30,20 @@ public class ProductController {
 
 	//리스트 조회
 	@RequestMapping("productList.pr")
-	public String productList(Model model) {
+	public String productList(HttpSession session) {
 	    
 	    // 상품 목록 + 썸네일 포함 조회
 	    ArrayList<Product> list = service.selectProductList();
 
-	    model.addAttribute("list", list);
+	    session.setAttribute("list", list);
 
-	    return "product/productList2";
+	    return "redirect:/productList2.pro";
 	}
 	
+	@RequestMapping("productList2.pro")
+	public String showProduct(HttpSession session) {
+		return "product/productList2";
+	}
 
 	
 
