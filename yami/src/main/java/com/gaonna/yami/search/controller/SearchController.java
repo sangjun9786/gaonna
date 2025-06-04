@@ -25,7 +25,6 @@ public class SearchController {
 		
 		if(!list.isEmpty()) {
 			session.setAttribute("cate", list);
-			System.out.println(list);
 			return "redirect:/productList2.pro";
 		}else {
 			System.out.println(list);

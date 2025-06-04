@@ -52,12 +52,13 @@
  		</script>
 	</c:if>
     <h4>위치</h4>
-<!--     <input type="radio" name="location" value="0" checked> -->
-<!--     <label>전체</label> <br> -->
-<%--     <c:forEach var="item" items="${loca }"> --%>
-<%--         <input type="radio" name="location" value=${item.locationNo }> --%>
-<%--         <label>${item.locationName }</label> <br> --%>
-<%--     </c:forEach> --%>
+    <h6>${userLoca }</h6>
+    <input type="radio" name="location" value="0" checked>
+    <label>전체</label> <br>
+    <c:forEach var="item" items="${loca }">
+        <input type="radio" name="location" value=${item.locationNo }>
+        <label>${item.locationName }</label> <br>
+    </c:forEach>
     
     <h4>카테고리</h4>
     <input type="radio" name="category" value="0" checked>
