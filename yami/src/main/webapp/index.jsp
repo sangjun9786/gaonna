@@ -7,6 +7,8 @@
 <title>안아줘요</title>
 </head>
 <body>
-	<jsp:forward page="/WEB-INF/views/main.jsp"/>
+<%-- 	<jsp:forward page="/WEB-INF/views/product/productDetail.jsp"/> --%>
+<%-- 	<jsp:forward page="/WEB-INF/views/product/productEnrollForm.jsp"/> --%>
+	<jsp:forward page="/WEB-INF/views/main.jsp"/> 메인
 </body>
 </html>

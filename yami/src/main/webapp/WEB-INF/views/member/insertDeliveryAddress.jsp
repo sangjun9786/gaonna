@@ -11,7 +11,7 @@
 <title>배송지 추가</title>
 <style>
     #mapModal .modal-dialog { max-width: 700px; }
-    #map { width: 100%; height: 400px; }
+    #map { width: 100%; height: 400px; visibility: hidden;}
     .center-marker {
         position: absolute;
         top: 50%; left: 50%;
@@ -316,14 +316,32 @@ document.getElementById('mapForm').onsubmit = function(e) {
 //---------------------다이나믹 웹뷰------------------------
 let map;
 let debounceTimer;
+let debouncedSendCoords;
+window.onload = function() {
+    map = new naver.maps.Map('map', {
+        center: new naver.maps.LatLng(37.5665, 126.9780),
+        zoom: 16
+    });
+    
+	debouncedSendCoords = _.debounce(sendCenterCoords, 500);
+    
+    naver.maps.Event.addListener(map, 'idle', function() {
+    	debouncedSendCoords();
+    });
+    
 
-// 디바운스 처리된 함수 생성 (Lodash 사용)
-const debouncedSendCoords = _.debounce(sendCenterCoords, 300);
+};
 
-// 모달 이벤트 리스너 수정
-document.getElementById('mapModal').addEventListener('shown.bs.modal', function () {
-    initMap();
+//누르면 지도 튀어나옴
+document.getElementById('mapModal').addEventListener('shown.bs.modal', function() {
+    document.getElementById('map').style.visibility = 'visible';
+    map.autoResize();
 });
+//지도 들어감
+document.getElementById('mapModal').addEventListener('hidden.bs.modal', function() {
+    document.getElementById('map').style.visibility = 'hidden';
+});
+
 
 btnMap.onclick = function() {
     btnMap.classList.remove('btn-outline-primary');
@@ -334,39 +352,30 @@ btnMap.onclick = function() {
     document.getElementById('directForm').classList.add('d-none');
     document.getElementById('searchForm').classList.add('d-none');
     
-    // 모달 띄우기 (Bootstrap 5)
-    var mapModal = new bootstrap.Modal(document.getElementById('mapModal'));
+    let mapModal = new bootstrap.Modal(document.getElementById('mapModal'));
     mapModal.show();
+    
+    if (navigator.geolocation) {
+        navigator.geolocation.getCurrentPosition(
+            function(position) {
+                var userLocation = new naver.maps.LatLng(
+                    position.coords.latitude,
+                    position.coords.longitude
+                );
+                map.setCenter(userLocation);
+            },
+            function(error) {
+                alert('위치 정보를 가져올 수 없습니다.');
+            },
+            {
+                enableHighAccuracy: true,
+                timeout: 5000,
+                maximumAge: 0
+            }
+        );
+    }
 };
 
-
-document.getElementById('mapModal').addEventListener('hidden.bs.modal', function () {
-    if(map) {
-        map.destroy();
-        map = null;
-    }
-});
-
-function initMap() {
-    if(map) return;
-    
-    // 지도 생성 시 10ms 딜레이 추가
-    setTimeout(() => {
-        map = new naver.maps.Map('map', {
-            center: new naver.maps.LatLng(37.5665, 126.9780),
-            zoom: 16,
-            minZoom: 7,
-            maxZoom: 19
-        });
-        
-        // 지도 리사이즈 이벤트 강제 발생
-        naver.maps.Event.once(map, 'init_stylemap', function() {
-            window.dispatchEvent(new Event('resize'));
-        });
-
-        naver.maps.Event.addListener(map, 'idle',debouncedSendCoords);
-    }, 10);
-}
 
 function sendCenterCoords() {
     if(!map) return;
@@ -396,8 +405,8 @@ function sendCenterCoords() {
 // 선택 완료 버튼 클릭 시
 document.getElementById('selectMapLocation').addEventListener('click', function() {
     $('#mapForm [name="detailAddress"]').focus();
-    var modalEl = document.getElementById('mapModal');
-    var modalInstance = bootstrap.Modal.getInstance(modalEl);
+    let modalEl = document.getElementById('mapModal');
+    let modalInstance = bootstrap.Modal.getInstance(modalEl);
     if(modalInstance) {
         modalInstance.hide();
     }

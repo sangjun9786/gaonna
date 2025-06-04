@@ -30,5 +30,8 @@ public interface EmailService {
 	//마이페이지 아이디 변경
 	int updateEmailToken(Member m, String token);
 
+	//비밀번호 찾기
+	int findPwdToken(Member m, String token);
+
 
 }

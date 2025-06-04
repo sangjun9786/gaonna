@@ -18,6 +18,7 @@ public class AdminInterceptor implements HandlerInterceptor{
 		HttpSession session = request.getSession();
 		Member loginUser = (Member)session.getAttribute("loginUser");
 		if(loginUser == null ||
+				loginUser.getRoleType() == null ||
 				loginUser.getRoleType().equals("N")) {
 			session.setAttribute("alertMsg", "접근 권한이 없습니다.");
 			response.sendRedirect(request.getContextPath());

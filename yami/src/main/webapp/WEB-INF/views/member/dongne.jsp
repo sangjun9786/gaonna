@@ -121,7 +121,7 @@
                     <div id="addForm" class="d-flex justify-content-center gap-2">
                     
                     <!-- 대표 동네가 없으면 그냥 동네 추가하기 버튼은 보이지 않음 -->
-	                    <c:if test="${empty loginUser.mainCoord || loginUser.mainCoord == 0}">
+	                    <c:if test="${not empty loginUser.mainCoord && loginUser.mainCoord != 0}">
 	                        <button type="button"
 	                        	id="addNormal"
 	                        	class="btn btn-outline-warning">
@@ -182,7 +182,7 @@
 </div>
 
 <script>
-
+console.log(${loginUser.mainCoord});
     document.getElementById('addForm').addEventListener('click', function(e) {
     	//버튼만 이벤트 작동되도록
     	if (e.target.tagName !== 'BUTTON' 

@@ -1,3 +1,4 @@
+
 package com.gaonna.yami.common;
 
 public class PageInfo {
