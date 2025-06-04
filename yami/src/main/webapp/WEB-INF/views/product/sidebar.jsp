@@ -56,8 +56,8 @@
     <input type="radio" name="location" value="0" checked>
     <label>전체</label> <br>
     <c:forEach var="item" items="${loca }">
-        <input type="radio" name="location" value=${item.locationNo }>
-        <label>${item.locationName }</label> <br>
+        <input type="radio" name="location" value=${item }>
+        <label>${item }</label> <br>
     </c:forEach>
     
     <h4>카테고리</h4>
