@@ -13,10 +13,7 @@ public class SearchDao {
 	public ArrayList<Category> getCategory(SqlSessionTemplate sqlSession) {
 		
 		 ArrayList<Category> list = (ArrayList)sqlSession.selectList("searchMapper.getCategory");
-		 System.out.println("조회 결과 수: " + list.size());
-		 for (Category c : list) {
-			 System.out.println(c);
-		 }
+		 
 		return list;
 	}
 
