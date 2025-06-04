@@ -29,11 +29,10 @@ public class EventController {
 		
 		if(event != null) {
 			session.setAttribute("event", event);
-			model.addAttribute("event", event);
-			return "event/eventPage";
+			return "redirect:/event.ev";
 		}else {
 			session.setAttribute("alertMsg", "이벤트 테이블 조회 실패");
-			return "redirect:/event.ev";
+			return "event/eventPage";
 		}
 		
 	}

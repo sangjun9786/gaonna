@@ -18,6 +18,7 @@
 		<typeAlias type="com.gaonna.yami.composite.vo.Category" alias="Category"/>
 		<typeAlias type="com.gaonna.yami.composite.vo.BoardCo" alias="BoardCo"/>
 		<typeAlias type="com.gaonna.yami.composite.vo.SearchForm" alias="SearchForm"/>
+		<typeAlias type="com.gaonna.yami.product.vo.Attachment" alias="Attachment"/>
 	</typeAliases>
 	
 </configuration>

@@ -5,7 +5,6 @@ import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
-import java.util.List;
 
 import javax.servlet.http.HttpSession;
 
@@ -14,12 +13,10 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.multipart.MultipartFile;
 
-import com.gaonna.yami.common.PageInfo;
-import com.gaonna.yami.common.Pagination;
-import com.gaonna.yami.product.model.ProductDTO;
 import com.gaonna.yami.product.service.ProductService;
 import com.gaonna.yami.product.vo.Attachment;
 import com.gaonna.yami.product.vo.Product;
@@ -31,71 +28,54 @@ public class ProductController {
 	@Autowired
 	private ProductService service;
 
-//	@GetMapping("/productList.pro")
-//	public String productList(@RequestParam(value = "currentPage", defaultValue = "1") int currentPage, Model model) {
-//		int listCount = 50; // 가짜 데이터 개수 (예: 50개)
-//		int pageLimit = 5;
-//		int boardLimit = 16;
-//
-//		PageInfo pi = Pagination.getPageInfo(listCount, currentPage, pageLimit, boardLimit);
-//
-//		// 가짜 데이터 생성
-//		List<ProductDTO> products = new ArrayList<>();
-//		for (int i = pi.getStartRow(); i <= pi.getEndRow() && i <= listCount; i++) {
-//			products.add(new ProductDTO(i, "테스트 상품" + i, "photo" + (i % 10 + 1) + ".jpg", i * 1000, "강남구", "패션잡화"));
-//		}
-//
-//		model.addAttribute("photos", products);
-//		model.addAttribute("pi", pi);
-//
-//		return "product/productList";
-//	}
+	//리스트 조회
+	@RequestMapping("productList.pr")
+	public String productList(HttpSession session) {
+	    
+	    // 상품 목록 + 썸네일 포함 조회
+	    ArrayList<Product> list = service.selectProductList();
+
+	    session.setAttribute("list", list);
+
+	    return "redirect:/productList2.pro";
+	}
 	
-	@GetMapping("/productList2.pro")
-	public String productList(@RequestParam(value = "currentPage", defaultValue = "1") int currentPage, Model model) {
-		int listCount = 50; // 가짜 데이터 개수 (예: 50개)
-		int pageLimit = 5;
-		int boardLimit = 16;
-
-		PageInfo pi = Pagination.getPageInfo(listCount, currentPage, pageLimit, boardLimit);
-
-		// 가짜 데이터 생성
-		List<ProductDTO> products = new ArrayList<>();
-		for (int i = pi.getStartRow(); i <= pi.getEndRow() && i <= listCount; i++) {
-			products.add(new ProductDTO(i, "테스트 상품" + i, "photo" + (i % 10 + 1) + ".jpg", i * 1000, "강남구", "패션잡화"));
-		}
-
-		model.addAttribute("photos", products);
-		model.addAttribute("pi", pi);
-
+	@RequestMapping("productList2.pro")
+	public String showProduct(HttpSession session) {
 		return "product/productList2";
 	}
 
-	// 상세 페이지 구현
-
-	@Autowired
-	private ProductService productService;
+	// 상세 페이지
 
 	@GetMapping("/productDetail.pro")
 	public String productDetail(@RequestParam("productNo") int productNo, Model model) {
 		// 1. 상품 정보 조회
-		Product product = productService.selectProductDetail(productNo);
+		Product product = service.selectProductDetail(productNo);
 
 		// 2. 첨부파일(사진) 리스트 조회
-//        List<Attachment> atList = productService.selectProductAttachments(productNo);
+        ArrayList<Attachment> atList = service.selectProductAttachments(productNo);
 
 		// 3. 상품 객체에 이미지 리스트 연결
-//        product.setAtList(atList);
+        product.setAtList(atList);
 
 		// 4. 모델에 담기
-		model.addAttribute("product", product); // 뷰에서 ${b.속성명}으로 접근 가능
+		model.addAttribute("product", product);
 
 		System.out.println("test :" + product);
-		return "product/productDetail"; // /WEB-INF/views/product/productDetail.jsp
+		// 🔍 테스트용 로그 출력
+		System.out.println("[DEBUG] 상품번호: " + product.getProductNo());
+		System.out.println("[DEBUG] 제목: " + product.getProductTitle());
+		System.out.println("[DEBUG] 첨부파일 개수: " + (atList != null ? atList.size() : 0));
+		if (atList != null) {
+			for (Attachment at : atList) {
+				System.out.println("[DEBUG] 파일명: " + at.getChangeName() + " / 경로: " + at.getFilePath());
+			}
+		}
+
+		return "product/productDetail"; 
 	}
 
 	// 파일 업로드
-
 	public String saveFile(MultipartFile uploadFile, HttpSession session) {
 		//1.원본 파일명 추출
 		String originName = uploadFile.getOriginalFilename();
@@ -147,12 +127,14 @@ public class ProductController {
 //		
 //	}
 	
+	//등록 이동
 	@GetMapping("productEnrollForm.pr")
 	public String ProductEnroll() {
 		
 		return "product/productEnrollForm";
 	}
 	
+	//등록 
 	@PostMapping("productEnrollForm.pr")
 	public String insertProduct(Product p,ArrayList<MultipartFile> uploadFiles
 							 ,HttpSession session) {
@@ -184,7 +166,7 @@ public class ProductController {
 		
 		if(result>0) { //등록 성공
 			session.setAttribute("alertMsg", "상품 등록이 성공적으로 처리 되었습니다.");
-			return "product/productList2";
+			return "redirect:/productList.pr";
 		}else {
 			session.setAttribute("alertMsg", "상품 등록이 실패!!");
 			return "common/errorPage";
@@ -194,3 +176,43 @@ public class ProductController {
 	}
 
 }
+
+//	@GetMapping("/productList.pro")
+//	public String productList(@RequestParam(value = "currentPage", defaultValue = "1") int currentPage, Model model) {
+//		int listCount = 50; // 가짜 데이터 개수 (예: 50개)
+//		int pageLimit = 5;
+//		int boardLimit = 16;
+//
+//		PageInfo pi = Pagination.getPageInfo(listCount, currentPage, pageLimit, boardLimit);
+//
+//		// 가짜 데이터 생성
+//		List<ProductDTO> products = new ArrayList<>();
+//		for (int i = pi.getStartRow(); i <= pi.getEndRow() && i <= listCount; i++) {
+//			products.add(new ProductDTO(i, "테스트 상품" + i, "photo" + (i % 10 + 1) + ".jpg", i * 1000, "강남구", "패션잡화"));
+//		}
+//
+//		model.addAttribute("photos", products);
+//		model.addAttribute("pi", pi);
+//
+//		return "product/productList";
+//	}
+
+//	@GetMapping("/productList2.pro")
+//	public String productList(@RequestParam(value = "currentPage", defaultValue = "1") int currentPage, Model model) {
+//		int listCount = 50; // 가짜 데이터 개수 (예: 50개)
+//		int pageLimit = 5;
+//		int boardLimit = 16;
+//
+//		PageInfo pi = Pagination.getPageInfo(listCount, currentPage, pageLimit, boardLimit);
+//
+//		// 가짜 데이터 생성
+//		List<ProductDTO> products = new ArrayList<>();
+//		for (int i = pi.getStartRow(); i <= pi.getEndRow() && i <= listCount; i++) {
+//			products.add(new ProductDTO(i, "테스트 상품" + i, "photo" + (i % 10 + 1) + ".jpg", i * 1000, "강남구", "패션잡화"));
+//		}
+//
+//		model.addAttribute("photos", products);
+//		model.addAttribute("pi", pi);
+//
+//		return "product/productList2";
+//	}

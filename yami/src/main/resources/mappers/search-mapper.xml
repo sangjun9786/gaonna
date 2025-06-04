@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="searchMapper">
+
+	<resultMap type="Category" id="categoryResultMap">
+		<result column="CATEGORY_NO" property="categoryNo"/>
+		<result column="CATEGORY_NAME" property="categoryName"/>
+	</resultMap>
+	
+	<select id="getCategory" resultMap="categoryResultMap">
+	    SELECT CATEGORY_NO, CATEGORY_NAME FROM CATEGORY
+	</select>
+	
+	<select id="getUserLoca" parameterType="Member" resultType="string">
+		SELECT
+		    REGEXP_SUBSTR(TRIM(COORD_ADDRESS), '^(.*)\s+[^ ]+$', 1, 1, NULL, 1)
+		FROM COORDS
+		JOIN MEMBER ON(COORD_NO = MAIN_COORD)
+		WHERE USER_NO = #{userNo}
+	</select>
+	
+	<select id="getLoca" parameterType="string" resultType="string">
+		SELECT DISTINCT
+		    REGEXP_SUBSTR(TRIM(COORD_ADDRESS), '[^ ]+$')
+		FROM COORDS
+		WHERE REGEXP_SUBSTR(TRIM(COORD_ADDRESS), '^(.*)\s+[^ ]+$', 1, 1, NULL, 1) = #{userLoca}
+	</select>
+	
+</mapper>

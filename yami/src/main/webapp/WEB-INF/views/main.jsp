@@ -148,7 +148,7 @@
 			style="max-width: 800px;">
 			<!-- 1행 -->
 			<div class="col">
-				<a href="${root}/productList.pro"
+				<a href="${root}/productList.pr"
 					class="card text-center h-100 shadow-sm text-decoration-none">
 					<div class="card-body">
 						<i class="bi bi-bag fs-1 text-primary"></i>

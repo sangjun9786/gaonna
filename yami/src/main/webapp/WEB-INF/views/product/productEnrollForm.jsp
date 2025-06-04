@@ -76,15 +76,15 @@
 <%@ include file="/WEB-INF/views/common/header.jsp" %>
 <c:set var="contextPath" value="${pageContext.request.contextPath}" />
 
-로그인 여부 체크 후 비로그인 시 로그인 페이지로 리다이렉트
+<!-- 로그인 여부 체크 후 비로그인 시 로그인 페이지로 리다이렉트 -->
 <c:if test="${empty loginUser}">
 <script>
-//        alert("로그인 후 이용 가능한 서비스입니다.");
-//       location.href = "${contextPath}/login.me";
+    alert("로그인 후 이용 가능한 서비스입니다.");
+	location.href = "${contextPath}/login.me";
 </script> 
 </c:if> 
 
-로그인된 경우에만 글작성 폼 출력
+<!-- 로그인된 경우에만 글작성 폼 출력 -->
 <c:if test="${not empty loginUser}">
 <div class="container-main">
     <%@ include file="/WEB-INF/views/product/sidebar.jsp" %>

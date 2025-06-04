@@ -39,6 +39,7 @@
             border-radius: 10px;
             box-shadow: 0 0 8px rgba(0,0,0,0.1);
             text-align: center;
+            cursor: pointer; /* ★ 클릭 가능한 느낌 */
         }
 
         .photo-item img {
@@ -72,22 +73,30 @@
 
 <div class="container-main">
 
-    <%@ include file="/WEB-INF/views/product/sidebar.jsp" %> <!-- 사이드바 인클루드 -->
+    <%@ include file="/WEB-INF/views/product/sidebar.jsp" %>
 
     <div class="content">
         <h2>📸 가온나 야미 리스트</h2>
         <div class="photo-grid">
-            <c:forEach var="photo" items="${photos}">
-                <div class="photo-item">
-                    <img src="${pageContext.request.contextPath}/resources/img/${photo.path}" alt="${photo.title}">
-                    <div class="photo-title">${photo.title}</div>
-                    <div class="photo-price">${photo.price}원</div>
-                    <div class="photo-location-category">${photo.location} ${photo.category}</div>
+            <c:forEach var="product" items="${list}">
+                <div class="photo-item"
+                     onclick="location.href='${pageContext.request.contextPath}/productDetail.pro?productNo=${product.productNo}'">
+                    <c:choose>
+                        <c:when test="${not empty product.atList}">
+                            <img src="${pageContext.request.contextPath}${product.atList[0].filePath}/${product.atList[0].changeName}" alt="${product.productTitle}">
+                        </c:when>
+                        <c:otherwise>
+                            <img src="${pageContext.request.contextPath}/resources/img/default.png" alt="기본 이미지">
+                        </c:otherwise>
+                    </c:choose>
+                    <div class="photo-title">${product.productTitle}</div>
+                    <div class="photo-price">${product.price}원</div>
+                    <div class="photo-location-category">${product.userId} | 카테고리: ${product.categoryNo}</div>
                 </div>
             </c:forEach>
         </div>
 
-        <!-- 페이지네이션 표시 -->
+        <!-- 페이지네이션 -->
         <nav aria-label="Page navigation" class="mt-4">
             <ul class="pagination justify-content-center">
                 <c:forEach var="i" begin="${pi.startPage}" end="${pi.endPage}">

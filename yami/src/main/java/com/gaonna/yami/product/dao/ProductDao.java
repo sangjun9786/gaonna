@@ -1,5 +1,7 @@
 package com.gaonna.yami.product.dao;
 
+import java.util.ArrayList;
+
 import org.mybatis.spring.SqlSessionTemplate;
 import org.springframework.stereotype.Repository;
 
@@ -32,6 +34,17 @@ public class ProductDao {
 	public int insertAttachment(SqlSessionTemplate sqlSession, Attachment at) {
 		// TODO Auto-generated method stub
 		return sqlSession.insert("productMapper.insertAttachment",at);
+	}
+	
+	//상세 리스트
+	public ArrayList<Product> selectProductList(SqlSessionTemplate sqlSession) {
+		// TODO Auto-generated method stub
+		return (ArrayList)sqlSession.selectList("productMapper.selectProductList");
+	}
+
+	public ArrayList<Attachment> selectProductAttachments(SqlSessionTemplate sqlSession, int productNo) {
+		// TODO Auto-generated method stub
+		return (ArrayList)sqlSession.selectList("productMapper.selectProductAttachments",productNo);
 	}
 
 
