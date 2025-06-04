@@ -33,7 +33,7 @@ public class EventController {
 			return "event/eventPage";
 		}else {
 			session.setAttribute("alertMsg", "이벤트 테이블 조회 실패");
-			return "redirect:/event.ev";
+			return "event/eventPage";
 		}
 		
 	}
