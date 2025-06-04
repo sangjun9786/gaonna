@@ -72,5 +72,17 @@ public class ProductServiceImpl implements ProductService {
 		}
 			
 	}
+	
+	@Override
+	public ArrayList<Product> selectProductList() {
+		// TODO Auto-generated method stub
+		return dao.selectProductList(sqlSession);
+	}
+	
+	@Override
+	public ArrayList<Attachment> selectProductAttachments(int productNo) {
+		// TODO Auto-generated method stub
+		return dao.selectProductAttachments(sqlSession,productNo);
+	}
     
 }

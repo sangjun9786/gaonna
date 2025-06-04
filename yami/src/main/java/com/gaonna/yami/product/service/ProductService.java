@@ -21,4 +21,10 @@ public interface ProductService {
 	
 	//상품등록
 	int insertProduct(Product p, ArrayList<Attachment> atList);
+	
+	//상품 리스트 조회
+	ArrayList<Product> selectProductList();
+	
+	//상세페이지
+	ArrayList<Attachment> selectProductAttachments(int productNo);
 }

@@ -115,10 +115,11 @@
     <div class="flex">
         <!-- 상품 이미지 영역 -->
         <div class="image-area">
-            <%-- 이미지 리스트는 현재 Product VO에 atList가 없어 주석처리
-            <img src="${contextPath}${product.atList[0].filePath}${product.atList[0].changeName}" alt="대표이미지">
-            --%>
+		    <c:if test="${not empty product.atList}">
+		        <img src="${contextPath}${product.atList[0].filePath}${product.atList[0].changeName}" alt="대표이미지">
+		    </c:if>
         </div>
+    
 
         <!-- 상품 정보 영역 -->
         <div class="info-area">
