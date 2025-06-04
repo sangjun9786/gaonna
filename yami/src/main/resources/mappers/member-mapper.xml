@@ -124,4 +124,11 @@
 		set MAIN_LOCATION = null
 		where user_no = #{userNo}
 	</update>
+	
+	<select id="selectUserNo" parameterType="Member" resultType="int">
+		select user_no
+		from member
+		where user_id = #{userId}
+		and status = 'Y'
+	</select>
 </mapper>

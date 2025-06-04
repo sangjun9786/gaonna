@@ -55,4 +55,9 @@ public class MemberDao {
 	public int updateMainCoord(SqlSessionTemplate sqlSession, Member m) {
 		return sqlSession.update("memberMapper.updateMainCoord", m);
 	}
+
+	public int selectUserNo(SqlSessionTemplate sqlSession, Member m) {
+		
+		return sqlSession.selectOne("memberMapper.selectUserNo",m);
+	}
 }
