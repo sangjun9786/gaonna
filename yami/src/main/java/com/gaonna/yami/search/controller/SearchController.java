@@ -1,6 +1,7 @@
 package com.gaonna.yami.search.controller;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import javax.servlet.http.HttpSession;
 
@@ -35,12 +36,21 @@ public class SearchController {
 	}
 	
 	@RequestMapping("get.lo")
-	public String getLocation(HttpSession session) {
+	public String getLocation(HttpSession session, Model model) {
 		Member m = (Member)session.getAttribute("loginUser");
 		
-		//FilterLoca
+		String userLoca = service.getUserLoca(m);
 		
-		return "redirect:/productList2.pro";
+		List<String> list = service.getLoca(userLoca);
+		
+		if(list.isEmpty()) {
+			model.addAttribute("errorMsg", "유저 위치 정보 조회 실패~!");
+			return "common/errorPage";
+		}else {
+			session.setAttribute("userLoca", userLoca);
+			session.setAttribute("loca", list);
+			return "redirect:/productList2.pro";
+		}
 	}
 	
 }
