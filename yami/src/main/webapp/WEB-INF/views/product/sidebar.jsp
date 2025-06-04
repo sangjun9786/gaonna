@@ -44,13 +44,13 @@
 		  });
 	  </script>
 	</c:if>
-<%-- 	<c:if test="${not empty loginUser and empty loca}"> --%>
-<!-- 		<script> -->
-// 			$(function() {
-// 		       location.href = "${root}/get.lo";
-// 		    });
-<!-- 		</script> -->
-<%-- 	</c:if> --%>
+	<c:if test="${not empty loginUser and empty loca}">
+		<script>
+  			$(function() {
+ 		       location.href = "${root}/get.lo";
+		    });
+ 		</script>
+	</c:if>
     <h4>위치</h4>
 <!--     <input type="radio" name="location" value="0" checked> -->
 <!--     <label>전체</label> <br> -->
@@ -62,11 +62,11 @@
     <h4>카테고리</h4>
     <input type="radio" name="category" value="0" checked>
     <label>전체</label> <br>
-    <c:forEach var="item" items="${sessionScope.cate }">
+    <c:forEach var="item" items="${cate }">
         <input type="radio" name="category" value=${item.categoryNo }>
         <label>${item.categoryName }</label> <br>
     </c:forEach>
 	<h4>가격</h4>
-	<input type="number" name="price1"> ~ <input type="number" name="price2">
+	<input type="number" name="price1"> <br> ~ <br> <input type="number" name="price2">
 	
 </div>
