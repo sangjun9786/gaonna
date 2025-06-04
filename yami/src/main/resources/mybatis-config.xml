@@ -15,9 +15,10 @@
 		<typeAlias type="com.gaonna.yami.location.vo.Coord" alias="Coord"/>
 		<typeAlias type="com.gaonna.yami.location.vo.Location" alias="Location"/>
 		<typeAlias type="com.gaonna.yami.product.vo.Product" alias="Product"/>
-		<typeAlias alias="Category" type="com.gaonna.yami.product.vo.Category"/>
+		<typeAlias type="com.gaonna.yami.composite.vo.Category" alias="Category"/>
+		<typeAlias type="com.gaonna.yami.composite.vo.BoardCo" alias="BoardCo"/>
+		<typeAlias type="com.gaonna.yami.composite.vo.SearchForm" alias="SearchForm"/>
 		<typeAlias type="com.gaonna.yami.product.vo.Attachment" alias="Attachment"/>
-
 	</typeAliases>
 	
 </configuration>

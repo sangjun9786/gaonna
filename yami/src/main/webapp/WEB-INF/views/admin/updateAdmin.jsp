@@ -1,5 +1,6 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8"
     pageEncoding="UTF-8"%>
+<%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
 <!DOCTYPE html>
 <html>
 <head>
@@ -163,6 +164,7 @@ function ajaxSearchAdmin(){
             `;
 
             result.forEach(function(item) {
+            	console.log(item);
                 table += `
                   <tr>
                     <td>\${item.userNo}</td>
@@ -170,8 +172,8 @@ function ajaxSearchAdmin(){
                     <td>\${item.userName}</td>
                     <td>\${item.phone ? item.phone : ''}</td>
                     <td>\${item.point ?? 0}</td>
-                    <td>\${item.enrollDate ? item.enrollDate : ''}</td>
-                    <td>\${item.modifyDate ? item.modifyDate : ''}</td>
+                    <td>\${item.enrollDate ? item.enrollDateStr : ''}</td>
+                    <td>\${item.modifyDate ? item.modifyDateStr : ''}</td>
                     <td>\${item.status ? item.status : ''}</td>
                     <td>\${item.roleType}</td>
                     <td>

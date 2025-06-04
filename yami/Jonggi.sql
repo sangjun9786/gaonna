@@ -4,7 +4,14 @@
 --create user yami identified by yami;
 --grant resource, connect to yami;
 ----------------------------------------------
-
+--ALTER TABLE product_board DROP CONSTRAINT FK_USER_ID;
+--ALTER TABLE product_board RENAME COLUMN user_id TO user_no;
+--ALTER TABLE product_board MODIFY user_no NUMBER;
+--ALTER TABLE product_board 
+--ADD CONSTRAINT fk_product_board_user_no 
+--FOREIGN KEY (user_no) 
+--REFERENCES member(user_no)
+--ON DELETE CASCADE;
 /*
     버그
     
