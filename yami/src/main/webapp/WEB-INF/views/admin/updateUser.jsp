@@ -361,18 +361,27 @@ $(function(){
 function renderCoordModal(coords) {
   const $body = $('#coordModalBody').empty();
   
+  if (!coords || coords.length === 0) {
+	    $body.html('<div class="text-center text-secondary py-4">데이터가 없습니다</div>');
+	    new bootstrap.Modal(document.getElementById('coordModal')).show();
+	    return;
+	  }
+
   coords.forEach(coord => {
     $body.append(`
-      <div class="list-group-item">
-        <div class="row">
-          <div class="col-md-8">
-            <h6>\${coord.coordAddress}</h6>
-            <small class="text-muted">
-              위도: \${coord.latitude}<br>
-              경도: \${coord.longitude}
-            </small>
+      <div class="mb-3">
+        <div class="card h-100 border-success">
+          <div class="card-header bg-light">
+            <i class="bi bi-geo-alt"></i> 동네
           </div>
-          <div class="col-md-4 text-end">
+          <div class="card-body">
+            <h6 class="card-title mb-2">\${coord.coordAddress}</h6>
+            <ul class="list-unstyled small">
+              <li>위도: \${coord.latitude}</li>
+              <li>경도: \${coord.longitude}</li>
+            </ul>
+          </div>
+          <div class="card-footer text-end">
             <small class="text-secondary">
               \${coord.coordDate}
             </small>
@@ -384,9 +393,16 @@ function renderCoordModal(coords) {
   new bootstrap.Modal(document.getElementById('coordModal')).show();
 }
 
+
   // 배송지 모달 렌더링
 function renderLocationModal(locations) {
   const $body = $('#locationModalBody').empty();
+  
+  if (!locations || locations.length === 0) {
+	    $body.html('<div class="text-center text-secondary py-4">데이터가 없습니다</div>');
+	    new bootstrap.Modal(document.getElementById('locationModal')).show();
+	    return;
+	  }
   
   locations.forEach(location => {
     $body.append(`
@@ -402,7 +418,7 @@ function renderLocationModal(locations) {
             </h6>
             <ul class="list-unstyled small">
               <li>지번: \${location.jibunAddress}</li>
-              <li>상세주소: \${location.detailAddress}</li>
+              <li>상세주소: \${location.detailAddress ? location.detailAddress : '-'}</li>
               <li>우편번호: \${location.zipCode}</li>
             </ul>
           </div>

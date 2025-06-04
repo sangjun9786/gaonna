@@ -219,13 +219,9 @@ document.getElementById("search").addEventListener('click', function(){
                 return;
             }
 
-            console.log(result);
             // 결과 리스트 출력 (선택 가능)
             searchResult.innerHTML = '';
             result.forEach(function(lo, idx){
-            	console.log(lo.zipCode);
-            	console.log(lo.jibunAddress);
-            	console.log(lo.zipCode);
                 searchResult.innerHTML += `
                     <div class="border rounded p-2 mb-2 search-item" style="cursor:pointer;" data-idx="${'$'}{idx}">
                         <div><span class="fw-bold">[${'$'}{lo.zipCode}]</span> ${'$'}{lo.roadAddress}</div>

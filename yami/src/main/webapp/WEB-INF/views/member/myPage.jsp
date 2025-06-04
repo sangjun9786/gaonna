@@ -121,7 +121,7 @@
 					      </a>
 					    </div>
 					    <div class="col">
-					      <a href='${root}/boared.co' class="btn btn-outline-success w-100 d-flex align-items-center justify-content-center">
+					      <a href='${root}/board.co' class="btn btn-outline-success w-100 d-flex align-items-center justify-content-center">
 					        <i class="bi bi-file-text me-2"></i>게시글
 					      </a>
 					    </div>
