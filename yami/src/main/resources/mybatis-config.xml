@@ -15,6 +15,7 @@
 		<typeAlias type="com.gaonna.yami.location.vo.Coord" alias="Coord"/>
 		<typeAlias type="com.gaonna.yami.location.vo.Location" alias="Location"/>
 		<typeAlias type="com.gaonna.yami.product.vo.Product" alias="Product"/>
+		<typeAlias alias="Category" type="com.gaonna.yami.product.vo.Category"/>
 	</typeAliases>
 	
 </configuration>
