@@ -37,6 +37,13 @@ public class ProductServiceImpl implements ProductService {
 //        return sqlSession.selectList("productMapper.selectProductList", pi);
 //    }
 //    
+    //조회수 증가
+    @Override
+	public int increaseCount(int productNo) {
+		// TODO Auto-generated method stub
+		return dao.increaseCount(sqlSession,productNo);
+	}
+    
     //상세보기
 	@Override
 	public Product selectProductDetail(int productNo) {

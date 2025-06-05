@@ -68,6 +68,11 @@ public class ProductDao {
 		// TODO Auto-generated method stub
 		return sqlSession.selectOne("productMapper.getListCount");
 	}
+	//조회수 증가
+	public int increaseCount(SqlSessionTemplate sqlSession, int productNo) {
+		// TODO Auto-generated method stub
+		return sqlSession.update("productMapper.increaseCount",productNo);
+	}
 
 
 }
