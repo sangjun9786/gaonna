@@ -27,6 +27,7 @@
 		    REGEXP_SUBSTR(TRIM(COORD_ADDRESS), '[^ ]+$')
 		FROM COORDS
 		WHERE REGEXP_SUBSTR(TRIM(COORD_ADDRESS), '^(.*)\s+[^ ]+$', 1, 1, NULL, 1) = #{userLoca}
+		ORDER BY 1
 	</select>
 	
 </mapper>

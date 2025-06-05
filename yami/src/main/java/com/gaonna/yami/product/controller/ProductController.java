@@ -73,8 +73,20 @@ public class ProductController {
 	@RequestMapping("productList2.pro")
 	public String productList(@RequestParam(value = "currentPage", defaultValue = "1") 
 							 int currentPage
+							,@RequestParam(value = "selectedLocation", defaultValue = "0") 
+							 String selectedLocation
+							,@RequestParam(value = "selectedCategory", defaultValue = "0") 
+							 int selectedCategory
 							,Model model) {
-
+		
+		//0. 페이지 필터 정보 초기화
+		if(selectedLocation.equals("0")) {
+			model.addAttribute("selectedLocation", "0");
+		}
+		if(selectedCategory == 0) {
+			model.addAttribute("selectedCategory", 0);
+		}
+		
 	    // 1. 전체 상품 개수
 	    int listCount = service.getListCount();
 
