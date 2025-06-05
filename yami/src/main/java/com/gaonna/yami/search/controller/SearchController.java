@@ -45,7 +45,7 @@ public class SearchController {
 		
 		String userLoca = service.getUserLoca(m);
 		
-		List<String> list = service.getLoca(userLoca);
+		ArrayList<String> list = service.getLoca(userLoca);
 		
 		if(list.isEmpty()) {
 			model.addAttribute("errorMsg", "유저 위치 정보 조회 실패~!");
@@ -70,7 +70,7 @@ public class SearchController {
         
         int listCount = service.getFilterCount(location, category, price1, price2);
         System.out.println(listCount);
-        int boardLimit = 1;
+        int boardLimit = 2;
         int pageLimit = 5;
         PageInfo pi = Pagination.getPageInfo(listCount, 1, pageLimit, boardLimit);
         
@@ -84,7 +84,6 @@ public class SearchController {
 	        model.addAttribute("selectedPrice1", price1);
 	        model.addAttribute("selectedPrice2", price2);
         }
-        System.out.println(list);
         return "product/productList2";
 	}
 	

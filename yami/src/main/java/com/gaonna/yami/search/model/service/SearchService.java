@@ -14,7 +14,7 @@ public interface SearchService {
 
 	String getUserLoca(Member m);
 
-	List<String> getLoca(String userLoca);
+	ArrayList<String> getLoca(String userLoca);
 
 	int getFilterCount(String location, int category, Integer price1, Integer price2);
 

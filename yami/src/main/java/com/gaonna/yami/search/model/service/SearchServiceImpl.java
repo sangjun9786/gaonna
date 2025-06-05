@@ -32,7 +32,7 @@ public class SearchServiceImpl implements SearchService {
 	}
 	
 	@Override
-	public List<String> getLoca(String userLoca) {
+	public ArrayList<String> getLoca(String userLoca) {
 		return dao.getUserLoca(sqlSession, userLoca);
 	}
 	

@@ -31,25 +31,29 @@
 	</select>
 	
 	<select id="getFilterCount" parameterType="map" resultType="int">
-		SELECT COUNT(pb.PRODUCT_NO)
-		FROM PRODUCT_BOARD pb
-		JOIN MEMBER USING(USER_NO)
-		JOIN COORDS c ON(MAIN_COORD = COORD_NO)
+		SELECT COUNT(PRODUCT_NO)
+		FROM PRODUCT_BOARD
+		LEFT JOIN MEMBER USING(USER_NO)
+		LEFT JOIN COORDS ON(MAIN_COORD = COORD_NO)
 		<where>
-			pb.STATUS = 'N'
-			<if test="category != '0'">
-				AND pb.CATEGORY_NO = #{category}
+			PRODUCT_BOARD.STATUS = 'N'
+			<if test="location != 'ALL'">
+			    AND REGEXP_SUBSTR(TRIM(COORD_ADDRESS), '[^ ]+$') = #{location}
+			</if>
+			<if test="category != 0">
+				AND CATEGORY_NO = #{category}
 			</if>
 			<if test="price1 != null and price2 != null">
-				AND pb.PRICE BETWEEN #{price1} AND #{price2}
+				AND PRICE BETWEEN #{price1} AND #{price2}
 			</if>
 		</where>
 	</select>
 	
 	<select id="productFilter" resultMap="productAttachmentMap">
-	    SELECT 
+	      SELECT 
 	        pb.PRODUCT_NO,
 	        pb.CATEGORY_NO,
+	        c.CATEGORY_NAME, 
 	        pb.SCORE,
 	        pb.USER_NO,
 	        pb.PRICE,
@@ -59,6 +63,12 @@
 	        pb.PRODUCT_CONTENT,
 	        pb.STATUS AS PB_STATUS,
 	
+	        m.USER_ID,
+	        m.USER_NAME,
+	        m.MAIN_COORD,
+	
+	        c.COORD_ADDRESS,  
+	
 	        at.FILE_NO,
 	        at.PRODUCT_NO,
 	        at.ORIGIN_NAME,
@@ -67,26 +77,27 @@
 	        at.UPLOAD_DATE AS AT_UPLOAD_DATE,
 	        at.FILE_LEVEL,
 	        at.STATUS AS AT_STATUS
-	
+
 	    FROM PRODUCT_BOARD pb
-	    JOIN MEMBER ON(pb.USER_NO = MEMBER.USER_NO)
-		JOIN COORDS ON(MAIN_COORD = COORD_NO)
+	    JOIN MEMBER m ON pb.USER_NO = m.USER_NO
+	    LEFT JOIN COORDS c ON m.MAIN_COORD = c.COORD_NO
 	    LEFT JOIN ATTATCHMENT at
-	      ON pb.PRODUCT_NO = at.PRODUCT_NO
+	        ON pb.PRODUCT_NO = at.PRODUCT_NO
+	        AND at.FILE_LEVEL = 1
+	        AND at.STATUS = 'Y'
+	    JOIN CATEGORY c ON pb.CATEGORY_NO = c.CATEGORY_NO
 	    <where>
-	    pb.STATUS = 'N'
-	    AND at.FILE_LEVEL = 1
-	    AND at.STATUS = 'Y'
-			<if test="location != '0'">
-				AND REGEXP_SUBSTR(TRIM(COORD_ADDRESS), '[^ ]+$') = #{location}
+	    	pb.STATUS = 'N'
+	    	<if test="location != 'all'">
+			    AND REGEXP_SUBSTR(TRIM(COORD_ADDRESS), '[^ ]+$') = #{location}
 			</if>
-			<if test="category != '0'">
-				AND CATEGORY_NO = #{category}
+	    	<if test="category != 0">
+				AND pb.CATEGORY_NO = #{category}
 			</if>
 			<if test="price1 != null and price2 != null">
-				AND PRICE BETWEEN #{price1} AND #{price2}
+				AND pb.PRICE BETWEEN #{price1} AND #{price2}
 			</if>
-		</where>
+	    </where>
 	    ORDER BY pb.UPLOAD_DATE DESC
 	</select>
 	
@@ -102,6 +113,10 @@
 	    <result property="productTitle" column="PRODUCT_TITLE"/>
 	    <result property="productContent" column="PRODUCT_CONTENT"/>
 	    <result property="status" column="PB_STATUS"/>
+	    <result property="coordAddress" column="COORD_ADDRESS"/>
+		<result property="userId" column="USER_ID"/>
+		<result property="userName" column="USER_NAME"/>
+		<result property="categoryName" column="CATEGORY_NAME"/>
 	
 	    <!-- 첨부파일 atList 필드 매핑 -->
 	    <collection property="atList" ofType="Attachment">
@@ -113,7 +128,7 @@
 	        <result property="uploadDate" column="AT_UPLOAD_DATE"/>
 	        <result property="fileLevel" column="FILE_LEVEL"/>
 	        <result property="status" column="AT_STATUS"/>
-	    </collection>    
+	    </collection>
 	</resultMap>
 	
 </mapper>

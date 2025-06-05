@@ -52,8 +52,8 @@
  		</script>
 	</c:if>
     <h4>위치</h4>
-	<input type="radio" name="location" value="0"
-  	${selectedLocation == '0' ? 'checked' : ''}> 전체<br>
+	<input type="radio" name="location" value="all"
+  	${selectedLocation == 'all' ? 'checked' : ''}> 전체<br>
 	
 	<c:forEach var="item" items="${loca}">
 	    <input type="radio" name="location" value="${item}"

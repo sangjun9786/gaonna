@@ -29,27 +29,27 @@ public class SearchDao {
 		return str;
 	}
 
-	public List<String> getUserLoca(SqlSessionTemplate sqlSession, String userLoca) {
-		return sqlSession.selectList("searchMapper.getLoca", userLoca);
+	public ArrayList<String> getUserLoca(SqlSessionTemplate sqlSession, String userLoca) {
+		return (ArrayList)sqlSession.selectList("searchMapper.getLoca", userLoca);
 	}
 
 	public int getFilterCount(SqlSessionTemplate sqlSession, String location, int category, Integer price1, Integer price2) {
-		HashMap<String, String> map = new HashMap<>();
-		map.put("location", location);
-		map.put("category", String.valueOf(category));
-		map.put("price1", price1 != null ? String.valueOf(price1) : null);
-		map.put("price2", price2 != null ? String.valueOf(price2) : null);
-		System.out.println("MAP => " + map);
+		HashMap<String, Object> map = new HashMap<>();
+	    map.put("location", location);
+	    map.put("category", category);
+	    map.put("price1", price1);
+	    map.put("price2", price2);
+		
 		return sqlSession.selectOne("searchMapper.getFilterCount", map);
 	}
 
 	public ArrayList<Product> productFilter(SqlSessionTemplate sqlSession, String location, int category,
 			Integer price1, Integer price2, PageInfo pi) {
-		HashMap<String, String> map = new HashMap<>();
-		map.put("location", location);
-		map.put("category", String.valueOf(category));
-		map.put("price1", price1 != null ? String.valueOf(price1) : null);
-		map.put("price2", price2 != null ? String.valueOf(price2) : null);
+		HashMap<String, Object> map = new HashMap<>();
+	    map.put("location", location);
+	    map.put("category", category);
+	    map.put("price1", price1);
+	    map.put("price2", price2);
 		
 		int limit = pi.getBoardLimit();
 		int offset = 0;
