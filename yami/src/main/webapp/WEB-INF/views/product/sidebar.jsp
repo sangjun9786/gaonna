@@ -53,21 +53,21 @@
 	</c:if>
     <h4>위치</h4>
 	<input type="radio" name="location" value="0"
-	    <c:if test="${selectedLocation == '0'}">checked</c:if>> 전체<br>
+  	${selectedLocation == '0' ? 'checked' : ''}> 전체<br>
 	
 	<c:forEach var="item" items="${loca}">
 	    <input type="radio" name="location" value="${item}"
-	        <c:if test="${selectedLocation == item}">checked</c:if>>
+	        ${selectedLocation == item ? 'checked' : ''}>
 	    <label>${item}</label><br>
 	</c:forEach>
     
     <h4>카테고리</h4>
 	<input type="radio" name="category" value="0"
-	    <c:if test="${selectedCategory == 0}">checked</c:if>> 전체<br>
+    ${selectedCategory == 0 ? 'checked' : ''}> 전체<br>
 	
 	<c:forEach var="item" items="${cate}">
 	    <input type="radio" name="category" value="${item.categoryNo}"
-	        <c:if test="${selectedCategory == item.categoryNo}">checked</c:if>>
+	        ${selectedCategory == item.categoryNo ? 'checked' : ''}>
 	    <label>${item.categoryName}</label><br>
 	</c:forEach>
 	

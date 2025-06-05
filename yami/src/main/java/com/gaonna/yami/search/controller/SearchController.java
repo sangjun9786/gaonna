@@ -11,6 +11,8 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
+import com.gaonna.yami.common.PageInfo;
+import com.gaonna.yami.common.Pagination;
 import com.gaonna.yami.member.model.vo.Member;
 import com.gaonna.yami.product.vo.Category;
 import com.gaonna.yami.product.vo.Product;
@@ -63,19 +65,26 @@ public class SearchController {
 					            Model model) {
 		System.out.println("선택된 위치: " + location);
         System.out.println("선택된 카테고리: " + category);
-        System.out.println("최소 가격: " + price1);
-        System.out.println("최대 가격: " + price2);
+        System.out.println("price1: " + price1);
+        System.out.println("price2: " + price2);
         
-        ArrayList<Product> list = service.productFilter(location, category, price1, price2);
+        int listCount = service.getFilterCount(location, category, price1, price2);
+        System.out.println(listCount);
+        int boardLimit = 1;
+        int pageLimit = 5;
+        PageInfo pi = Pagination.getPageInfo(listCount, 1, pageLimit, boardLimit);
+        
+        ArrayList<Product> list = service.productFilter(location, category, price1, price2, pi);
         
         model.addAttribute("list", list);
+        model.addAttribute("pi", pi);
         model.addAttribute("selectedLocation", location);
         model.addAttribute("selectedCategory", category);
         if(price1 != null && price2 != null) {
 	        model.addAttribute("selectedPrice1", price1);
 	        model.addAttribute("selectedPrice2", price2);
         }
-        
+        System.out.println(list);
         return "product/productList2";
 	}
 	

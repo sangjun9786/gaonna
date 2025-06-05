@@ -103,7 +103,7 @@ public class ProductController {
 	    // 5. JSP에 전달
 	    model.addAttribute("list", list);
 	    model.addAttribute("pi", pi);
-
+	    
 	    // 6. 렌더링할 JSP
 	    return "product/productList2";
 	}
