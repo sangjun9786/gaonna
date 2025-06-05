@@ -18,7 +18,10 @@ public interface ProductService {
 
 //    List<ProductDTO> selectProductList(PageInfo pi);
     
-    //상세보기
+	//조회수 증가
+	int increaseCount(int productNo);
+    
+	//상세보기
 	Product selectProductDetail(int productNo);
 	
 	//상품등록
@@ -29,6 +32,7 @@ public interface ProductService {
 	
 	//상세페이지
 	ArrayList<Attachment> selectProductAttachments(int productNo);
+
 	
 }
 
