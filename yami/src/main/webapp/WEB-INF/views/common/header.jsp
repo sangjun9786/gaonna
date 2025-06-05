@@ -85,7 +85,7 @@
     <div class="center-menu">
       <ul class="navbar-nav mb-2 mb-lg-0 d-flex flex-row">
         <li class="nav-item">
-          <a class="nav-link" href="${root }/productList.pr">Resell</a>
+          <a class="nav-link" href="${root }/productList2.pro">Resell</a>
         </li>
         <li class="nav-item">
           <a class="nav-link" href="#">Location</a>

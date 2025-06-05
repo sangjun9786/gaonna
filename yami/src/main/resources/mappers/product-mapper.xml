@@ -7,7 +7,9 @@
 
     <!-- 전체 게시글 수 조회 -->
     <select id="getListCount" resultType="int">
-        SELECT COUNT(*) FROM product
+        SELECT COUNT(*) 
+        FROM PRODUCT_BOARD
+        WHERE STATUS = 'N'
     </select>
 
 <!--     페이지네이션 적용된 게시글 리스트 조회 -->
@@ -25,7 +27,7 @@
 	        PRODUCT_NO,
 	        CATEGORY_NO,
 	        SCORE,
-	        USER_ID,
+	        USER_NO,
 	        PRICE,
 	        UPLOAD_DATE,
 	        PRODUCT_COUNT,
@@ -47,7 +49,7 @@
 	<insert id="insertAtProduct" parameterType="Product">
 	INSERT INTO PRODUCT_BOARD	(PRODUCT_NO
 							  	,CATEGORY_NO
-						  	    ,USER_ID
+						  	    ,USER_NO
 						  	    ,PRICE
        						    ,PRODUCT_TITLE
        						    ,PRODUCT_CONTENT
@@ -55,7 +57,7 @@
 						VALUES (
 							    #{productNo}
 							   ,#{categoryNo}
-							   ,#{userId}
+							   ,#{userNo}
 							   ,#{price}
 							   ,#{productTitle}
 							   ,#{productContent}
@@ -89,7 +91,7 @@
 	        pb.PRODUCT_NO,
 	        pb.CATEGORY_NO,
 	        pb.SCORE,
-	        pb.USER_ID,
+	        pb.USER_NO,
 	        pb.PRICE,
 	        pb.UPLOAD_DATE,
 	        pb.PRODUCT_COUNT,
@@ -115,6 +117,10 @@
 	    ORDER BY pb.UPLOAD_DATE DESC
 	</select>
 	
+	
+	
+	
+	
 	<select id="selectProductAttachments" parameterType="int" resultMap="attachmentResultMap">
 	    SELECT * 
 	    FROM ATTATCHMENT 
@@ -128,7 +134,7 @@
 	    <id property="productNo" column="PRODUCT_NO"/>
 	    <result property="categoryNo" column="CATEGORY_NO"/>
 	    <result property="score" column="SCORE"/>
-	    <result property="userId" column="USER_ID"/>
+	    <result property="userNo" column="USER_NO"/>
 	    <result property="price" column="PRICE"/>
 	    <result property="uploadDate" column="UPLOAD_DATE"/>
 	    <result property="productCount" column="PRODUCT_COUNT"/>
@@ -142,7 +148,7 @@
     <id property="productNo" column="PRODUCT_NO"/>
     <result property="categoryNo" column="CATEGORY_NO"/>
     <result property="score" column="SCORE"/>
-    <result property="userId" column="USER_ID"/>
+    <result property="userNo" column="USER_NO"/>
     <result property="price" column="PRICE"/>
     <result property="uploadDate" column="UPLOAD_DATE"/>
     <result property="productCount" column="PRODUCT_COUNT"/>

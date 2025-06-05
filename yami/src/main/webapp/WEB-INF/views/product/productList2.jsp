@@ -65,6 +65,16 @@
             color: #888;
             margin-top: 3px;
         }
+        
+       
+        .pagination .page-item.active .page-link {
+            background-color: #fd7e14;
+    		border-color: #fd7e14;
+    		color: white;
+        }
+        .pagination .page-link {
+            color: #fd7e14;
+        }
     </style>
 </head>
 <body>
@@ -81,27 +91,28 @@
             <c:forEach var="product" items="${list}">
                 <div class="photo-item"
                      onclick="location.href='${pageContext.request.contextPath}/productDetail.pro?productNo=${product.productNo}'">
-                    <c:choose>
-                        <c:when test="${not empty product.atList}">
+                    
+                        <c:if test="${not empty product.atList}">
                             <img src="${pageContext.request.contextPath}${product.atList[0].filePath}/${product.atList[0].changeName}" alt="${product.productTitle}">
-                        </c:when>
-                        <c:otherwise>
+                        </c:if>
+                        <c:if test="${empty product.atList}">
                             <img src="${pageContext.request.contextPath}/resources/img/default.png" alt="기본 이미지">
-                        </c:otherwise>
-                    </c:choose>
+                        </c:if>
+                    
                     <div class="photo-title">${product.productTitle}</div>
                     <div class="photo-price">${product.price}원</div>
-                    <div class="photo-location-category">${product.userId} | 카테고리: ${product.categoryNo}</div>
+                    <div class="photo-location-category">${product.userNo} | 카테고리: ${product.categoryNo}</div>
                 </div>
             </c:forEach>
         </div>
 
-        <!-- 페이지네이션 -->
+<!--         페이지네이션 -->
         <nav aria-label="Page navigation" class="mt-4">
             <ul class="pagination justify-content-center">
                 <c:forEach var="i" begin="${pi.startPage}" end="${pi.endPage}">
                     <li class="page-item ${pi.currentPage == i ? 'active' : ''}">
-                        <a class="page-link" href="${pageContext.request.contextPath}/productList.pro?currentPage=${i}">${i}</a>
+                        <a class="page-link" href="${pageContext.request.contextPath}/productList2.pro?currentPage=${i}">
+                    ${i}</a>
                     </li>
                 </c:forEach>
             </ul>
