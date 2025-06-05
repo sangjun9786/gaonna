@@ -21,7 +21,7 @@ public class SearchDao {
 
 	public String getUserLoca(SqlSessionTemplate sqlSession, Member m) {
 		String str =  sqlSession.selectOne("searchMapper.getUserLoca", m);
-		System.out.println(str);
+		
 		return str;
 	}
 
