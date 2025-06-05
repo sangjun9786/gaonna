@@ -13,16 +13,22 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.gaonna.yami.common.PageInfo;
 import com.gaonna.yami.common.Pagination;
+import com.gaonna.yami.member.model.vo.Member;
 import com.gaonna.yami.product.model.ProductDTO;
 import com.gaonna.yami.product.service.ProductService;
+import com.gaonna.yami.product.service.ReplyService;
 import com.gaonna.yami.product.vo.Attachment;
 import com.gaonna.yami.product.vo.Product;
+import com.gaonna.yami.product.vo.Reply;
 
 @Controller
 public class ProductController {
@@ -30,6 +36,9 @@ public class ProductController {
 	//서비스 선언
 	@Autowired
 	private ProductService service;
+	
+	@Autowired
+    private ReplyService replyService;  // ← 이거 추가하면 오류 해결
 
 //	@GetMapping("/productList.pro")
 //	public String productList(@RequestParam(value = "currentPage", defaultValue = "1") int currentPage, Model model) {
@@ -192,5 +201,36 @@ public class ProductController {
 		
 
 	}
+	
+	
+	@PostMapping("/insertReply")
+	@ResponseBody
+	public String insertReply(Reply r, HttpSession session) {
+	    // 세션에서 로그인된 사용자 가져오기 (loginUser라는 이름으로 세팅되어 있어야 함)
+	    Member loginUser = (Member) session.getAttribute("loginUser");
+	    if (loginUser == null) {
+	        // 로그인하지 않은 상태라면 “fail” 리턴
+	        return "fail";
+	    }
+
+	    // VO에 userId를 채워 준 뒤 DAO → DB 저장  
+	    r.setUserId(loginUser.getUserId());
+	    int result = replyService.insertReply(r);
+	    return result > 0 ? "success" : "fail";
+	}
+	
+	@GetMapping("/replyList")
+    @ResponseBody
+    public List<Reply> replyList(@RequestParam("productNo") int productNo) {
+        System.out.println("📍 댓글 불러오기: " + productNo);
+        return replyService.selectReplyList(productNo);
+    }
+	
+	
+	
+	
+	
+	
+	
 
 }

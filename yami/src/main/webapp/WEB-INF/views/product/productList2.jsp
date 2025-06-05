@@ -79,11 +79,13 @@
         <div class="photo-grid">
             <c:forEach var="photo" items="${photos}">
                 <div class="photo-item">
-                    <img src="${pageContext.request.contextPath}/resources/img/${photo.path}" alt="${photo.title}">
-                    <div class="photo-title">${photo.title}</div>
-                    <div class="photo-price">${photo.price}원</div>
-                    <div class="photo-location-category">${photo.location} ${photo.category}</div>
-                </div>
+    <a href="${pageContext.request.contextPath}/productDetail.pro?productNo=${photo.productNo}" style="text-decoration: none; color: inherit;">
+        <img src="${pageContext.request.contextPath}/resources/img/${photo.path}" alt="${photo.title}">
+        <div class="photo-title">${photo.title}</div>
+        <div class="photo-price">${photo.price}원</div>
+        <div class="photo-location-category">${photo.location} ${photo.category}</div>
+    </a>
+</div>
             </c:forEach>
         </div>
 

@@ -1,62 +1,49 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <beans xmlns="http://www.springframework.org/schema/beans"
-	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	xmlns:tx="http://www.springframework.org/schema/tx"
-	xmlns:context="http://www.springframework.org/schema/context"
-	xsi:schemaLocation="http://www.springframework.org/schema/beans https://www.springframework.org/schema/beans/spring-beans.xsd
-		http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-4.3.xsd
-		http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-4.3.xsd">
-	
-	<!-- Root Context: defines shared resources visible to all other web components -->
-	<!-- 
-		root-context : 서버구동과 동시에 web.xml을 거쳐 읽힌다.
-			서버 구동에 필요한 준비요소 작성.
-			db연결, 트랜잭션, 모듈 연결 등등
-	 -->
-	 
-	 <!--DB등록작업 3단계-->
-	 <!-- 1단계 : db접속정보 등록 -->
-	 <bean class="org.apache.commons.dbcp2.BasicDataSource" id="dataSource">
-	 	<property name="driverClassName" value="oracle.jdbc.OracleDriver"/>
-	 	
-	 	<!--
-	 	<property name="url" value="jdbc:oracle:thin:@localhost:1521:xe"/>
-	 	-->
-	 	<property name="url" value="jdbc:oracle:thin:@192.168.150.31:1521:xe"/>
-	 	
-	 	<property name="username" value="yami"/>
-	 	<property name="password" value="yami"/>
-	 </bean>
-	 
-	 <!-- 2단계 : mybatis에서 제공하는 sql명령어 실행도구 등록 -->
-	 <bean class="org.mybatis.spring.SqlSessionFactoryBean" id="sqlSessionFactory">
-	 	<!-- 위에서 만든 db접속정보와 mybatis관련 설정 및 매퍼파일 위치 지정 -->
-	 	<property name="dataSource" ref="dataSource"/> <!-- db접속정보 연결 -->
-	 	
-	 	<!-- configLocation : config파일 위치 / classpath: classes 폴더 최상단 경로 -->
-	 	<property name="configLocation" value="classpath:mybatis-config.xml"/>
-	 	
-	 	<!-- mapperLocations : mapper파일 위치 / *-mapper : *전체 와일드카드 -->
-	 	<property name="mapperLocations" value="classpath:mappers/*-mapper.xml" />
-	 	
-	 </bean>
-	 
-	 <!-- 3단계 : sqlSessionFactory를 이용해 sqlSessionTemplate 도구 등록(sqlSession) -->
-	 <bean class="org.mybatis.spring.SqlSessionTemplate" id="sqlSession">
-	 	<!-- sqlSessionFactory 넣어주기 -->
-	 	<constructor-arg ref="sqlSessionFactory"/>
-	 </bean>
-	 
-	 
-	 <!-- 트랜잭션 처리 -->
-	 <tx:annotation-driven/>
-	 <bean id="transactionManager" class="org.springframework.jdbc.datasource.DataSourceTransactionManager">
-	 	<property name="dataSource" ref="dataSource"/>
-	 </bean>
-	<!-- root-context에서 비지니스 로직 처리를 위한 컴포넌트들 등록 -->
-	<context:component-scan base-package="com.gaonna.yami" use-default-filters="false" >
-		<context:include-filter type="annotation" expression="org.springframework.stereotype.Service"/>
-		<context:include-filter type="annotation" expression="org.springframework.stereotype.Repository"/>
-		<context:include-filter type="annotation" expression="org.springframework.stereotype.Component"/>
-	</context:component-scan>
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:tx="http://www.springframework.org/schema/tx"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xsi:schemaLocation="
+         http://www.springframework.org/schema/beans 
+           https://www.springframework.org/schema/beans/spring-beans.xsd
+         http://www.springframework.org/schema/context 
+           https://www.springframework.org/schema/context/spring-context.xsd
+         http://www.springframework.org/schema/tx 
+           https://www.springframework.org/schema/tx/spring-tx.xsd">
+
+    <!-- 1) 데이터 소스 설정 (Oracle 예시) -->
+    <bean id="dataSource" class="org.apache.commons.dbcp2.BasicDataSource">
+        <property name="driverClassName" value="oracle.jdbc.OracleDriver"/>
+        <property name="url" value="jdbc:oracle:thin:@192.168.150.31:1521:xe"/>
+        <property name="username" value="yami"/>
+        <property name="password" value="yami"/>
+    </bean>
+
+    <!-- 2) MyBatis SqlSessionFactoryBean 설정 -->
+    <bean id="sqlSessionFactory" class="org.mybatis.spring.SqlSessionFactoryBean">
+        <property name="dataSource" ref="dataSource"/>
+        <!-- mybatis-config.xml 경로 -->
+        <property name="configLocation" value="classpath:mybatis-config.xml"/>
+        <!-- Mapper XML 파일들이 있는 폴더 -->
+        <property name="mapperLocations" value="classpath:mappers/*-mapper.xml"/>
+    </bean>
+
+    <!-- 3) SqlSessionTemplate (실제 DAO에서 주입 받을 SqlSession) -->
+    <bean id="sqlSession" class="org.mybatis.spring.SqlSessionTemplate">
+        <constructor-arg ref="sqlSessionFactory"/>
+    </bean>
+
+    <!-- 4) 트랜잭션 처리 -->
+    <tx:annotation-driven/>
+    <bean id="transactionManager" class="org.springframework.jdbc.datasource.DataSourceTransactionManager">
+        <property name="dataSource" ref="dataSource"/>
+    </bean>
+
+    <!-- 5) @Service, @Repository, @Component 어노테이션을 스캔할 패키지 -->
+    <context:component-scan base-package="com.gaonna.yami" use-default-filters="false">
+        <context:include-filter type="annotation" expression="org.springframework.stereotype.Service"/>
+        <context:include-filter type="annotation" expression="org.springframework.stereotype.Repository"/>
+        <context:include-filter type="annotation" expression="org.springframework.stereotype.Component"/>
+    </context:component-scan>
+
 </beans>

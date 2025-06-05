@@ -2,19 +2,26 @@
 <!DOCTYPE configuration
   PUBLIC "-//mybatis.org//DTD Config 3.0//EN"
   "https://mybatis.org/dtd/mybatis-3-config.dtd">
-  
+
 <configuration>
-	<settings>
-		<setting name="jdbcTypeForNull" value="NULL"/>
-	</settings>
-		
-	<typeAliases>
-		<typeAlias type="com.gaonna.yami.member.model.vo.Member" alias="Member"/>
-		<typeAlias type="com.gaonna.yami.member.email.vo.MemberToken" alias="MemberToken"/>
-		<typeAlias type="com.gaonna.yami.event.model.vo.Event" alias="Event"/>
-		<typeAlias type="com.gaonna.yami.location.vo.Coord" alias="Coord"/>
-		<typeAlias type="com.gaonna.yami.location.vo.Location" alias="Location"/>
-		<typeAlias type="com.gaonna.yami.product.vo.Product" alias="Product"/>
-	</typeAliases>
-	
+    <settings>
+    
+    <!-- ▼ 댓글 등록 기능 ▼ -->
+    <setting name="mapUnderscoreToCamelCase" value="true"/>
+    
+    
+        <setting name="jdbcTypeForNull" value="NULL"/>
+    </settings>
+
+    <typeAliases>
+        <typeAlias type="com.gaonna.yami.member.model.vo.Member" alias="Member"/>
+        <typeAlias type="com.gaonna.yami.member.email.vo.MemberToken" alias="MemberToken"/>
+        <typeAlias type="com.gaonna.yami.event.model.vo.Event" alias="Event"/>
+        <typeAlias type="com.gaonna.yami.location.vo.Coord" alias="Coord"/>
+        <typeAlias type="com.gaonna.yami.location.vo.Location" alias="Location"/>
+        <typeAlias type="com.gaonna.yami.product.vo.Product" alias="Product"/>
+
+          <!-- ⭐️ “Reply” alias 추가 -->
+       <typeAlias type="com.gaonna.yami.product.vo.Reply" alias="Reply"/>
+    </typeAliases>
 </configuration>
