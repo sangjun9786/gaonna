@@ -155,6 +155,9 @@ public class ProductController {
 
 		//6. 서버에 업로드 처리할때 물리적인 경로 추출하기
 		String savePath = session.getServletContext().getRealPath("/resources/uploadFiles/");
+		
+		System.out.println("실제 저장 경로 (savePath): " + savePath);
+		System.out.println("전체 파일 경로: " + savePath + changeName);
 
 		//7.경로와 변경된 이름을 이용하여 파일 업로드 처리 메소드 수행
 		//MultipartFile 의 transferTo() 메소드 이용

@@ -76,15 +76,13 @@
 <%@ include file="/WEB-INF/views/common/header.jsp" %>
 <c:set var="contextPath" value="${pageContext.request.contextPath}" />
 
-<!-- 로그인 여부 체크 후 비로그인 시 로그인 페이지로 리다이렉트 -->
 <c:if test="${empty loginUser}">
 <script>
     alert("로그인 후 이용 가능한 서비스입니다.");
-	location.href = "${contextPath}/login.me";
+    location.href = "${contextPath}/login.me";
 </script> 
 </c:if> 
 
-<!-- 로그인된 경우에만 글작성 폼 출력 -->
 <c:if test="${not empty loginUser}">
 <div class="container-main">
     <%@ include file="/WEB-INF/views/product/sidebar.jsp" %>
@@ -92,7 +90,8 @@
     <div class="form-container">
         <h2>상품 등록</h2>
         <form method="post" action="${contextPath}/productEnrollForm.pr" enctype="multipart/form-data">
-            <input type="hidden" name="userId" value="${loginUser.userId}">
+            <!-- 로그인 유저 번호 hidden -->
+            <input type="hidden" name="userNo" value="${loginUser.userNo}">
 
             <div class="form-group">
                 <label class="form-label">대표 이미지</label>
@@ -116,8 +115,13 @@
             </div>
 
             <div class="form-group">
-                <label class="form-label">거래 희망 장소</label>
-                <input type="text" name="location" class="form-control" placeholder="예: 서울시 강남구 역삼동" required>
+                <label class="form-label">카테고리</label>
+                <select name="categoryNo" class="form-control" required>
+                    <option value="">-- 카테고리를 선택하세요 --</option>
+                    <c:forEach var="category" items="${categoryList}">
+                        <option value="${category.categoryNo}">${category.categoryName}</option>
+                    </c:forEach>
+                </select>
             </div>
 
             <button type="submit" class="action-btn">작성 완료</button>
