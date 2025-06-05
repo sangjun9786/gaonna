@@ -13,8 +13,10 @@ import com.gaonna.yami.product.vo.Product;
 
 @Repository
 public interface ProductService {
-    int getListCount();
-    List<ProductDTO> selectProductList(PageInfo pi);
+    //게시글 조회
+	int getListCount();
+
+//    List<ProductDTO> selectProductList(PageInfo pi);
     
     //상세보기
 	Product selectProductDetail(int productNo);
@@ -23,8 +25,11 @@ public interface ProductService {
 	int insertProduct(Product p, ArrayList<Attachment> atList);
 	
 	//상품 리스트 조회
-	ArrayList<Product> selectProductList();
+	ArrayList<Product> selectProductList(PageInfo pi);
 	
 	//상세페이지
 	ArrayList<Attachment> selectProductAttachments(int productNo);
+	
 }
+
+//int getListCount();

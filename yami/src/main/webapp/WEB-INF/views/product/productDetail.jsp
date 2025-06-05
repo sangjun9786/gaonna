@@ -128,7 +128,7 @@
             </div>
 
             <h2>${product.productTitle}</h2>
-            <div class="meta">${product.userId} · <fmt:formatDate value="${product.uploadDate}" pattern="yyyy-MM-dd" /></div>
+            <div class="meta">${product.userNo} · <fmt:formatDate value="${product.uploadDate}" pattern="yyyy-MM-dd" /></div>
             <div class="price">
                 <fmt:formatNumber value="${product.price}" pattern="#,###" />원
             </div>
@@ -149,7 +149,7 @@
     <!-- 작성자 정보 + 평점 -->
     <div class="writer-box">
         <div class="writer-info">
-            <strong>${product.userId}</strong><br>
+            <strong>${product.userNo}</strong><br>
             지역정보 없음
         </div>
         <div class="score">
