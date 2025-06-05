@@ -54,13 +54,4 @@ public class SearchForm {
         //searchKeyword 공백 자르기
         this.searchKeyword = searchKeyword.trim();
     }
-	
-	/*
-	 * reply
-	 * 
-	 * searchType2
-	 * searchKeyword
-	 * 안씀
-	 * 
-	 */
 }

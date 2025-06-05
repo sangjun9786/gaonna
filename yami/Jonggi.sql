@@ -3,15 +3,10 @@
 --
 --create user yami identified by yami;
 --grant resource, connect to yami;
+
+exp yami/yami file=c:\yami.dmp owner=yami
 ----------------------------------------------
---ALTER TABLE product_board DROP CONSTRAINT FK_USER_ID;
---ALTER TABLE product_board RENAME COLUMN user_id TO user_no;
---ALTER TABLE product_board MODIFY user_no NUMBER;
---ALTER TABLE product_board 
---ADD CONSTRAINT fk_product_board_user_no 
---FOREIGN KEY (user_no) 
---REFERENCES member(user_no)
---ON DELETE CASCADE;
+
 /*
     버그
     
@@ -224,6 +219,27 @@ CREATE TABLE role (
 COMMENT ON TABLE role IS '관리자 권한';
 COMMENT ON COLUMN role.user_no IS '회원 식별번호';
 COMMENT ON COLUMN role.role_type IS '권한 유형';
+
+--베이커리 테이블
+CREATE TABLE bakery (
+    bakery_no      VARCHAR2(30),
+    open_date      VARCHAR2(20), -- yyyy-MM-dd꼴
+    phone          VARCHAR2(20),
+    road_address   VARCHAR2(300),
+    jibun_address  VARCHAR2(300),
+    bakery_name    VARCHAR2(300),
+    latitude       VARCHAR2(20), -- 위도
+    longitude      VARCHAR2(20)  -- 경도
+);
+
+COMMENT ON TABLE bakery IS '뽱집';
+COMMENT ON COLUMN bakery.bakery_no IS '뽱집 식별번호(관리번호)';
+COMMENT ON COLUMN bakery.open_date IS '개업일(인허가 일자)';
+COMMENT ON COLUMN bakery.phone IS '전화번호';
+COMMENT ON COLUMN bakery.road_Address IS '도로명 주소';
+COMMENT ON COLUMN bakery.jibun_Address IS '지번 주소';
+COMMENT ON COLUMN bakery.LATITUDE IS '위도';
+COMMENT ON COLUMN bakery.LONGITUDE IS '경도';
 
 -----------------------------------------------------
 --                      DML                        --

@@ -36,6 +36,7 @@ public class LocationCotroller {
 			return "redirect:/lab";
 		}
 	}
+	
 	@RequestMapping("address.lab")
 	public String getAddress(HttpSession session, Model model, String address) {
 		try {
