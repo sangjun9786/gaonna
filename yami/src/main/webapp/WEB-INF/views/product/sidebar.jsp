@@ -70,4 +70,17 @@
 	<h4>가격</h4>
 	<input type="number" name="price1"> <br> ~ <br> <input type="number" name="price2">
 	
+	<script>
+	    $(function() {
+	        $('.sidebar').on('change', 'input[name=location], input[name=category]', function() {
+	            const selectedLoca = $('.sidebar input[name=location]:checked').val();
+	            const selectedCate = $('.sidebar input[name=category]:checked').val();
+	
+	            location.href = "${root}/filter.bo?location=" + encodeURIComponent(selectedLoca)
+	                                             + "&category=" + encodeURIComponent(selectedCate);
+	        });
+	    });
+	</script>
+	
+	
 </div>
