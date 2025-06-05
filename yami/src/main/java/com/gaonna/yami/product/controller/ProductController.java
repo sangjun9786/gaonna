@@ -17,6 +17,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.multipart.MultipartFile;
 
+import com.gaonna.yami.common.PageInfo;
+import com.gaonna.yami.common.Pagination;
 import com.gaonna.yami.product.service.ProductService;
 import com.gaonna.yami.product.vo.Attachment;
 import com.gaonna.yami.product.vo.Product;
@@ -28,24 +30,71 @@ public class ProductController {
 	@Autowired
 	private ProductService service;
 
-	//리스트 조회
-	@RequestMapping("productList.pr")
-	public String productList(HttpSession session) {
-	    
-	    // 상품 목록 + 썸네일 포함 조회
-	    ArrayList<Product> list = service.selectProductList();
+////	리스트 조회
+//	@RequestMapping("productList.pr")
+//	public String productList(HttpSession session) {
+//	    
+//	
+//	    ArrayList<Product> list = service.selectProductList();
+//
+//	    session.setAttribute("list", list);
+//	    session.addAttribute("pi", pi);
+//
+//	    return "product/productList2";
+//	}
+//	
+//	
+//	@RequestMapping("productList2.pro")
+//	public String showProduct(HttpSession session) {
+//		return "product/productList2";
+//	}
 
-	    session.setAttribute("list", list);
-
-	    return "redirect:/productList2.pro";
-	}
 	
+//	//페이징
+//	@GetMapping("/productList.pr")
+//	public String productList(@RequestParam(value = "currentPage", defaultValue = "1") 
+//	int currentPage
+//	, Model model) {
+//		int listCount = service.getListCount(); // 가짜 데이터 개수 (예: 50개) 총 게시글 개수
+//		int boardLimit = 1; //보여줄 개수
+//		int pageLimit = 5; //페이징 바 개수
+//		
+//		PageInfo pi = Pagination.getPageInfo(listCount, currentPage, pageLimit, boardLimit);
+//		
+//		ArrayList<Product> list = service.
+//				
+//				model.addAttribute("list", list);
+//		model.addAttribute("pi", pi);
+//		
+//		return "product/productList";
+//	}
+	
+	//test 리스트 
 	@RequestMapping("productList2.pro")
-	public String showProduct(HttpSession session) {
-		return "product/productList2";
-	}
+	public String productList(@RequestParam(value = "currentPage", defaultValue = "1") 
+							 int currentPage
+							,Model model) {
 
-	
+	    // 1. 전체 상품 개수
+	    int listCount = service.getListCount();
+
+	    // 2. 페이징 관련 설정
+	    int boardLimit = 1; // 한 페이지당 보여줄 상품 수
+	    int pageLimit = 5;   // 페이징바에 표시될 페이지 수
+
+	    // 3. 페이징 정보 생성
+	    PageInfo pi = Pagination.getPageInfo(listCount, currentPage, pageLimit, boardLimit);
+
+	    // 4. 현재 페이지에 해당하는 상품 목록 조회
+	    ArrayList<Product> list = service.selectProductList(pi); // 페이징 적용된 DAO 메서드
+
+	    // 5. JSP에 전달
+	    model.addAttribute("list", list);
+	    model.addAttribute("pi", pi);
+
+	    // 6. 렌더링할 JSP
+	    return "product/productList2";
+	}
 
 	// 상세 페이지
 
@@ -109,7 +158,7 @@ public class ProductController {
 		return changeName; // 서버에 업로드된 파일명 반환
 	}
 
-//    @RequestMapping("detail.bo")
+//  @RequestMapping("detail.bo")
 //	public String boardDetail(int bno
 //							 ,HttpSession session
 //							 ,Model model) {
@@ -176,6 +225,7 @@ public class ProductController {
 		
 
 	}
+	
 
 }
 

@@ -14,7 +14,7 @@ public class Product {
 	private int productNo;
 	private int categoryNo;
 	private double score;
-	private String userId;
+	private String userNo;
 	private int price;
 	private Date uploadDate;
 	private int productCount;
