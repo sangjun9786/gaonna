@@ -91,7 +91,7 @@ public class ProductController {
 	    int listCount = service.getListCount();
 
 	    // 2. 페이징 관련 설정
-	    int boardLimit = 1; // 한 페이지당 보여줄 상품 수
+	    int boardLimit = 2; // 한 페이지당 보여줄 상품 수
 	    int pageLimit = 5;   // 페이징바에 표시될 페이지 수
 
 	    // 3. 페이징 정보 생성
@@ -169,26 +169,6 @@ public class ProductController {
 		return changeName; // 서버에 업로드된 파일명 반환
 	}
 
-//  @RequestMapping("detail.bo")
-//	public String boardDetail(int bno
-//							 ,HttpSession session
-//							 ,Model model) {
-//		//글 번호를 이용해서 조회수 증가 및 게시글 조회처리하기
-//		
-//		int result = service.increaseCount(bno);
-//		
-//		if(result>0) {//조회수 증가 처리가 성공이라면
-//			Board b = service.boardDetail(bno);
-//			model.addAttribute("b",b);
-//			return "board/boardDetailView";
-//			
-//		}else { //실패라면
-//			model.addAttribute("errorMsg","카운트 증가 실패!!");
-//			return "common/errorPage";
-//		}
-//		
-//	}
-	
 	//등록 이동
 	@GetMapping("productEnrollForm.pr")
 	public String ProductEnroll() {
@@ -228,7 +208,7 @@ public class ProductController {
 		
 		if(result>0) { //등록 성공
 			session.setAttribute("alertMsg", "상품 등록이 성공적으로 처리 되었습니다.");
-			return "redirect:/productList.pr";
+			return "redirect:/productList2.pro";
 		}else {
 			session.setAttribute("alertMsg", "상품 등록이 실패!!");
 			return "common/errorPage";

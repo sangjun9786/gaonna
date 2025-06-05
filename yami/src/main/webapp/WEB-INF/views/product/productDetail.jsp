@@ -120,16 +120,16 @@
 		        <img src="${contextPath}${product.atList[0].filePath}${product.atList[0].changeName}" alt="대표이미지">
 		    </c:if>
         </div>
-    
+
         <!-- 상품 정보 영역 -->
         <div class="info-area">
             <div class="meta" style="font-weight:bold; color:#888;">
-                ${product.categoryNo}번 카테고리
+                ${product.categoryName}
             </div>
 
             <h2>${product.productTitle}</h2>
             <div class="meta">
-                ${product.userNo} · 
+                ${product.userId} · 
                 <fmt:formatDate value="${product.uploadDate}" pattern="yyyy-MM-dd" /> · 
                 조회수: ${product.productCount}
             </div>
@@ -154,8 +154,8 @@
     <!-- 작성자 정보 + 평점 -->
     <div class="writer-box">
         <div class="writer-info">
-            <strong>${product.userNo}</strong><br>
-            지역정보 없음
+            <strong>${product.userId}</strong><br>
+            ${product.coordAddress}
         </div>
         <div class="score">
             ★ <fmt:formatNumber value="${product.score}" pattern="#.0" /> / 5.0<br>
@@ -167,11 +167,10 @@
     <div class="comment-section">
         <h4>댓글</h4>
 
-        <%-- 댓글 리스트는 현재 Product VO에 commentList가 없어 주석처리 필요
-        <c:forEach var="c" items="${product.commentList}">
+        <!-- 댓글 리스트 (현재는 주석 처리) -->
+        <%-- <c:forEach var="c" items="${product.commentList}">
             <div class="comment-box">${c.content}</div>
-        </c:forEach>
-        --%>
+        </c:forEach> --%>
 
         <!-- 댓글 작성 폼 -->
         <form action="${contextPath}/insertComment.co" method="post" style="margin-top:20px;">
