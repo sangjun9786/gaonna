@@ -99,29 +99,28 @@ public class ProductController {
 	// 상세 페이지
 
 	@GetMapping("/productDetail.pro")
-	public String productDetail(@RequestParam("productNo") int productNo, Model model) {
-		// 1. 상품 정보 조회
+	public String productDetail(@RequestParam("productNo") 
+								int productNo
+								,Model model) {
+		// 1. 조회수 증가
+		int result = service.increaseCount(productNo);
+		
+		if (result <= 0) {
+	        model.addAttribute("errorMsg", "게시글 조회 실패!!");
+	        return "common/errorPage";
+		}
+		
+		// 2. 상품 정보 조회
 		Product product = service.selectProductDetail(productNo);
 
-		// 2. 첨부파일(사진) 리스트 조회
+		// 3. 첨부파일(사진) 리스트 조회
         ArrayList<Attachment> atList = service.selectProductAttachments(productNo);
 
-		// 3. 상품 객체에 이미지 리스트 연결
+		// 4. 상품 객체에 이미지 리스트 연결
         product.setAtList(atList);
 
-		// 4. 모델에 담기
+		// 5. 모델에 담기
 		model.addAttribute("product", product);
-
-		System.out.println("test :" + product);
-		// 🔍 테스트용 로그 출력
-		System.out.println("[DEBUG] 상품번호: " + product.getProductNo());
-		System.out.println("[DEBUG] 제목: " + product.getProductTitle());
-		System.out.println("[DEBUG] 첨부파일 개수: " + (atList != null ? atList.size() : 0));
-		if (atList != null) {
-			for (Attachment at : atList) {
-				System.out.println("[DEBUG] 파일명: " + at.getChangeName() + " / 경로: " + at.getFilePath());
-			}
-		}
 
 		return "product/productDetail"; 
 	}

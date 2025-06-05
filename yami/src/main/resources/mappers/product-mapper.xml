@@ -20,6 +20,15 @@
 <!--         ) -->
 <!--         WHERE rnum BETWEEN #{startRow} AND #{endRow} -->
 <!--     </select> -->
+
+	<!-- 조회스 증가 -->
+	<update id="increaseCount" parameterType="_int">
+		UPDATE PRODUCT_BOARD
+		SET PRODUCT_COUNT = PRODUCT_COUNT + 1
+		WHERE PRODUCT_NO = #{productNo}
+		AND STATUS = 'N'
+	</update>
+
 	
 	<!-- 상세 페이지 -->
 	<select id="selectProductDetail" resultMap="productResultMap">

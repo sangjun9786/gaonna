@@ -111,6 +111,7 @@
 <%@ include file="/WEB-INF/views/common/header.jsp" %>
 <c:set var="contextPath" value="${pageContext.request.contextPath}" />
 <c:set var="product" value="${product}" />
+
 <div class="container">
     <div class="flex">
         <!-- 상품 이미지 영역 -->
@@ -120,7 +121,6 @@
 		    </c:if>
         </div>
     
-
         <!-- 상품 정보 영역 -->
         <div class="info-area">
             <div class="meta" style="font-weight:bold; color:#888;">
@@ -128,14 +128,19 @@
             </div>
 
             <h2>${product.productTitle}</h2>
-            <div class="meta">${product.userNo} · <fmt:formatDate value="${product.uploadDate}" pattern="yyyy-MM-dd" /></div>
+            <div class="meta">
+                ${product.userNo} · 
+                <fmt:formatDate value="${product.uploadDate}" pattern="yyyy-MM-dd" /> · 
+                조회수: ${product.productCount}
+            </div>
+
             <div class="price">
                 <fmt:formatNumber value="${product.price}" pattern="#,###" />원
             </div>
             <div class="desc">${product.productContent}</div>
 
             <div class="like-area">
-                채팅 0 · 조회 0
+                채팅 0 · 조회 ${product.productCount}
                 <form action="${contextPath}/like.do" method="post" style="display:inline;">
                     <input type="hidden" name="productNo" value="${product.productNo}">
                     <button type="submit" class="like-btn">❤️ 좋아요 (0)</button>
