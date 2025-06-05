@@ -129,7 +129,7 @@
 				</div>
 				<!-- 검색창 영역: 남은 공간 모두 차지 -->
 				<div class="col ps-2">
-					<form action="${root}/search" method="get">
+					<form action="${root}/mainSearch" method="get">
 						<div class="input-group">
 							<input type="text" class="form-control form-control-lg"
 								name="keyword" placeholder="검색어를 입력하세요" aria-label="Search">
@@ -176,7 +176,7 @@
 					</div>
 				</a>
 			</div>
-			
+
 			<!-- 회원 카드 -->
 			<div class="col">
 				<div class="card text-center h-100 shadow-sm bg-light">
@@ -270,29 +270,30 @@
 
 
 
-		<script>
-	let msg="${alertMsg}";
-	if(msg!="") {
-		alert(msg);
-	}
+<script>
+let msg="${alertMsg}";
+if(msg!="") {
+	alert(msg);
+}
 </script>
+<c:remove var="alertMsg"/>
 
-		<%---------------콘솔 나와바리--------------------%>
+<%---------------콘솔 나와바리--------------------%>
 
-		<!-- 콘솔 오버레이 -->
-		<div id="consoleOverlay">
-			<form id="consoleForm" method="post" action="${root}/console"
-				autocomplete="off">
-				<div id="consoleBox" class="shadow-lg">
-					<div class="mb-3">
-						<label for="consoleInput" class="form-label">관리자 콘솔</label> <input
-							type="text" id="consoleInput" name="command" class="form-control"
-							placeholder="명령어를 입력하세요" autofocus />
-					</div>
-				</div>
-			</form>
+<!-- 콘솔 오버레이 -->
+<div id="consoleOverlay">
+	<form id="consoleForm" method="post" action="${root}/console"
+		autocomplete="off">
+		<div id="consoleBox" class="shadow-lg">
+			<div class="mb-3">
+				<label for="consoleInput" class="form-label">관리자 콘솔</label> <input
+					type="text" id="consoleInput" name="command" class="form-control"
+					placeholder="명령어를 입력하세요" autofocus />
+			</div>
 		</div>
-		<script>
+	</form>
+</div>
+<script>
 //콘솔 입력창
 document.addEventListener('keydown', function(e) {
     // 입력창 포커스 시 무시

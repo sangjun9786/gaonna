@@ -5,6 +5,7 @@ import java.util.List;
 
 import javax.servlet.http.HttpSession;
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -34,10 +35,9 @@ public class AdminController {
 	//콘솔창 명령
 	@PostMapping("console")
 	public String console(HttpServletRequest request
-			,HttpSession session, String command) {
+			, HttpServletResponse response, String command) {
 		try {
 			String userId = "";
-			HttpSession newSession;
 			Member loginUser = new Member();
 			List<Coord> coords = new ArrayList<Coord>();
 			
@@ -67,7 +67,12 @@ public class AdminController {
 			
 			switch	(commandType){
 			case "login" :
-				newSession = request.getSession(true);
+				HttpSession oldSession = request.getSession(false);
+			    if (oldSession != null) {
+			        oldSession.invalidate();
+			    }
+			    
+				HttpSession newSession = request.getSession(true);
 				loginUser = service.consoleLogin(userId);
 				newSession.setAttribute("loginUser", loginUser);
 				coords= locationService.selectUserDongne(loginUser.getUserNo());
@@ -78,7 +83,7 @@ public class AdminController {
 							.selectRoleType(loginUser));
 					//('superAdmin', 'admin', 'viewer')
 				}
-				break;
+				return "redirect:" + response.encodeRedirectURL("/");
 			}
 			return "redirect:/";
 			
@@ -139,10 +144,7 @@ public class AdminController {
 			
 			int result =  service.updateAdmin(m);
 			
-			if(loginUser.getUserNo() == m.getUserNo()) {
-				//자기가 자기 자신을 고쳤으면 로그아웃
-				return "pass";
-			}else if(result==0) {
+			if(result==0) {
 				return "noPass";
 			}
 			
@@ -201,7 +203,6 @@ public class AdminController {
 		try {
 			List<Member> result = service.searchMember(searchType
 					,searchKeyword, searchCount, page);
-			
 			String json = new Gson().toJson(result);
 			
 			return json;
