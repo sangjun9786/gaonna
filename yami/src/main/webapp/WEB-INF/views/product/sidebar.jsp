@@ -52,22 +52,57 @@
  		</script>
 	</c:if>
     <h4>위치</h4>
-    <h6>${userLoca }</h6>
-    <input type="radio" name="location" value="0" checked>
-    <label>전체</label> <br>
-    <c:forEach var="item" items="${loca }">
-        <input type="radio" name="location" value=${item }>
-        <label>${item }</label> <br>
-    </c:forEach>
+	<input type="radio" name="location" value="0"
+	    <c:if test="${selectedLocation == '0'}">checked</c:if>> 전체<br>
+	
+	<c:forEach var="item" items="${loca}">
+	    <input type="radio" name="location" value="${item}"
+	        <c:if test="${selectedLocation == item}">checked</c:if>>
+	    <label>${item}</label><br>
+	</c:forEach>
     
     <h4>카테고리</h4>
-    <input type="radio" name="category" value="0" checked>
-    <label>전체</label> <br>
-    <c:forEach var="item" items="${cate }">
-        <input type="radio" name="category" value=${item.categoryNo }>
-        <label>${item.categoryName }</label> <br>
-    </c:forEach>
+	<input type="radio" name="category" value="0"
+	    <c:if test="${selectedCategory == 0}">checked</c:if>> 전체<br>
+	
+	<c:forEach var="item" items="${cate}">
+	    <input type="radio" name="category" value="${item.categoryNo}"
+	        <c:if test="${selectedCategory == item.categoryNo}">checked</c:if>>
+	    <label>${item.categoryName}</label><br>
+	</c:forEach>
+	
 	<h4>가격</h4>
-	<input type="number" name="price1"> <br> ~ <br> <input type="number" name="price2">
+	<form id="priceFilterForm" action="${root}/filter.bo" method="get" class="mb-3">
+	    <input type="number" name="price1" value="${param.price1}"> <br>
+		~ <br>
+		<input type="number" name="price2" value="${param.price2}"> <br>
+	
+	    <input type="hidden" name="location" value="${selectedLocation}">
+	    <input type="hidden" name="category" value="${selectedCategory}">
+	
+	    <button type="submit" class="btn btn-sm btn-primary mt-2">검색</button>
+	</form>
+	
+	<script>
+	    $(function() {
+	        $('.sidebar').on('change', 'input[name=location], input[name=category]', function() {
+	            const selectedLoca = $('.sidebar input[name=location]:checked').val();
+	            const selectedCate = $('.sidebar input[name=category]:checked').val();
+	            const price1 = $('.sidebar input[name=price1]').val();
+	            const price2 = $('.sidebar input[name=price2]').val();
+	
+	            let url = "${root}/filter.bo?location=" + encodeURIComponent(selectedLoca)
+	                                        + "&category=" + encodeURIComponent(selectedCate);
+	
+	            if (price1 !== "" && price2 !== "") {
+	                url += "&price1=" + encodeURIComponent(price1)
+	                     + "&price2=" + encodeURIComponent(price2);
+	            }
+	
+	            location.href = url;
+	        });
+	    });
+	</script>
+	
 	
 </div>
