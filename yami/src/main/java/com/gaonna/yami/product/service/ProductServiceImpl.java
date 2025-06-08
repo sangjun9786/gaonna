@@ -25,16 +25,24 @@ public class ProductServiceImpl implements ProductService {
     
     @Autowired
     private ProductDao dao;
-
+    
+    //게시글 리스트 카운트
     @Override
     public int getListCount() {
-        return sqlSession.selectOne("productMapper.getListCount");
+        return dao.getListCount(sqlSession);
     }
 
+//    @Override
+//    public List<ProductDTO> selectProductList(PageInfo pi) {
+//        return sqlSession.selectList("productMapper.selectProductList", pi);
+//    }
+//    
+    //조회수 증가
     @Override
-    public List<ProductDTO> selectProductList(PageInfo pi) {
-        return sqlSession.selectList("productMapper.selectProductList", pi);
-    }
+	public int increaseCount(int productNo) {
+		// TODO Auto-generated method stub
+		return dao.increaseCount(sqlSession,productNo);
+	}
     
     //상세보기
 	@Override
@@ -74,9 +82,9 @@ public class ProductServiceImpl implements ProductService {
 	}
 	
 	@Override
-	public ArrayList<Product> selectProductList() {
+	public ArrayList<Product> selectProductList(PageInfo pi) {
 		// TODO Auto-generated method stub
-		return dao.selectProductList(sqlSession);
+		return dao.selectProductList(sqlSession,pi);
 	}
 	
 	@Override
@@ -86,3 +94,8 @@ public class ProductServiceImpl implements ProductService {
 	}
     
 }
+
+//@Override
+//public int getListCount() {
+//	return dao.selectOne("productMapper.getListCount");
+//}

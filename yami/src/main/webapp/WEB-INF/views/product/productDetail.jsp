@@ -111,6 +111,7 @@
 <%@ include file="/WEB-INF/views/common/header.jsp" %>
 <c:set var="contextPath" value="${pageContext.request.contextPath}" />
 <c:set var="product" value="${product}" />
+
 <div class="container">
     <div class="flex">
         <!-- 상품 이미지 영역 -->
@@ -119,23 +120,27 @@
 		        <img src="${contextPath}${product.atList[0].filePath}${product.atList[0].changeName}" alt="대표이미지">
 		    </c:if>
         </div>
-    
 
         <!-- 상품 정보 영역 -->
         <div class="info-area">
             <div class="meta" style="font-weight:bold; color:#888;">
-                ${product.categoryNo}번 카테고리
+                ${product.categoryName}
             </div>
 
             <h2>${product.productTitle}</h2>
-            <div class="meta">${product.userId} · <fmt:formatDate value="${product.uploadDate}" pattern="yyyy-MM-dd" /></div>
+            <div class="meta">
+                ${product.userId} · 
+                <fmt:formatDate value="${product.uploadDate}" pattern="yyyy-MM-dd" /> · 
+                조회수: ${product.productCount}
+            </div>
+
             <div class="price">
                 <fmt:formatNumber value="${product.price}" pattern="#,###" />원
             </div>
             <div class="desc">${product.productContent}</div>
 
             <div class="like-area">
-                채팅 0 · 조회 0
+                채팅 0 · 조회 ${product.productCount}
                 <form action="${contextPath}/like.do" method="post" style="display:inline;">
                     <input type="hidden" name="productNo" value="${product.productNo}">
                     <button type="submit" class="like-btn">❤️ 좋아요 (0)</button>
@@ -150,7 +155,7 @@
     <div class="writer-box">
         <div class="writer-info">
             <strong>${product.userId}</strong><br>
-            지역정보 없음
+            ${product.coordAddress}
         </div>
         <div class="score">
             ★ <fmt:formatNumber value="${product.score}" pattern="#.0" /> / 5.0<br>
@@ -162,11 +167,10 @@
     <div class="comment-section">
         <h4>댓글</h4>
 
-        <%-- 댓글 리스트는 현재 Product VO에 commentList가 없어 주석처리 필요
-        <c:forEach var="c" items="${product.commentList}">
+        <!-- 댓글 리스트 (현재는 주석 처리) -->
+        <%-- <c:forEach var="c" items="${product.commentList}">
             <div class="comment-box">${c.content}</div>
-        </c:forEach>
-        --%>
+        </c:forEach> --%>
 
         <!-- 댓글 작성 폼 -->
         <form action="${contextPath}/insertComment.co" method="post" style="margin-top:20px;">

@@ -17,6 +17,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.multipart.MultipartFile;
 
+import com.gaonna.yami.common.PageInfo;
+import com.gaonna.yami.common.Pagination;
 import com.gaonna.yami.product.service.ProductService;
 import com.gaonna.yami.product.vo.Attachment;
 import com.gaonna.yami.product.vo.Product;
@@ -28,49 +30,109 @@ public class ProductController {
 	@Autowired
 	private ProductService service;
 
-	//리스트 조회
-	@RequestMapping("productList.pr")
-	public String productList(HttpSession session) {
-	    
-	    // 상품 목록 + 썸네일 포함 조회
-	    ArrayList<Product> list = service.selectProductList();
+////	리스트 조회
+//	@RequestMapping("productList.pr")
+//	public String productList(HttpSession session) {
+//	    
+//	
+//	    ArrayList<Product> list = service.selectProductList();
+//
+//	    session.setAttribute("list", list);
+//	    session.addAttribute("pi", pi);
+//
+//	    return "product/productList2";
+//	}
+//	
+//	
+//	@RequestMapping("productList2.pro")
+//	public String showProduct(HttpSession session) {
+//		return "product/productList2";
+//	}
 
-	    session.setAttribute("list", list);
-
-	    return "redirect:/productList2.pro";
-	}
 	
+//	//페이징
+//	@GetMapping("/productList.pr")
+//	public String productList(@RequestParam(value = "currentPage", defaultValue = "1") 
+//	int currentPage
+//	, Model model) {
+//		int listCount = service.getListCount(); // 가짜 데이터 개수 (예: 50개) 총 게시글 개수
+//		int boardLimit = 1; //보여줄 개수
+//		int pageLimit = 5; //페이징 바 개수
+//		
+//		PageInfo pi = Pagination.getPageInfo(listCount, currentPage, pageLimit, boardLimit);
+//		
+//		ArrayList<Product> list = service.
+//				
+//				model.addAttribute("list", list);
+//		model.addAttribute("pi", pi);
+//		
+//		return "product/productList";
+//	}
+	
+	//test 리스트 
 	@RequestMapping("productList2.pro")
-	public String showProduct(HttpSession session) {
-		return "product/productList2";
+	public String productList(@RequestParam(value = "currentPage", defaultValue = "1") 
+							 int currentPage
+							,@RequestParam(value = "selectedLocation", defaultValue = "0") 
+							 String selectedLocation
+							,@RequestParam(value = "selectedCategory", defaultValue = "0") 
+							 int selectedCategory
+							,Model model) {
+		
+		//0. 페이지 필터 정보 초기화
+		if(selectedLocation.equals("0")) {
+			model.addAttribute("selectedLocation", "0");
+		}
+		if(selectedCategory == 0) {
+			model.addAttribute("selectedCategory", 0);
+		}
+		
+	    // 1. 전체 상품 개수
+	    int listCount = service.getListCount();
+
+	    // 2. 페이징 관련 설정
+	    int boardLimit = 2; // 한 페이지당 보여줄 상품 수
+	    int pageLimit = 5;   // 페이징바에 표시될 페이지 수
+
+	    // 3. 페이징 정보 생성
+	    PageInfo pi = Pagination.getPageInfo(listCount, currentPage, pageLimit, boardLimit);
+
+	    // 4. 현재 페이지에 해당하는 상품 목록 조회
+	    ArrayList<Product> list = service.selectProductList(pi); // 페이징 적용된 DAO 메서드
+
+	    // 5. JSP에 전달
+	    model.addAttribute("list", list);
+	    model.addAttribute("pi", pi);
+
+	    // 6. 렌더링할 JSP
+	    return "product/productList2";
 	}
 
 	// 상세 페이지
 
 	@GetMapping("/productDetail.pro")
-	public String productDetail(@RequestParam("productNo") int productNo, Model model) {
-		// 1. 상품 정보 조회
+	public String productDetail(@RequestParam("productNo") 
+								int productNo
+								,Model model) {
+		// 1. 조회수 증가
+		int result = service.increaseCount(productNo);
+		
+		if (result <= 0) {
+	        model.addAttribute("errorMsg", "게시글 조회 실패!!");
+	        return "common/errorPage";
+		}
+		
+		// 2. 상품 정보 조회
 		Product product = service.selectProductDetail(productNo);
 
-		// 2. 첨부파일(사진) 리스트 조회
+		// 3. 첨부파일(사진) 리스트 조회
         ArrayList<Attachment> atList = service.selectProductAttachments(productNo);
 
-		// 3. 상품 객체에 이미지 리스트 연결
+		// 4. 상품 객체에 이미지 리스트 연결
         product.setAtList(atList);
 
-		// 4. 모델에 담기
+		// 5. 모델에 담기
 		model.addAttribute("product", product);
-
-		System.out.println("test :" + product);
-		// 🔍 테스트용 로그 출력
-		System.out.println("[DEBUG] 상품번호: " + product.getProductNo());
-		System.out.println("[DEBUG] 제목: " + product.getProductTitle());
-		System.out.println("[DEBUG] 첨부파일 개수: " + (atList != null ? atList.size() : 0));
-		if (atList != null) {
-			for (Attachment at : atList) {
-				System.out.println("[DEBUG] 파일명: " + at.getChangeName() + " / 경로: " + at.getFilePath());
-			}
-		}
 
 		return "product/productDetail"; 
 	}
@@ -107,26 +169,6 @@ public class ProductController {
 		return changeName; // 서버에 업로드된 파일명 반환
 	}
 
-//    @RequestMapping("detail.bo")
-//	public String boardDetail(int bno
-//							 ,HttpSession session
-//							 ,Model model) {
-//		//글 번호를 이용해서 조회수 증가 및 게시글 조회처리하기
-//		
-//		int result = service.increaseCount(bno);
-//		
-//		if(result>0) {//조회수 증가 처리가 성공이라면
-//			Board b = service.boardDetail(bno);
-//			model.addAttribute("b",b);
-//			return "board/boardDetailView";
-//			
-//		}else { //실패라면
-//			model.addAttribute("errorMsg","카운트 증가 실패!!");
-//			return "common/errorPage";
-//		}
-//		
-//	}
-	
 	//등록 이동
 	@GetMapping("productEnrollForm.pr")
 	public String ProductEnroll() {
@@ -166,7 +208,7 @@ public class ProductController {
 		
 		if(result>0) { //등록 성공
 			session.setAttribute("alertMsg", "상품 등록이 성공적으로 처리 되었습니다.");
-			return "redirect:/productList.pr";
+			return "redirect:/productList2.pro";
 		}else {
 			session.setAttribute("alertMsg", "상품 등록이 실패!!");
 			return "common/errorPage";
@@ -174,6 +216,7 @@ public class ProductController {
 		
 
 	}
+	
 
 }
 
