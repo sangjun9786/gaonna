@@ -111,6 +111,16 @@
 .user-menu-link:hover .menu-label, .user-menu-link:focus .menu-label {
 	opacity: 1;
 }
+.disabled-location-card {
+    pointer-events: auto !important;
+}
+.disabled-location-card .card {
+    background-color: #e9ecef !important;
+    opacity: 0.85;
+}
+.disabled-location-card .card-body {
+    cursor: pointer;
+}
 </style>
 </head>
 <body>
@@ -157,15 +167,36 @@
 				</a>
 			</div>
 			<div class="col">
-				<a href="#" class="text-decoration-none">
-					<div class="card text-center h-100 shadow-sm">
-						<div class="card-body">
-							<i class="bi bi-geo-alt fs-1 text-success"></i>
-							<h6 class="card-title mt-2 mb-0">Location</h6>
-						</div>
-					</div>
-				</a>
+			    <c:choose>
+			        <c:when test="${loginUser.mainCoord == 0}">
+			            <a href="${root}/dongne.me" 
+			               class="text-decoration-none disabled-location-card"
+			               style="pointer-events:auto;">
+			                <div class="card text-center h-100 shadow-sm bg-secondary bg-opacity-25"
+			                     style="cursor:pointer;">
+			                    <div class="card-body position-relative"
+			                         data-bs-toggle="tooltip" 
+			                         data-bs-placement="top" 
+			                         title="먼저 대표동네를 설정해 주세요">
+			                        <i class="bi bi-geo-alt fs-1 text-secondary"></i>
+			                        <h6 class="card-title mt-2 mb-0 text-secondary">Location</h6>
+			                    </div>
+			                </div>
+			            </a>
+			        </c:when>
+			        <c:otherwise>
+			            <a href="${root}/dongneMain.dn" class="text-decoration-none">
+			                <div class="card text-center h-100 shadow-sm">
+			                    <div class="card-body">
+			                        <i class="bi bi-geo-alt fs-1 text-success"></i>
+			                        <h6 class="card-title mt-2 mb-0">Location</h6>
+			                    </div>
+			                </div>
+			            </a>
+			        </c:otherwise>
+			    </c:choose>
 			</div>
+
 			<div class="col">
 				<a href="#" class="text-decoration-none">
 					<div class="card text-center h-100 shadow-sm">
@@ -274,6 +305,15 @@ let msg="${alertMsg}";
 if(msg!="") {
 	alert(msg);
 }
+
+<%--location카드 이벤트 핸들러--%>
+document.addEventListener('DOMContentLoaded', function () {
+    var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
+    tooltipTriggerList.forEach(function (tooltipTriggerEl) {
+        new bootstrap.Tooltip(tooltipTriggerEl);
+    });
+});
+
 </script>
 <c:remove var="alertMsg"/>
 

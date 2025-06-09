@@ -1,18 +1,23 @@
 package com.gaonna.yami.location.controller;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import javax.servlet.http.HttpSession;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.gaonna.yami.location.service.LocationService;
+import com.gaonna.yami.location.vo.Bakery;
+import com.gaonna.yami.location.vo.BakeryComment;
 import com.gaonna.yami.location.vo.Coord;
 import com.gaonna.yami.location.vo.Location;
 import com.gaonna.yami.member.model.vo.Member;
@@ -130,4 +135,62 @@ public class LocationCotroller {
 			return "fail";
 		}
 	}
+	
+	
+	//동네(location) 메인으로
+	@GetMapping("dongneMain.dn")
+	public String dongneMain(HttpSession session,Model model){
+		try {
+			List<Coord> coords = (List<Coord>)session.getAttribute("coords");
+			Member m = (Member)session.getAttribute("loginUser");
+			
+			//유저의 대표동네 추출
+			Coord mainCoord = null;
+			for(Coord c : coords) {
+				if(c.getCoordNo() == m.getMainCoord()) {
+					mainCoord = c;
+					break;
+				}
+			}
+			System.out.println("컨트롤러, 대표동네 : "+mainCoord);
+			
+			//model에 json형식으로 bakery조회
+			List<Bakery> bakeries = service.selectBakeries(mainCoord);
+			System.out.println("컨트롤러, bakeries : "+bakeries);
+			String bakeriesJson = new Gson().toJson(bakeries);
+			model.addAttribute("bakeriesJson", bakeriesJson);
+			
+			return "dongne/map";
+		} catch (Exception e) {
+			e.printStackTrace();
+			model.addAttribute("alertMsg","500 err");
+			return "common/errorPage";
+		}
+	}
+	
+	@PostMapping("selectBakeryComment.dn")
+	public Map<String, Object> selectBakeryComment(int bakeryNo, int page) {
+		try {
+			List<BakeryComment> bakeryComments = service.selectBakeryComment(bakeryNo,page);
+			
+		    Map<String, Object> response = new HashMap<>();
+		    response.put("comments", bakeryComments);
+//		    response.put("hasNext", hasNext);
+		    response.put("status", "pass");
+		    return response;
+		} catch (Exception e) {
+			e.printStackTrace();
+			Map<String, Object> response = new HashMap<>();
+			response.put("status", "noPass");
+			return response;
+		}
+	}
+	
+	
+	
+	
+	
+	
+	
+	
 }
