@@ -4,6 +4,8 @@ import java.util.List;
 
 import javax.servlet.http.HttpSession;
 
+import com.gaonna.yami.location.vo.Bakery;
+import com.gaonna.yami.location.vo.BakeryComment;
 import com.gaonna.yami.location.vo.Coord;
 import com.gaonna.yami.location.vo.Location;
 import com.gaonna.yami.member.model.vo.Member;
@@ -45,6 +47,12 @@ public interface LocationService {
 
 	//유저 메인 배송지 추가
 	int insertMainLocation(HttpSession session,Member m, Location lo);
+
+	//대표동네에 따른 동네빵집 조회
+	List<Bakery> selectBakeries(Coord mainCoord);
+
+	//댓글 조회
+	List<BakeryComment> selectBakeryComment(int bakeryNo, int page);
 
 
 }
