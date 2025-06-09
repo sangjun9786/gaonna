@@ -156,6 +156,13 @@
 	    ORDER BY FILE_LEVEL
 	</select>
 	
+	<!-- 카테고리 리스트 -->
+	<select id="selectCategoryList" resultMap="categoryResultMap">
+    SELECT CATEGORY_NO, CATEGORY_NAME
+    FROM CATEGORY
+    ORDER BY CATEGORY_NO
+	</select>
+	
 
 	<resultMap id="productResultMap" type="Product">
 	    <id property="productNo" column="PRODUCT_NO"/>
@@ -214,6 +221,11 @@
     <result property="uploadDate" column="UPLOAD_DATE"/>
     <result property="fileLevel" column="FILE_LEVEL"/>
     <result property="status" column="STATUS"/>
+</resultMap>
+
+<resultMap id="categoryResultMap" type="Category">
+    <result property="categoryNo" column="CATEGORY_NO"/>
+    <result property="categoryName" column="CATEGORY_NAME"/>
 </resultMap>
 	
 	

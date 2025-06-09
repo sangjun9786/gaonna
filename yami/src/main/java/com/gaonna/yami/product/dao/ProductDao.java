@@ -8,6 +8,7 @@ import org.springframework.stereotype.Repository;
 
 import com.gaonna.yami.common.PageInfo;
 import com.gaonna.yami.product.vo.Attachment;
+import com.gaonna.yami.product.vo.Category;
 import com.gaonna.yami.product.vo.Product;
 
 @Repository
@@ -72,6 +73,11 @@ public class ProductDao {
 	public int increaseCount(SqlSessionTemplate sqlSession, int productNo) {
 		// TODO Auto-generated method stub
 		return sqlSession.update("productMapper.increaseCount",productNo);
+	}
+
+	public ArrayList<Category> selectCategoryList(SqlSessionTemplate sqlSession) {
+		// TODO Auto-generated method stub
+		return (ArrayList)sqlSession.selectList("productMapper.selectCategoryList");
 	}
 
 

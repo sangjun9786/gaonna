@@ -117,7 +117,7 @@
         <!-- 상품 이미지 영역 -->
         <div class="image-area">
 		    <c:if test="${not empty product.atList}">
-		        <img src="${contextPath}${product.atList[0].filePath}${product.atList[0].changeName}" alt="대표이미지">
+		        <img src="/resources/uploadFiles/${product.atList[0].changeName}" alt="대표이미지">
 		    </c:if>
         </div>
 

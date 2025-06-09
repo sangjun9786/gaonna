@@ -21,6 +21,7 @@ import com.gaonna.yami.common.PageInfo;
 import com.gaonna.yami.common.Pagination;
 import com.gaonna.yami.product.service.ProductService;
 import com.gaonna.yami.product.vo.Attachment;
+import com.gaonna.yami.product.vo.Category;
 import com.gaonna.yami.product.vo.Product;
 
 @Controller
@@ -138,7 +139,9 @@ public class ProductController {
 	}
 
 	// 파일 업로드
-	public String saveFile(MultipartFile uploadFile, HttpSession session) {
+	public String saveFile(
+						   MultipartFile uploadFile, 
+						   HttpSession session) {
 		//1.원본 파일명 추출
 		String originName = uploadFile.getOriginalFilename();
 
@@ -153,36 +156,49 @@ public class ProductController {
 		//5.합치기
 		String changeName = currentTime + ranNum + ext;
 
-		//6. 서버에 업로드 처리할때 물리적인 경로 추출하기
-		String savePath = session.getServletContext().getRealPath("/resources/uploadFiles/");
+//		//6. 서버에 업로드 처리할때 물리적인 경로 추출하기
+//		String savePath = session.getServletContext().getRealPath("/resources/uploadFiles/");
+//		
+//		System.out.println("실제 저장 경로 (savePath): " + savePath);
+//		System.out.println("전체 파일 경로: " + savePath + changeName);
 		
-		System.out.println("실제 저장 경로 (savePath): " + savePath);
-		System.out.println("전체 파일 경로: " + savePath + changeName);
-
+		//6. 외부 경로 쓰기위해 경로 설정
+		String savePath = "C:/upload/";
+		//6-1 저장 폴더 없으면 생성 
+		File folder = new File(savePath);
+		if(!folder.exists()){
+			
+	        folder.mkdirs(); // 폴더 생성
+	    }
+		
 		//7.경로와 변경된 이름을 이용하여 파일 업로드 처리 메소드 수행
 		//MultipartFile 의 transferTo() 메소드 이용
 
-			try {
-				uploadFile.transferTo(new File(savePath + changeName));
-			} catch (IllegalStateException | IOException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-	
-		return changeName; // 서버에 업로드된 파일명 반환
+		try {
+			uploadFile.transferTo(new File(savePath + changeName));
+			return changeName;
+		} catch (IllegalStateException | IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			return null; //저장 실패 시 null 반환
+		}
+
+		
 	}
 
 	//등록 이동
 	@GetMapping("productEnrollForm.pr")
-	public String ProductEnroll() {
-		
+	public String ProductEnroll(Model model) {
+		ArrayList<Category> categoryList = service.selectCategoryList(); // DB 또는 서비스에서 가져오기
+		model.addAttribute("categoryList", categoryList);
 		return "product/productEnrollForm";
 	}
 	
 	//등록 
 	@PostMapping("productEnrollForm.pr")
-	public String insertProduct(Product p,ArrayList<MultipartFile> uploadFiles
-							 ,HttpSession session) {
+	public String insertProduct(Product p
+								,ArrayList<MultipartFile> uploadFiles
+								,HttpSession session) {
 		//첨부파일이 여러개일땐 배열또는 리스트 형식으로 전달받으면 된다.
 		
 		ArrayList<Attachment> atList = new ArrayList<>(); //천부파일 정보들 등록할 리스트
@@ -190,6 +206,12 @@ public class ProductController {
 		int count =1;
 		for(MultipartFile m : uploadFiles) {
 			String changeName = saveFile(m,session);
+			//저장실패시 처리중단 및 에러페이지 반환
+			if (changeName == null) {
+	            session.setAttribute("alertMsg", "파일 저장 중 오류가 발생했습니다.");
+	            return "common/errorPage";
+		    }
+			
 			String originName = m.getOriginalFilename(); //원본 파일명 추출
 			
 			//파일정보 객체 생성하여 리스트에 추가하기
@@ -205,7 +227,8 @@ public class ProductController {
 			
 			atList.add(at); //리스트에 추가
 		}
-		
+//		System.out.println(p);
+//		System.out.println(uploadFiles);
 		//서비스에 요청
 		int result = service.insertProduct(p,atList);
 		
@@ -213,7 +236,7 @@ public class ProductController {
 			session.setAttribute("alertMsg", "상품 등록이 성공적으로 처리 되었습니다.");
 			return "redirect:/productList2.pro";
 		}else {
-			session.setAttribute("alertMsg", "상품 등록이 실패!!");
+//			session.setAttribute("alertMsg", "상품 등록이 실패!!");
 			return "common/errorPage";
 		}
 		
