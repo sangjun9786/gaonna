@@ -97,7 +97,7 @@
           <a class="nav-link" href="#">QnA</a>
         </li>
         <li class="nav-item">
-          <a class="nav-link" href="#">Notice</a>
+          <a class="nav-link" href="${pageContext.request.contextPath}/notice/list">Notice</a>
         </li>
         <li class="nav-item">
           <a class="nav-link" href="${root }/event.ev">Event</a>

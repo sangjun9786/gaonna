@@ -313,7 +313,7 @@
 				</a>
 			</div>
 			<div class="col">
-				<a href="#" class="text-decoration-none">
+				<a href="${root}/notice/list" class="text-decoration-none">
 					<div class="card text-center h-100 shadow-sm">
 						<div class="card-body">
 							<i class="bi bi-megaphone fs-1 text-danger"></i>
