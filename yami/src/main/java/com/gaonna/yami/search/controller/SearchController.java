@@ -100,4 +100,11 @@ public class SearchController {
         return "success";
     }
 	
+	@RequestMapping("searchNotice")
+	public String searchNotice(HttpSession session, Model model) {
+		String keyword = (String)session.getAttribute("keyword");
+		//공지사항 보여주는 메소드에 매개변수로 키워드 전달해서 검색 조건 처리
+		return "공지사항 메소드에 매핑";
+	}
+	
 }

@@ -79,11 +79,24 @@
 					}
 				});
 			} else { // resell이 아닌 다른 조건일 경우
-				let url = ''; // url 변수 선언
 				if (condition == 'location') {
 					url = '${root}/locationSearch?keyword=' + encodedKeyword;
 				} else if (condition == 'notice') {
-					url = '${root}/noticeSearch?keyword=' + encodedKeyword;
+					$.ajax({
+						type: 'POST',
+						url: '${root}/saveKeyword', // ${root}를 사용하여 절대 경로 지정
+						data: {
+							keyword: keyword
+						},
+						success: function(response) {
+							console.log('세션에 키워드 저장 성공:', response);
+							location.href = '${root}/searchNotice';
+						},
+						error: function(xhr, status, error) {
+							console.error('세션 저장 실패:', error);
+							alert('검색어 저장 중 오류가 발생했습니다.');
+						}
+					});
 				} else if (condition == 'qna') {
 					url = '${root}/qnaSearch?keyword=' + encodedKeyword;
 				} else if (condition == 'report') {
