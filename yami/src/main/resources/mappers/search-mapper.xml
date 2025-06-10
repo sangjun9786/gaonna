@@ -30,4 +30,105 @@
 		ORDER BY 1
 	</select>
 	
+	<select id="getFilterCount" parameterType="map" resultType="int">
+		SELECT COUNT(*)
+		FROM PRODUCT_BOARD
+		LEFT JOIN MEMBER USING(USER_NO)
+		LEFT JOIN COORDS ON(MAIN_COORD = COORD_NO)
+		<where>
+			PRODUCT_BOARD.STATUS = 'N'
+			<if test="location != 'all'">
+			    AND REGEXP_SUBSTR(TRIM(COORD_ADDRESS), '[^ ]+$') = #{location}
+			</if>
+			<if test="category != 0">
+				AND CATEGORY_NO = #{category}
+			</if>
+			<if test="price1 != null and price2 != null">
+				AND PRICE BETWEEN #{price1} AND #{price2}
+			</if>
+		</where>
+	</select>
+	
+	<select id="productFilter" resultMap="productAttachmentMap">
+	      SELECT 
+	        pb.PRODUCT_NO,
+	        pb.CATEGORY_NO,
+	        c.CATEGORY_NAME, 
+	        pb.SCORE,
+	        pb.USER_NO,
+	        pb.PRICE,
+	        pb.UPLOAD_DATE,
+	        pb.PRODUCT_COUNT,
+	        pb.PRODUCT_TITLE,
+	        pb.PRODUCT_CONTENT,
+	        pb.STATUS AS PB_STATUS,
+	
+	        m.USER_ID,
+	        m.USER_NAME,
+	        m.MAIN_COORD,
+	
+	        c.COORD_ADDRESS,  
+	
+	        at.FILE_NO,
+	        at.PRODUCT_NO,
+	        at.ORIGIN_NAME,
+	        at.CHANGE_NAME,
+	        at.FILE_PATH,
+	        at.UPLOAD_DATE AS AT_UPLOAD_DATE,
+	        at.FILE_LEVEL,
+	        at.STATUS AS AT_STATUS
+
+	    FROM PRODUCT_BOARD pb
+	    JOIN MEMBER m ON pb.USER_NO = m.USER_NO
+	    LEFT JOIN COORDS c ON m.MAIN_COORD = c.COORD_NO
+	    LEFT JOIN ATTATCHMENT at
+	        ON pb.PRODUCT_NO = at.PRODUCT_NO
+	        AND at.FILE_LEVEL = 1
+	        AND at.STATUS = 'Y'
+	    JOIN CATEGORY c ON pb.CATEGORY_NO = c.CATEGORY_NO
+	    <where>
+	    	pb.STATUS = 'N'
+	    	<if test="location != 'all'">
+			    AND REGEXP_SUBSTR(TRIM(COORD_ADDRESS), '[^ ]+$') = #{location}
+			</if>
+	    	<if test="category != 0">
+				AND pb.CATEGORY_NO = #{category}
+			</if>
+			<if test="price1 != null and price2 != null">
+				AND pb.PRICE BETWEEN #{price1} AND #{price2}
+			</if>
+	    </where>
+	    ORDER BY pb.UPLOAD_DATE DESC
+	</select>
+	
+	<resultMap id="productAttachmentMap" type="Product">
+	    <!-- 기존 product 필드 -->
+	    <id property="productNo" column="PRODUCT_NO"/>
+	    <result property="categoryNo" column="CATEGORY_NO"/>
+	    <result property="score" column="SCORE"/>
+	    <result property="userNo" column="USER_NO"/>
+	    <result property="price" column="PRICE"/>
+	    <result property="uploadDate" column="UPLOAD_DATE"/>
+	    <result property="productCount" column="PRODUCT_COUNT"/>
+	    <result property="productTitle" column="PRODUCT_TITLE"/>
+	    <result property="productContent" column="PRODUCT_CONTENT"/>
+	    <result property="status" column="PB_STATUS"/>
+	    <result property="coordAddress" column="COORD_ADDRESS"/>
+		<result property="userId" column="USER_ID"/>
+		<result property="userName" column="USER_NAME"/>
+		<result property="categoryName" column="CATEGORY_NAME"/>
+	
+	    <!-- 첨부파일 atList 필드 매핑 -->
+	    <collection property="atList" ofType="Attachment">
+	        <id property="fileNo" column="FILE_NO"/>
+	        <result property="productBno" column="PRODUCT_NO"/>
+	        <result property="originName" column="ORIGIN_NAME"/>
+	        <result property="changeName" column="CHANGE_NAME"/>
+	        <result property="filePath" column="FILE_PATH"/>
+	        <result property="uploadDate" column="AT_UPLOAD_DATE"/>
+	        <result property="fileLevel" column="FILE_LEVEL"/>
+	        <result property="status" column="AT_STATUS"/>
+	    </collection>
+	</resultMap>
+	
 </mapper>

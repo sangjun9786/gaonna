@@ -3,6 +3,7 @@ package com.gaonna.yami.search.model.service;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.gaonna.yami.common.PageInfo;
 import com.gaonna.yami.member.model.vo.Member;
 import com.gaonna.yami.product.vo.Category;
 import com.gaonna.yami.product.vo.Product;
@@ -13,8 +14,10 @@ public interface SearchService {
 
 	String getUserLoca(Member m);
 
-	List<String> getLoca(String userLoca);
+	ArrayList<String> getLoca(String userLoca);
 
-	ArrayList<Product> productFilter(String location, int category, Integer price1, Integer price2);
+	int getFilterCount(String location, int category, Integer price1, Integer price2);
+
+	ArrayList<Product> productFilter(String location, int category, Integer price1, Integer price2, PageInfo pi);
 
 }

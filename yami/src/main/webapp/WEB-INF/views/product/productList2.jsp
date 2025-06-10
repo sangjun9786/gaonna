@@ -127,9 +127,18 @@
             <ul class="pagination justify-content-center">
                 <c:forEach var="i" begin="${pi.startPage}" end="${pi.endPage}">
                     <li class="page-item ${pi.currentPage == i ? 'active' : ''}">
-                        <a class="page-link" href="${pageContext.request.contextPath}/productList2.pro?currentPage=${i}">
-                            ${i}
-                        </a>
+                    	<c:choose>
+                    		<c:when test="${selectedPrice1 != null and selectedPrice2 != null }">
+		                        <a class="page-link" href="${root}/filter.bo?currentPage=${i}&location=${selectedLocation}&category=${selectedCategory}&price1=${selectedPrice1}&price2=${selectedPrice2}">
+		                            ${i}
+		                        </a>
+                    		</c:when>
+                    		<c:otherwise>
+                    			<a class="page-link" href="${root}/filter.bo?currentPage=${i}&location=${selectedLocation}&category=${selectedCategory}">
+		                            ${i}
+		                        </a>
+                    		</c:otherwise>
+                    	</c:choose>
                     </li>
                 </c:forEach>
             </ul>

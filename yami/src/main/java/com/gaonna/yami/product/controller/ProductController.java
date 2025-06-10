@@ -73,15 +73,15 @@ public class ProductController {
 	@RequestMapping("productList2.pro")
 	public String productList(@RequestParam(value = "currentPage", defaultValue = "1") 
 							 int currentPage
-							,@RequestParam(value = "selectedLocation", defaultValue = "0") 
+							,@RequestParam(value = "selectedLocation", defaultValue = "all") 
 							 String selectedLocation
 							,@RequestParam(value = "selectedCategory", defaultValue = "0") 
 							 int selectedCategory
 							,Model model) {
 		
 		//0. 페이지 필터 정보 초기화
-		if(selectedLocation.equals("0")) {
-			model.addAttribute("selectedLocation", "0");
+		if(selectedLocation.equals("all")) {
+			model.addAttribute("selectedLocation", "all");
 		}
 		if(selectedCategory == 0) {
 			model.addAttribute("selectedCategory", 0);
@@ -99,11 +99,11 @@ public class ProductController {
 
 	    // 4. 현재 페이지에 해당하는 상품 목록 조회
 	    ArrayList<Product> list = service.selectProductList(pi); // 페이징 적용된 DAO 메서드
-
+	    
 	    // 5. JSP에 전달
 	    model.addAttribute("list", list);
 	    model.addAttribute("pi", pi);
-
+	    
 	    // 6. 렌더링할 JSP
 	    return "product/productList2";
 	}

@@ -7,6 +7,7 @@ import org.mybatis.spring.SqlSessionTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.gaonna.yami.common.PageInfo;
 import com.gaonna.yami.member.model.vo.Member;
 import com.gaonna.yami.product.vo.Category;
 import com.gaonna.yami.product.vo.Product;
@@ -31,14 +32,18 @@ public class SearchServiceImpl implements SearchService {
 	}
 	
 	@Override
-	public List<String> getLoca(String userLoca) {
+	public ArrayList<String> getLoca(String userLoca) {
 		return dao.getUserLoca(sqlSession, userLoca);
 	}
 	
 	@Override
-	public ArrayList<Product> productFilter(String location, int category, Integer price1, Integer price2) {
-		// TODO Auto-generated method stub
-		return null;
+	public int getFilterCount(String location, int category, Integer price1, Integer price2) {
+		return dao.getFilterCount(sqlSession, location, category, price1, price2);
+	}
+	
+	@Override
+	public ArrayList<Product> productFilter(String location, int category, Integer price1, Integer price2, PageInfo pi) {
+		return dao.productFilter(sqlSession, location, category, price1, price2, pi);
 	}
 	
 }
