@@ -100,6 +100,23 @@ public class ProductServiceImpl implements ProductService {
 		// TODO Auto-generated method stub
 		return dao.selectCategoryList(sqlSession);
 	}
+	
+	//삭제
+	@Override
+	public int deleteProduct(int productNo) {
+		// TODO Auto-generated method stub
+		
+		
+		return dao.deleteProduct(sqlSession,productNo);
+	}
+	
+	//수정
+	@Override
+	public int productUpdate(Product p) {
+		// TODO Auto-generated method stub
+		return dao.productUpdate(sqlSession,p);
+	}
+
 }
 
 //@Override

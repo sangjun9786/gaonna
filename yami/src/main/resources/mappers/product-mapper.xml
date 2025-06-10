@@ -227,6 +227,13 @@
     <result property="categoryNo" column="CATEGORY_NO"/>
     <result property="categoryName" column="CATEGORY_NAME"/>
 </resultMap>
+
+
+<delete id="deleteProduct" parameterType="_int">
+	DELETE FROM PRODUCT_BOARD
+	WHERE PRODUCT_NO = #{productNo}
+</delete>
+	
 	
 	
 </mapper>

@@ -36,6 +36,12 @@ public interface ProductService {
 	
 	//카테고리 가져오기
 	ArrayList<Category> selectCategoryList();
+	
+	//상품 삭제
+	int deleteProduct(int productNo);
+	
+	//상품 수정
+	int productUpdate(Product p);
 
 	
 }

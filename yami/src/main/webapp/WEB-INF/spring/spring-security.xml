@@ -4,9 +4,8 @@
 	xmlns:security="http://www.springframework.org/schema/security"
 	xsi:schemaLocation="http://www.springframework.org/schema/security http://www.springframework.org/schema/security/spring-security-5.6.xsd
 		http://www.springframework.org/schema/beans https://www.springframework.org/schema/beans/spring-beans.xsd">
-	
+	<security:http security="none" pattern="/resources/uploadFiles/**"/>	
 	<security:http security="none" pattern="/resources/**"/>
-    <security:http security="none" pattern="/resources/uploadFiles/**"/>
     <security:http security="none" pattern="/webjars/**"/>
 <!-- 	    <security:http pattern="/**" security="none"/> -->
 	

@@ -78,11 +78,10 @@
         color: white;
         border: none;
         padding: 12px;
-        width: 100%;
-        margin-top: 20px;
         font-size: 16px;
         cursor: pointer;
         border-radius: 4px;
+        margin-top: 10px;
     }
     .comment-section {
         margin-top: 40px;
@@ -116,9 +115,9 @@
     <div class="flex">
         <!-- 상품 이미지 영역 -->
         <div class="image-area">
-		    <c:if test="${not empty product.atList}">
-		        <img src="/resources/uploadFiles/${product.atList[0].changeName}" alt="대표이미지">
-		    </c:if>
+            <c:if test="${not empty product.atList}">
+                <img src="/resources/uploadFiles/${product.atList[0].changeName}" alt="대표이미지">
+            </c:if>
         </div>
 
         <!-- 상품 정보 영역 -->
@@ -147,7 +146,16 @@
                 </form>
             </div>
 
-            <button class="action-btn">채팅으로 거래하기</button>
+            <button class="action-btn" style="width:100%;">채팅으로 거래하기</button>
+
+            <!-- 삭제 버튼 (작성자 본인일 경우에만 노출) -->
+		<c:if test="${loginUser.userId eq product.userId}">
+		   <form id="deleteForm" method="post" action="${contextPath}/delete.pro" style="display:none;">
+		       <input type="hidden" name="productNo" value="${product.productNo}" />
+		       <input type="hidden" name="filePath" value="/resources/uploadFiles/${product.atList[0].changeName}" />
+		   </form>
+		   <button type="button" id="deleteBtn" class="action-btn" style="width:auto; float:right;">삭제하기</button>
+		</c:if>
         </div>
     </div>
 
@@ -167,12 +175,10 @@
     <div class="comment-section">
         <h4>댓글</h4>
 
-        <!-- 댓글 리스트 (현재는 주석 처리) -->
         <%-- <c:forEach var="c" items="${product.commentList}">
             <div class="comment-box">${c.content}</div>
         </c:forEach> --%>
 
-        <!-- 댓글 작성 폼 -->
         <form action="${contextPath}/insertComment.co" method="post" style="margin-top:20px;">
             <input type="hidden" name="productNo" value="${product.productNo}">
             <textarea name="content" rows="3" style="width:100%;" placeholder="댓글을 입력하세요"></textarea><br>
@@ -180,6 +186,18 @@
         </form>
     </div>
 </div>
+
+<!-- 삭제 스크립트 -->
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script>
+    $(function () {
+        $("#deleteBtn").click(function () {
+            if (confirm("정말로 삭제하시겠습니까?")) {
+                $("#deleteForm").submit();
+            }
+        });
+    });
+</script>
 
 </body>
 </html>
