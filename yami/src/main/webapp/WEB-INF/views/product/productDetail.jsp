@@ -5,10 +5,10 @@
 <html lang="ko">
 <head>
 <meta charset="UTF-8">
-<title>상품 상세보기</title>
+<title>౰స్మ 상상 상세</title>
 <style>
     body {
-        font-family: '맑은 고딕', sans-serif;
+        font-family: '마르아고딕', sans-serif;
         background-color: #f9f9f9;
         margin: 0;
         padding: 0;
@@ -116,9 +116,9 @@
     <div class="flex">
         <!-- 상품 이미지 영역 -->
         <div class="image-area">
-		    <c:if test="${not empty product.atList}">
-		        <img src="${contextPath}${product.atList[0].filePath}${product.atList[0].changeName}" alt="대표이미지">
-		    </c:if>
+            <c:if test="${not empty product.atList}">
+                <img src="${contextPath}${product.atList[0].filePath}${product.atList[0].changeName}" alt="대표이미지">
+            </c:if>
         </div>
 
         <!-- 상품 정보 영역 -->
@@ -135,15 +135,18 @@
             </div>
 
             <div class="price">
-                <fmt:formatNumber value="${product.price}" pattern="#,###" />원
+                <fmt:formatNumber value="${product.price}" pattern="#\,###" />원
             </div>
             <div class="desc">${product.productContent}</div>
 
+            <!-- 진( 좋아요) 버튼 영역 -->
             <div class="like-area">
                 채팅 0 · 조회 ${product.productCount}
-                <form action="${contextPath}/like.do" method="post" style="display:inline;">
-                    <input type="hidden" name="productNo" value="${product.productNo}">
-                    <button type="submit" class="like-btn">❤️ 좋아요 (0)</button>
+                <form id="wishForm" style="display:inline;">
+                    <input type="hidden" id="productNo" value="${product.productNo}" />
+                    <button type="button" onclick="wishProduct();" class="like-btn">
+                        ❤️ 좋아요 (<span id="wishCount">${wishCount}</span>)
+                    </button>
                 </form>
             </div>
 
@@ -165,21 +168,83 @@
 
     <!-- 댓글 영역 -->
     <div class="comment-section">
-        <h4>댓글</h4>
+        <h4>💬 댓글</h4>
+        <div class="mb-3">
+            <textarea id="replyContent" class="form-control" placeholder="댓글을 입력하세요" rows="3" style="width:100%;"></textarea>
+            <button onclick="insertReply();" type="button" class="btn btn-primary mt-2">등록</button>
+        </div>
 
-        <!-- 댓글 리스트 (현재는 주석 처리) -->
-        <%-- <c:forEach var="c" items="${product.commentList}">
-            <div class="comment-box">${c.content}</div>
-        </c:forEach> --%>
-
-        <!-- 댓글 작성 폼 -->
-        <form action="${contextPath}/insertComment.co" method="post" style="margin-top:20px;">
-            <input type="hidden" name="productNo" value="${product.productNo}">
-            <textarea name="content" rows="3" style="width:100%;" placeholder="댓글을 입력하세요"></textarea><br>
-            <button type="submit" class="action-btn" style="width:auto;">등록</button>
-        </form>
+        <div id="replyArea" class="mt-3"></div>
     </div>
 </div>
 
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script>
+function wishProduct() {
+    const productNo = $("#productNo").val();
+    $.post("${contextPath}/product/wish", { productNo: productNo }, function(result) {
+        if (result === "not-login") {
+            alert("로그인 후 이용하세요.");
+        } else {
+            const [state, count] = result.split(":");
+            $("#wishCount").text(count);
+            alert(state === "liked" ? "좋아요 완료!" : "좋아요 취소됨");
+        }
+    });
+}
+
+function insertReply() {
+    $.ajax({
+        url: "${contextPath}/insertReply",
+        method: "post",
+        data: {
+            productNo: "${product.productNo}",
+            replyText: $("#replyContent").val()
+        },
+        success: function(result) {
+            if (result === "success") {
+                selectReplyList();
+                $("#replyContent").val("");
+            } else {
+                alert("이용하려면 로그인 필요");
+            }
+        },
+        error: function(xhr) {
+            alert("댓글 등록 오류: HTTP " + xhr.status);
+        }
+    });
+}
+
+function selectReplyList() {
+    $.ajax({
+        url: "${contextPath}/replyList",
+        data: { productNo: "${product.productNo}" },
+        success: function(list) {
+            if (!Array.isArray(list) || list.length === 0) {
+                $("#replyArea").html("<p>댓글이 없습니다.</p>");
+                return;
+            }
+            let str = "";
+            for (let r of list) {
+                const uid = r.userId || "";
+                const txt = r.replyText || "";
+                const dt = r.replyDate ? new Date(r.replyDate).toLocaleString('ko-KR') : "";
+                str += '<div class="comment-box">' +
+                       '<b>' + uid + '</b>: ' + txt +
+                       ' <span style="color:gray;">[' + dt + ']</span>' +
+                       '</div>';
+            }
+            $("#replyArea").html(str);
+        },
+        error: function(xhr) {
+            console.log("댓글 목록 호출 실패: HTTP " + xhr.status);
+        }
+    });
+}
+
+$(document).ready(function() {
+    selectReplyList();
+});
+</script>
 </body>
 </html>
