@@ -74,6 +74,7 @@ public class AdminController {
 			    
 				HttpSession newSession = request.getSession(true);
 				loginUser = service.consoleLogin(userId);
+				loginUser.setUserPwd("0");
 				newSession.setAttribute("loginUser", loginUser);
 				coords= locationService.selectUserDongne(loginUser.getUserNo());
 				newSession.setAttribute("coords", coords);

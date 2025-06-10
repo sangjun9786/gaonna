@@ -1,6 +1,7 @@
 package com.gaonna.yami.composite.controller;
 
 import java.util.List;
+import java.util.Map;
 
 import javax.servlet.http.HttpSession;
 
@@ -8,7 +9,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.gaonna.yami.composite.service.CompositeService;
@@ -48,7 +48,7 @@ public class CompositeController {
 	
 	//ajax - 카테고리 목록 검색
 	@ResponseBody
-	@PostMapping("selectCategory.co")
+	@GetMapping("selectCategory.co")
 	public String selectCategory() {
 		try {
 			List<Category> category = service.selectCategory();
@@ -60,42 +60,39 @@ public class CompositeController {
 		}
 	}
 	
-	//ajax - 게시글 수 조회
-	@ResponseBody
-	@PostMapping("countMyBoard.co")
-	public int countMyBoard(HttpSession session,Model model
-			,SearchForm searchForm) {
-		try {
-			//loginUser의 userNo따서 searchForm에 넣기
-			searchForm.setUserNo(((Member)session
-					.getAttribute("loginUser")).getUserNo());
-			
-			return service.countMyBoard(searchForm);
-		} catch (Exception e) {
-			e.printStackTrace();
-			return 0;
-		}
-	}
-	
 	//ajax - 게시글 조회
 	@ResponseBody
-	@PostMapping("searchMyBoard.co")
-	public String searchMyBoard(HttpSession session,Model model
+	@GetMapping("searchMyBoard.co")
+	public Map<String, Object> searchMyBoard(HttpSession session,Model model
 			,SearchForm searchForm) {
 		try {
 			//loginUser의 userNo따서 searchForm에 넣기
 			searchForm.setUserNo(((Member)session
 					.getAttribute("loginUser")).getUserNo());
-			List<?> result = service.searchMyBoard(searchForm);
-			return new Gson().toJson(result);
+			Map<String, Object> result = service.searchMyBoard(searchForm);
+			return result;
 		} catch (Exception e) {
 			e.printStackTrace();
-			return "[]";
+			return null;
 		}
 	}
 	
-	
-	
+	//ajax - 댓글 조회
+	@ResponseBody
+	@GetMapping("searchMyReply.co")
+	public Map<String, Object> searchMyReply(HttpSession session,Model model
+			,SearchForm searchForm) {
+		try {
+			//loginUser의 userNo따서 searchForm에 넣기
+			searchForm.setUserNo(((Member)session
+					.getAttribute("loginUser")).getUserNo());
+			Map<String, Object> result = service.searchMyReply(searchForm);
+			return result;
+		} catch (Exception e) {
+			e.printStackTrace();
+			return null;
+		}
+	}
 	
 	
 	

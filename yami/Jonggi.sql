@@ -3,15 +3,10 @@
 --
 --create user yami identified by yami;
 --grant resource, connect to yami;
+
+exp yami/yami file=c:\yami.dmp owner=yami
 ----------------------------------------------
---ALTER TABLE product_board DROP CONSTRAINT FK_USER_ID;
---ALTER TABLE product_board RENAME COLUMN user_id TO user_no;
---ALTER TABLE product_board MODIFY user_no NUMBER;
---ALTER TABLE product_board 
---ADD CONSTRAINT fk_product_board_user_no 
---FOREIGN KEY (user_no) 
---REFERENCES member(user_no)
---ON DELETE CASCADE;
+ALTER TABLE bakery MODIFY (latitude NUMBER, longitude NUMBER);
 /*
     버그
     
@@ -50,6 +45,14 @@ CREATE SEQUENCE seq_coords
 START WITH 1
 INCREMENT BY 1
 NOCACHE;
+
+--뽱집 댓글 시퀀스
+CREATE SEQUENCE seq_bakery_comment
+START WITH 1 INCREMENT BY 1 NOCACHE;
+
+--좋싫 시퀀스
+CREATE SEQUENCE seq_comment_like 
+START WITH 1 INCREMENT BY 1 NOCACHE;
 
 --member테이블
 CREATE TABLE member (
@@ -224,6 +227,103 @@ CREATE TABLE role (
 COMMENT ON TABLE role IS '관리자 권한';
 COMMENT ON COLUMN role.user_no IS '회원 식별번호';
 COMMENT ON COLUMN role.role_type IS '권한 유형';
+
+--베이커리 테이블
+CREATE TABLE bakery (
+    bakery_no      VARCHAR2(30),
+    open_date      VARCHAR2(20), -- yyyy-MM-dd꼴
+    phone          VARCHAR2(20),
+    road_address   VARCHAR2(300),
+    jibun_address  VARCHAR2(300),
+    bakery_name    VARCHAR2(300),
+    latitude       NUMBER, -- 위도
+    longitude      NUMBER, -- 경도
+    status         VARCHAR2(1)   DEFAULT 'Y',
+
+    CONSTRAINT bakery_no_pk PRIMARY KEY (bakery_no)
+);
+
+COMMENT ON TABLE bakery IS '뽱집';
+COMMENT ON COLUMN bakery.bakery_no IS '뽱집 식별번호(관리번호)';
+COMMENT ON COLUMN bakery.open_date IS '개업일(인허가 일자)';
+COMMENT ON COLUMN bakery.phone IS '전화번호';
+COMMENT ON COLUMN bakery.road_Address IS '도로명 주소';
+COMMENT ON COLUMN bakery.jibun_Address IS '지번 주소';
+COMMENT ON COLUMN bakery.LATITUDE IS '위도';
+COMMENT ON COLUMN bakery.LONGITUDE IS '경도';
+COMMENT ON COLUMN bakery.status IS '상태';
+
+CREATE OR REPLACE FUNCTION RADIANS(nDegrees IN NUMBER) RETURN NUMBER DETERMINISTIC IS
+BEGIN
+    RETURN nDegrees / 57.29577951308232087679815481410517033235;
+END RADIANS;
+
+-- 일반 복합 인덱스 생성
+CREATE INDEX idx_bakery_coords ON bakery(latitude, longitude);
+
+-- 공간 인덱스 - 사용 시 Oracle Spatial 필요
+INSERT INTO USER_SDO_GEOM_METADATA VALUES (
+    'bakery',
+    'SDO_GEOMETRY(TO_NUMBER(longitude), TO_NUMBER(latitude))',
+    SDO_DIM_ARRAY(
+        SDO_DIM_ELEMENT('X', -180, 180, 0.005),
+        SDO_DIM_ELEMENT('Y', -90, 90, 0.005)
+    ),
+    4326
+);
+
+CREATE INDEX bakery_spatial_idx ON bakery(
+    SDO_GEOMETRY(TO_NUMBER(longitude), TO_NUMBER(latitude))
+) INDEXTYPE IS MDSYS.SPATIAL_INDEX_V2;
+
+
+
+--댓글 테이블
+CREATE TABLE BAKERY_COMMENT (
+    comment_no     NUMBER,
+    parent_comment_no NUMBER,
+    comment_content   VARCHAR2(300),
+    comment_type   VARCHAR2(10),
+    bakery_no      VARCHAR2(30),
+    user_no        NUMBER,
+    comment_date   DATE         DEFAULT SYSDATE,
+    LIKE           VARCHAR2(1),
+    status         VARCHAR2(1),
+
+    CONSTRAINT comment_no_pk PRIMARY KEY (comment_no),
+    CONSTRAINT parent_comment_no_fk FOREIGN KEY (parent_comment_no) REFERENCES BAKERY_COMMENT(comment_no) ON DELETE CASCADE,
+    CONSTRAINT BAKERY_COMMENT_bakery_no_fk FOREIGN KEY (bakery_no) REFERENCES bakery(bakery_no) ON DELETE CASCADE,
+    CONSTRAINT BAKERY_COMMENT_user_no_fk FOREIGN KEY (user_no) REFERENCES member(user_no) ON DELETE CASCADE,
+    CONSTRAINT BAKERY_COMMENT_STATUS_CK CHECK (status IN ('Y', 'N', 'M', 'P')),
+    CONSTRAINT LIKE_CK CHECK (LIKE IN ('L', 'D', 'P')),
+    CONSTRAINT comment_type_ck CHECK (comment_type IN ('COMMENT', 'RECOMMENT')),
+   
+    -- comment_type과 parent_comment_no의 관계
+    CONSTRAINT comment_type_parent_chk CHECK (
+        (comment_type = 'COMMENT' AND parent_comment_no IS NULL) OR
+        (comment_type = 'RECOMMENT' AND parent_comment_no IS NOT NULL)
+    )
+
+);
+
+COMMENT ON TABLE BAKERY_COMMENT IS '뽱집 댓글';
+COMMENT ON COLUMN BAKERY_COMMENT.comment_no IS '댓글 식별번호';
+COMMENT ON COLUMN BAKERY_COMMENT.parent_comment_no IS '대댓글 대상 댓글 식별번호';
+COMMENT ON COLUMN BAKERY_COMMENT.comment_content IS '댓글 내용';
+COMMENT ON COLUMN BAKERY_COMMENT.comment_type IS '댓글/대댓글';
+COMMENT ON COLUMN BAKERY_COMMENT.bakery_no IS '뽱집 식별번호';
+COMMENT ON COLUMN BAKERY_COMMENT.user_no IS '작성자 식별번호';
+COMMENT ON COLUMN BAKERY_COMMENT.comment_date IS '작성일';
+COMMENT ON COLUMN BAKERY_COMMENT.LIKE IS '좋/싫 (L:좋 D:싫 P:대댓글(좋/싫 없음))';
+COMMENT ON COLUMN BAKERY_COMMENT.status IS '상태 (Y:정상 N:삭제됨 M:수정됨 P:신고됨)';
+
+--뽱집, 회원 식별번호 인덱스
+CREATE INDEX idx_bakery_comment_bakery_no ON BAKERY_COMMENT(bakery_no);
+CREATE INDEX idx_bakery_comment_user_no ON BAKERY_COMMENT(user_no);
+
+--좋/싫 수 조회용 인덱스
+CREATE INDEX idx_bakery_comment_stats 
+ON BAKERY_COMMENT(bakery_no, LIKE, status);
 
 -----------------------------------------------------
 --                      DML                        --

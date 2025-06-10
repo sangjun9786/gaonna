@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>중부원점TM → WGS84 변환기 (최종)</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/proj4js/2.15.0/proj4.js"></script>
+    <script>
+      document.addEventListener("DOMContentLoaded", function () {
+        proj4.defs(
+          "TM_중부원점",
+          "+proj=tmerc +lat_0=38 +lon_0=127 +k=1 +x_0=200000 +y_0=500000 +ellps=bessel +units=m +no_defs"
+        );
+        proj4.defs("WGS84", "+proj=longlat +datum=WGS84 +no_defs");
+      });
+    </script>
+  </head>
+  <body>
+    <h2>CSV 파일 업로드 (중부원점TM → WGS84 변환)</h2>
+    <input type="file" id="csvFile" accept=".csv" />
+    <button onclick="processFile()">변환 실행</button>
+
+    <script>
+      function processFile() {
+        const file = document.getElementById("csvFile").files[0];
+        if (!file) return alert("CSV 파일을 선택하세요.");
+
+        const reader = new FileReader();
+        reader.onload = function (e) {
+          try {
+            const csvData = e.target.result;
+            const convertedData = convertCSV(csvData);
+            downloadCSV(convertedData, "converted_" + file.name);
+          } catch (error) {
+            alert("오류 발생: " + error.message);
+          }
+        };
+        reader.readAsText(file, "UTF-8");
+      }
+
+      function convertCSV(csv) {
+        const rows = parseCSV(csv);
+        if (rows.length === 0) throw new Error("CSV 데이터가 없습니다.");
+
+        // 헤더 처리 (쌍따옴표 제거 후 트림)
+        const headers = rows[0].map((h) => h.replace(/^"|"$/g, "").trim());
+        console.log("헤더:", headers); // ✅ 헤더 로그
+
+        const xIndex = headers.indexOf("좌표정보(X)");
+        const yIndex = headers.indexOf("좌표정보(Y)");
+        console.log(`X 인덱스: ${xIndex}, Y 인덱스: ${yIndex}`); // ✅ 인덱스 로그
+
+        if (xIndex === -1 || yIndex === -1) {
+          throw new Error(
+            'CSV 헤더에 "좌표정보(X)" 또는 "좌표정보(Y)" 컬럼이 없습니다.'
+          );
+        }
+
+        // 새 컬럼 추가
+        const newHeaders = [...headers];
+        newHeaders.splice(xIndex + 1, 0, "경도(WGS84)", "위도(WGS84)");
+
+        // 데이터 행 처리
+        const newRows = rows.map((row, rowIndex) => {
+          if (rowIndex === 0) return newHeaders; // 헤더 행 건너뛰기
+
+          const cols = row.map((c) => c.replace(/^"|"$/g, "").trim());
+          const tmX = parseFloat(cols[xIndex]);
+          const tmY = parseFloat(cols[yIndex]);
+
+          // 좌표 변환 로그
+          console.log(`변환 전: ${tmX}, ${tmY}`); // ✅
+
+          if (isNaN(tmX) || isNaN(tmY)) {
+            console.warn(
+              `행 ${rowIndex}: 유효하지 않은 좌표 - X:${cols[xIndex]}, Y:${cols[yIndex]}`
+            );
+            return [...cols]; // 변환 없이 반환
+          }
+
+          const [lng, lat] = proj4("TM_중부원점", "WGS84", [tmX, tmY]);
+          console.log(`변환 후: ${lng}, ${lat}`); // ✅
+
+          const newCols = [...cols];
+          newCols.splice(xIndex + 1, 0, lng.toFixed(6), lat.toFixed(6));
+          return newCols;
+        });
+
+        // CSV 재구성 (모든 필드를 쌍따옴표로 감쌈)
+        const csvOutput = newRows
+          .map((row) =>
+            row.map((field) => `"${field.replace(/"/g, '""')}"`).join(",")
+          )
+          .join("\n");
+
+        return csvOutput;
+      }
+
+      // 강화된 CSV 파서 (RFC 4180 준수)
+      function parseCSV(csv) {
+        const rows = [];
+        let currentRow = [];
+        let currentField = "";
+        let inQuotes = false;
+
+        for (let i = 0; i < csv.length; i++) {
+          const char = csv[i];
+
+          if (char === '"') {
+            if (inQuotes && csv[i + 1] === '"') {
+              // escaped quote
+              currentField += '"';
+              i++;
+            } else {
+              inQuotes = !inQuotes;
+            }
+          } else if (char === "," && !inQuotes) {
+            currentRow.push(currentField);
+            currentField = "";
+          } else if (char === "\n" && !inQuotes) {
+            currentRow.push(currentField);
+            rows.push(currentRow);
+            currentRow = [];
+            currentField = "";
+          } else {
+            currentField += char;
+          }
+        }
+
+        // 마지막 필드 처리
+        if (currentField !== "" || inQuotes) {
+          currentRow.push(currentField);
+          rows.push(currentRow);
+        }
+
+        return rows;
+      }
+
+      function downloadCSV(data, filename) {
+        const blob = new Blob(["\uFEFF" + data], {
+          type: "text/csv;charset=utf-8;",
+        });
+        const link = document.createElement("a");
+        link.href = URL.createObjectURL(blob);
+        link.download = filename;
+        link.click();
+      }
+    </script>
+  </body>
+</html>
