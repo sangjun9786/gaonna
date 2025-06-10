@@ -58,21 +58,18 @@ public class SearchController {
 	}
 	
 	@RequestMapping("filter.bo")
-	public String productFilter(@RequestParam("location") String location,
+	public String productFilter(@RequestParam(value = "currentPage", defaultValue = "1") 
+	 							int currentPage,
+	 							@RequestParam("location") String location,
 					            @RequestParam("category") int category,
 					            @RequestParam(value = "price1", required = false) Integer price1,
 					            @RequestParam(value = "price2", required = false) Integer price2,
 					            Model model) {
-		System.out.println("선택된 위치: " + location);
-        System.out.println("선택된 카테고리: " + category);
-        System.out.println("price1: " + price1);
-        System.out.println("price2: " + price2);
         
         int listCount = service.getFilterCount(location, category, price1, price2);
-        System.out.println(listCount);
         int boardLimit = 2;
         int pageLimit = 5;
-        PageInfo pi = Pagination.getPageInfo(listCount, 1, pageLimit, boardLimit);
+        PageInfo pi = Pagination.getPageInfo(listCount, currentPage, pageLimit, boardLimit);
         
         ArrayList<Product> list = service.productFilter(location, category, price1, price2, pi);
         

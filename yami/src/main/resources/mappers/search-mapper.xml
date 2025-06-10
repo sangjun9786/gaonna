@@ -31,13 +31,13 @@
 	</select>
 	
 	<select id="getFilterCount" parameterType="map" resultType="int">
-		SELECT COUNT(PRODUCT_NO)
+		SELECT COUNT(*)
 		FROM PRODUCT_BOARD
 		LEFT JOIN MEMBER USING(USER_NO)
 		LEFT JOIN COORDS ON(MAIN_COORD = COORD_NO)
 		<where>
 			PRODUCT_BOARD.STATUS = 'N'
-			<if test="location != 'ALL'">
+			<if test="location != 'all'">
 			    AND REGEXP_SUBSTR(TRIM(COORD_ADDRESS), '[^ ]+$') = #{location}
 			</if>
 			<if test="category != 0">

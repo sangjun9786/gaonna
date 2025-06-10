@@ -52,7 +52,7 @@ public class SearchDao {
 	    map.put("price2", price2);
 		
 		int limit = pi.getBoardLimit();
-		int offset = 0;
+		int offset = (pi.getCurrentPage()-1)*limit;
 		RowBounds rowBounds = new RowBounds(offset,limit);
 		
 		return (ArrayList)sqlSession.selectList("searchMapper.productFilter", map, rowBounds);

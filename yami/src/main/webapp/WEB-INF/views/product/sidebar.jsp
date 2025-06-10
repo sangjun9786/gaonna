@@ -73,9 +73,9 @@
 	
 	<h4>가격</h4>
 	<form id="priceFilterForm" action="${root}/filter.bo" method="get" class="mb-3">
-	    <input type="number" name="price1" value="${param.price1}"> <br>
+	    <input type="number" name="price1" value="${selectedPrice1}"> <br>
 		~ <br>
-		<input type="number" name="price2" value="${param.price2}"> <br>
+		<input type="number" name="price2" value="${selectedPrice2}"> <br>
 	
 	    <input type="hidden" name="location" value="${selectedLocation}">
 	    <input type="hidden" name="category" value="${selectedCategory}">
