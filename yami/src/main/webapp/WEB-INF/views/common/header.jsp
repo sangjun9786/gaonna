@@ -146,6 +146,6 @@
 
   </div>
 </nav>
-<%@ include file="/WEB-INF/views/common/searchbar.jsp" %>
+
 </body>
 </html>

@@ -79,7 +79,7 @@
 	
 	    <input type="hidden" name="location" value="${selectedLocation}">
 	    <input type="hidden" name="category" value="${selectedCategory}">
-	
+		<input type="hidden" name="category" value="${keyword}">
 	    <button type="submit" class="btn btn-sm btn-primary mt-2">검색</button>
 	</form>
 	
@@ -90,7 +90,7 @@
 	            const selectedCate = $('.sidebar input[name=category]:checked').val();
 	            const price1 = $('.sidebar input[name=price1]').val();
 	            const price2 = $('.sidebar input[name=price2]').val();
-	
+	            
 	            let url = "${root}/filter.bo?location=" + encodeURIComponent(selectedLoca)
 	                                        + "&category=" + encodeURIComponent(selectedCate);
 	
