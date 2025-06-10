@@ -70,32 +70,65 @@ public class ProductController {
 //        return "product/productList";
 //    }
 
-    // test 리스트
+
+	
+//	//페이징
+//	@GetMapping("/productList.pr")
+//	public String productList(@RequestParam(value = "currentPage", defaultValue = "1") 
+//	int currentPage
+//	, Model model) {
+//		int listCount = service.getListCount(); // 가짜 데이터 개수 (예: 50개) 총 게시글 개수
+//		int boardLimit = 1; //보여줄 개수
+//		int pageLimit = 5; //페이징 바 개수
+//		
+//		PageInfo pi = Pagination.getPageInfo(listCount, currentPage, pageLimit, boardLimit);
+//		
+//		ArrayList<Product> list = service.
+//				
+//				model.addAttribute("list", list);
+//		model.addAttribute("pi", pi);
+//		
+//		return "product/productList";
+//	}
+	
+	//test 리스트 
     @RequestMapping("productList2.pro")
-    public String productList(@RequestParam(value = "currentPage", defaultValue = "1") int currentPage,
-                               @RequestParam(value = "selectedLocation", defaultValue = "0") String selectedLocation,
-                               @RequestParam(value = "selectedCategory", defaultValue = "0") int selectedCategory,
-                               Model model) {
+	public String productList(@RequestParam(value = "currentPage", defaultValue = "1") 
+							 int currentPage
+							,@RequestParam(value = "selectedLocation", defaultValue = "0") 
+							 String selectedLocation
+							,@RequestParam(value = "selectedCategory", defaultValue = "0") 
+							 int selectedCategory
+							,Model model) {
+		
+		//0. 페이지 필터 정보 초기화
+		if(selectedLocation.equals("0")) {
+			model.addAttribute("selectedLocation", "0");
+		}
+		if(selectedCategory == 0) {
+			model.addAttribute("selectedCategory", 0);
+		}
+		
+	    // 1. 전체 상품 개수
+	    int listCount = service.getListCount();
 
-        if (selectedLocation.equals("0")) {
-            model.addAttribute("selectedLocation", "0");
-        }
-        if (selectedCategory == 0) {
-            model.addAttribute("selectedCategory", 0);
-        }
+	    // 2. 페이징 관련 설정
+	    int boardLimit = 2; // 한 페이지당 보여줄 상품 수
+	    int pageLimit = 5;   // 페이징바에 표시될 페이지 수
 
-        int listCount = service.getListCount();
-        int boardLimit = 2;
-        int pageLimit = 5;
+	    // 3. 페이징 정보 생성
+	    PageInfo pi = Pagination.getPageInfo(listCount, currentPage, pageLimit, boardLimit);
 
-        PageInfo pi = Pagination.getPageInfo(listCount, currentPage, pageLimit, boardLimit);
-        ArrayList<Product> list = service.selectProductList(pi);
+	    // 4. 현재 페이지에 해당하는 상품 목록 조회
+	    ArrayList<Product> list = service.selectProductList(pi); // 페이징 적용된 DAO 메서드
 
-        model.addAttribute("list", list);
-        model.addAttribute("pi", pi);
+	    // 5. JSP에 전달
+	    model.addAttribute("list", list);
+	    model.addAttribute("pi", pi);
 
-        return "product/productList2";
-    }
+	    // 6. 렌더링할 JSP
+	    return "product/productList2";
+	}
 
     // 상세 페이지
     @GetMapping("/productDetail.pro")

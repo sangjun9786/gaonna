@@ -184,6 +184,9 @@ public class MemberController {
 					return "member/resendEmailMe";
 				}
 				
+				//비밀번호 지우기
+				loginUser.setUserPwd("0");
+				
 				//로그인 성공
 				session.setAttribute("loginUser",loginUser);
 				

@@ -111,6 +111,21 @@
 .user-menu-link:hover .menu-label, .user-menu-link:focus .menu-label {
 	opacity: 1;
 }
+.disabled-location-card {
+    pointer-events: auto !important;
+}
+.disabled-location-card .card {
+    background-color: #e9ecef !important;
+    opacity: 0.85;
+}
+.disabled-location-card .card-body {
+    cursor: pointer;
+}
+
+.select {
+	margin-right: 10px;
+	margin-top: 15px;
+}
 </style>
 </head>
 <body>
@@ -129,16 +144,64 @@
 				</div>
 				<!-- 검색창 영역: 남은 공간 모두 차지 -->
 				<div class="col ps-2">
-					<form action="${root}/mainSearch" method="get">
-						<div class="input-group">
-							<input type="text" class="form-control form-control-lg"
-								name="keyword" placeholder="검색어를 입력하세요" aria-label="Search">
-							<button class="btn btn-primary btn-lg" type="submit">
-								<i class="bi bi-search"></i>
-							</button>
-						</div>
-					</form>
+					<div class="input-group">
+						<div class="select">
+		                    <select class="form-select form-select-lg mb-3" id="condition">
+		                        <option value="resell">Resell</option>
+		                        <option value="location">Location</option>
+		                        <option value="notice">Notice</option>
+		                        <option value="qna">QnA</option>
+		                        <option value="report">Report</option>
+		                    </select>
+		                </div>
+						<input type="text" class="form-control form-control-lg"
+							id="keyword" placeholder="제목 또는 내용으로 검색" aria-label="Search">
+						<button class="btn btn-primary btn-lg" type="submit" id="searchBtn">
+							<i class="bi bi-search"></i>
+						</button>
+					</div>
 				</div>
+				
+				<script>
+				    $(function () {
+				        $('#searchBtn').on('click', function () {
+				            let condition = $('#condition').val();
+				            let keyword = $('#keyword').val();
+				            let encodedKeyword = encodeURIComponent(keyword);
+				            
+				            if (condition == 'resell') {
+					            $.ajax({
+					                type: 'POST', // 데이터를 전송하므로 POST 방식 사용
+					                url: 'saveKeyword', // 세션 저장을 처리할 서버의 URL
+					                data: {
+					                    keyword: keyword // 서버로 보낼 데이터. { key: value } 형태
+					                },
+					                success: function(response) {
+					                    // 세션 저장이 성공하면 원래의 검색 로직을 실행합니다.
+					                    console.log('세션에 키워드 저장 성공:', response);
+					                    
+					                    // 2. 원래 의도했던 검색 기능 실행 (예: 검색 결과 페이지로 이동)
+					                    location.href = '${root}/filter.bo';
+					                },
+					                error: function(xhr, status, error) {
+					                    // 에러 처리
+					                    console.error('세션 저장 실패:', error);
+					                    alert('검색어 저장 중 오류가 발생했습니다.');
+					                }
+					            });
+				            } else if (condition == 'location') {
+				                url = '${root}/locationSearch?keyword=' + encodedKeyword;
+				            } else if (condition == 'notice') {
+				                url = '${root}/noticeSearch?keyword=' + encodedKeyword;
+				            } else if (condition == 'qna') {
+				                url = '${root}/qnaSearch?keyword=' + encodedKeyword;
+				            } else if (condition == 'report') {
+				                url = '${root}/reportSearch?keyword=' + encodedKeyword;
+				            }
+				        });
+				    });
+				</script>
+				
 			</div>
 		</div>
 
@@ -157,15 +220,36 @@
 				</a>
 			</div>
 			<div class="col">
-				<a href="#" class="text-decoration-none">
-					<div class="card text-center h-100 shadow-sm">
-						<div class="card-body">
-							<i class="bi bi-geo-alt fs-1 text-success"></i>
-							<h6 class="card-title mt-2 mb-0">Location</h6>
-						</div>
-					</div>
-				</a>
+			    <c:choose>
+			        <c:when test="${loginUser.mainCoord == 0}">
+			            <a href="${root}/dongne.me" 
+			               class="text-decoration-none disabled-location-card"
+			               style="pointer-events:auto;">
+			                <div class="card text-center h-100 shadow-sm bg-secondary bg-opacity-25"
+			                     style="cursor:pointer;">
+			                    <div class="card-body position-relative"
+			                         data-bs-toggle="tooltip" 
+			                         data-bs-placement="top" 
+			                         title="먼저 대표동네를 설정해 주세요">
+			                        <i class="bi bi-geo-alt fs-1 text-secondary"></i>
+			                        <h6 class="card-title mt-2 mb-0 text-secondary">Location</h6>
+			                    </div>
+			                </div>
+			            </a>
+			        </c:when>
+			        <c:otherwise>
+			            <a href="${root}/dongneMain.dn" class="text-decoration-none">
+			                <div class="card text-center h-100 shadow-sm">
+			                    <div class="card-body">
+			                        <i class="bi bi-geo-alt fs-1 text-success"></i>
+			                        <h6 class="card-title mt-2 mb-0">Location</h6>
+			                    </div>
+			                </div>
+			            </a>
+			        </c:otherwise>
+			    </c:choose>
 			</div>
+
 			<div class="col">
 				<a href="#" class="text-decoration-none">
 					<div class="card text-center h-100 shadow-sm">
@@ -269,12 +353,20 @@
 
 
 
-
 <script>
 let msg="${alertMsg}";
 if(msg!="") {
 	alert(msg);
 }
+
+<%--location카드 이벤트 핸들러--%>
+document.addEventListener('DOMContentLoaded', function () {
+    var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
+    tooltipTriggerList.forEach(function (tooltipTriggerEl) {
+        new bootstrap.Tooltip(tooltipTriggerEl);
+    });
+});
+
 </script>
 <c:remove var="alertMsg"/>
 

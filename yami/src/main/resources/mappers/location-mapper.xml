@@ -20,6 +20,25 @@
 		<result column="COORD_DATE" property="coordDate"/>
 	</resultMap>
 	
+	<resultMap type="Bakery" id="bakeryResultMap">
+		<result column="BAKERY_NO" property="bakeryNo"/>
+		<result column="OPEN_DATE" property="openDate"/>
+		<result column="ROAD_ADDRESS" property="roadAddress"/>
+		<result column="JIBUN_ADDRESS" property="jibunAddress"/>
+		<result column="BAKERY_NAME" property="bakeryName"/>
+	</resultMap>
+	
+	<resultMap type="BakeryComment" id="bakeryCommentResultMap">
+		<result column="COMMENT_NO" property="commentNo"/>
+		<result column="PARENT_COMMENT_NO" property="parentCommentNo"/>
+		<result column="COMMENT_CONTENT" property="commentContent"/>
+		<result column="COMMENT_TYPE" property="commentType"/>
+		<result column="BAKERY_NO" property="bakeryNo"/>
+		<result column="USER_NO" property="userNo"/>
+		<result column="USER_NAME" property="userName"/>
+		<result column="COMMENT_DATE" property="commentDate"/>
+	</resultMap>
+	
 	<select id="selectUserDongne" parameterType="int" resultMap="coordResultMap">
 		select c.coord_no, 
 			c.latitude,
@@ -95,5 +114,34 @@
 	    values(#{userNo}, #{locationNo})
 	</insert>
 	
+	
+	<!--             동네뽱집 나와바리              -->
+	
+	<select id="selectBakeries" parameterType="Coord">
+	    SELECT * FROM (
+	        SELECT 
+	            bakery_no,
+	            open_date,
+	            phone,
+	            road_address,
+	            jibun_address,
+	            bakery_name,
+	            latitude,
+	            longitude,
+	            ACOS(
+	                SIN(RADIANS(TO_NUMBER(latitude))) * SIN(RADIANS(#{latitude}))
+	                + COS(RADIANS(TO_NUMBER(latitude))) * COS(RADIANS(#{latitude}))
+	                * COS(RADIANS(TO_NUMBER(longitude)) - RADIANS(#{longitude}))
+	            ) * 6371 AS distance
+	        FROM bakery
+	        WHERE 
+	            TO_NUMBER(latitude) BETWEEN #{latitude} - 0.009 AND #{latitude} + 0.009
+	            AND TO_NUMBER(longitude) BETWEEN #{longitude} - (0.009 / COS(RADIANS(#{latitude}))) 
+	                AND #{longitude} + (0.009 / COS(RADIANS(#{latitude})))
+	    )
+	    WHERE distance &lt;= 1
+	    ORDER BY distance
+	</select>
+
 	
 </mapper>

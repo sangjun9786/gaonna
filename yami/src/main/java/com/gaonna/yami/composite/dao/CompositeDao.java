@@ -5,7 +5,9 @@ import java.util.List;
 import org.mybatis.spring.SqlSessionTemplate;
 import org.springframework.stereotype.Repository;
 
+import com.gaonna.yami.composite.vo.BoardCo;
 import com.gaonna.yami.composite.vo.Category;
+import com.gaonna.yami.composite.vo.ReplyCo;
 import com.gaonna.yami.composite.vo.SearchForm;
 
 @Repository
@@ -19,15 +21,15 @@ public class CompositeDao {
 		return sqlSession.selectOne("compositeMapper.countMyBoard",searchForm);
 	}
 
-	public List<Object> selectMyQuestion(SqlSessionTemplate sqlSession, SearchForm searchForm) {
-		return sqlSession.selectList("compositeMapper.selectMyQuestion",searchForm);
+	public List<BoardCo> searchMyBoard(SqlSessionTemplate sqlSession, SearchForm searchForm) {
+		return sqlSession.selectList("compositeMapper.searchMyBoard",searchForm);
 	}
 
-	public List<Object> selectMyReport(SqlSessionTemplate sqlSession, SearchForm searchForm) {
-		return sqlSession.selectList("compositeMapper.selectMyReport",searchForm);
+	public int countMyReply(SqlSessionTemplate sqlSession, SearchForm searchForm) {
+		return sqlSession.selectOne("compositeMapper.countMyReply",searchForm);
 	}
 
-	public List<Object> selectMyBoard(SqlSessionTemplate sqlSession, SearchForm searchForm) {
-		return sqlSession.selectList("compositeMapper.selectMyBoard",searchForm);
+	public List<ReplyCo> searchMyReply(SqlSessionTemplate sqlSession, SearchForm searchForm) {
+		return sqlSession.selectList("compositeMapper.searchMyReply",searchForm);
 	}
 }
