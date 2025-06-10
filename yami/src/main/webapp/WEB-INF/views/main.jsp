@@ -139,7 +139,7 @@
 			<div class="row align-items-center mb-4">
 				<!-- 로고 영역 -->
 				<div class="col-auto pe-0">
-					<img src="${root}/resources/img/yami-logo.png" alt="YAMI!"
+					<img src="${root}/resources/icon/yami-logo.png" alt="YAMI!"
 						style="height: 200px; width: auto; display: block;" />
 				</div>
 				<!-- 검색창 영역: 남은 공간 모두 차지 -->
