@@ -6,6 +6,7 @@ import java.util.Map;
 import org.mybatis.spring.SqlSessionTemplate;
 import org.springframework.stereotype.Repository;
 
+import com.gaonna.yami.location.vo.Bakery;
 import com.gaonna.yami.location.vo.Coord;
 import com.gaonna.yami.location.vo.Location;
 import com.gaonna.yami.member.model.vo.Member;
@@ -55,5 +56,9 @@ public class LocationDao {
 
 	public int insertMemberLocation(SqlSessionTemplate sqlSession, Map<String, Integer> memberLocation) {
 		return sqlSession.insert("locationMapper.insertMemberLocation",memberLocation);
+	}
+
+	public List<Bakery> selectBakeries(SqlSessionTemplate sqlSession, Coord mainCoord) {
+		return sqlSession.selectList("locationMapper.selectBakeries",mainCoord);
 	}
 }

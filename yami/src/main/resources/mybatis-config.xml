@@ -18,8 +18,12 @@
 		<typeAlias type="com.gaonna.yami.composite.vo.Category" alias="Category"/>
 		<typeAlias type="com.gaonna.yami.composite.vo.BoardCo" alias="BoardCo"/>
 		<typeAlias type="com.gaonna.yami.composite.vo.SearchForm" alias="SearchForm"/>
+		<typeAlias type="com.gaonna.yami.product.vo.Category" alias="Categorylist"/>
+		<typeAlias type="com.gaonna.yami.composite.vo.ReplyCo" alias="ReplyCo"/>
+		<typeAlias type="com.gaonna.yami.location.vo.Bakery" alias="Bakery"/>
+		<typeAlias type="com.gaonna.yami.location.vo.BakeryComment" alias="BakeryComment"/>
 		<typeAlias type="com.gaonna.yami.product.vo.Attachment" alias="Attachment"/>
-<!-- 		<typeAlias type="com.gaonna.yami.product.vo.Category" alias="Categorylist"/> -->
+		
 	</typeAliases>
 	
 </configuration>

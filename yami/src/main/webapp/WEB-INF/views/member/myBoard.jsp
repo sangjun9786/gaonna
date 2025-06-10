@@ -19,15 +19,13 @@
         <div class="card-body">
           <form id="searchForm" class="row g-3 align-items-center" autocomplete="off">
             <div class="col-md-3">
-              <select class="form-select" id="searchType1" name="searchType" required>
-                <option value="boardAll">전체 판매 게시판</option>
-                <!-- AJAX로 카테고리 옵션 추가 -->
-                <option value="question">질문게시판</option>
-                <option value="report">신고게시판</option>
+              <select class="form-select" id="searchType1" name="searchType1" required>
+                <option value="all">전체 판매 게시판</option>
+                <!-- AJAX로 카테고리 옵션 추가됨 -->
               </select>
             </div>
             <div class="col-md-2">
-              <select class="form-select" id="searchType2" name="searchType" required>
+              <select class="form-select" id="searchType2" name="searchType2" required>
                 <option value="all">전체</option>
                 <option value="title">제목</option>
                 <option value="content">내용</option>
@@ -45,7 +43,6 @@
               </select>
             </div>
             <input type="hidden" id="page" name="page" value="1">
-            <input type="hidden" id="resultCount" name="resultCount">
             <div class="col-md-2">
               <button type="submit" class="btn btn-success w-100" id="searchBoard">
                 <i class="bi bi-search"></i> 검색
@@ -78,15 +75,15 @@ $(function(){
   // 카테고리 옵션 동적 추가
   $.ajax({
     url: '${root}/selectCategory.co',
-    method: 'POST',
+    method: 'GET',
     dataType: "json",
     success: function(result) {
-      let $questionOption = $('#searchType1 option[value="question"]');
+		let $allOption = $('#searchType1 option[value="all"]');
       $.each(result, function(idx, category){
         $('<option>', {
           value: category.categoryNo,
           text: category.categoryName
-        }).insertBefore($questionOption);
+        }).insertAfter($allOption);
       });
     },
     error: function() {
@@ -114,23 +111,17 @@ $(function(){
     const params = $('#searchForm').serialize();
 
     try {
-      // 게시글 수 조회
-      const totalCount = await $.ajax({
-        url: '${root}/countMyBoard.co',
-        method: 'POST',
-        data: params,
-        dataType: 'json'
-      });
-      $('#resultCount').val(totalCount);
-      $('#boardResultCount .fw-bold').text(totalCount);
-
-      // 게시글 리스트 조회
-      const boardList = await $.ajax({
+      // 게시글 조회
+      const response = await $.ajax({
         url: '${root}/searchMyBoard.co',
-        method: 'POST',
+        method: 'GET',
         data: params,
-        dataType: "json"
       });
+      const boardList = response.result;
+      const totalCount = response.totalCount;
+      
+      $('#boardResultCount .fw-bold').text(totalCount || 0);
+      renderBoardList(boardList, totalCount);
 
       const page = parseInt($('#page').val());
       const pageSize = parseInt($('#searchCount').val());
@@ -164,17 +155,17 @@ $(function(){
           <div class="card h-100 shadow-sm position-relative">
             <div class="card-body">
               <div class="d-flex justify-content-between align-items-center mb-2">
-                <h5 class="card-title mb-0 text-truncate" style="max-width: 70%;">${title}</h5>
-                <span class="badge bg-secondary ms-2">${board.price.toLocaleString()}원</span>
+                <h5 class="card-title mb-0 text-truncate" style="max-width: 70%;">\${title}</h5>
+                <span class="badge bg-secondary ms-2">\${board.price.toLocaleString()}원</span>
               </div>
-              <p class="card-text text-truncate" style="max-width: 100%;">${content}</p>
+              <p class="card-text text-truncate" style="max-width: 100%;">\${content}</p>
             </div>
             <div class="card-footer small text-muted d-flex justify-content-between align-items-center">
-              <span>${board.categoryName}</span>
-              <span>${board.uploadDate}</span>
-              <span class="ms-2">${board.status}</span>
+              <span>\${board.categoryName ? board.categoryName : '-'}</span>
+              <span>\${board.uploadDateStr}</span>
+              <span class="ms-2">\${board.status}</span>
             </div>
-            <a href="${root}/board.pro?productNo=${board.productNo}" class="stretched-link"></a>
+            <a href="${root}/productDetail.pro?productNo=\${board.productNo}" class="stretched-link"></a>
           </div>
         </div>
       `;
@@ -192,8 +183,8 @@ $(function(){
     let nav = `<ul class="pagination">`;
     for(let i=1; i<=totalPage; i++){
       nav += `
-        <li class="page-item ${i === currentPage ? 'active' : ''}">
-          <a class="page-link" href="#" data-page="${i}">${i}</a>
+        <li class="page-item \${i === currentPage ? 'active' : ''}">
+          <a class="page-link" href="#" data-page="\${i}">\${i}</a>
         </li>
       `;
     }

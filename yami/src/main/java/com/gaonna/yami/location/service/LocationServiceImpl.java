@@ -21,6 +21,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.gaonna.yami.location.dao.LocationDao;
+import com.gaonna.yami.location.vo.Bakery;
+import com.gaonna.yami.location.vo.BakeryComment;
 import com.gaonna.yami.location.vo.Coord;
 import com.gaonna.yami.location.vo.Location;
 import com.gaonna.yami.member.model.vo.Member;
@@ -414,6 +416,23 @@ public class LocationServiceImpl implements LocationService{
 		m.setMainLocation(lo.getLocationNo());
 		session.setAttribute("loginUser", m);
 		return result;
+	}
+	
+	
+	//-------------------동네빵집 나와바리-------------------
+	
+	//동네빵집 조회
+	@Override
+	public List<Bakery> selectBakeries(Coord mainCoord) {
+		List<Bakery> result = dao.selectBakeries(sqlSession,mainCoord);
+		new Bakery().bakerySDF(result);
+		return result;
+	}
+	
+	//댓글 조회
+	@Override
+	public List<BakeryComment> selectBakeryComment(int bakeryNo, int page) {
+		return null;
 	}
 	
 }
