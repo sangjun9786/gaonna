@@ -5,10 +5,10 @@
 <html lang="ko">
 <head>
 <meta charset="UTF-8">
-<title>상품 상세보기</title>
+<title>౰స్మ 상상 상세</title>
 <style>
     body {
-        font-family: '맑은 고딕', sans-serif;
+        font-family: '마르아고딕', sans-serif;
         background-color: #f9f9f9;
         margin: 0;
         padding: 0;
@@ -111,35 +111,41 @@
 <%@ include file="/WEB-INF/views/common/header.jsp" %>
 <c:set var="contextPath" value="${pageContext.request.contextPath}" />
 <c:set var="product" value="${product}" />
+
 <div class="container">
     <div class="flex">
         <!-- 상품 이미지 영역 -->
         <div class="image-area">
-            <%-- 이미지 리스트는 현재 Product VO에 atList가 없어 주석처리
-            <img src="${contextPath}${product.atList[0].filePath}${product.atList[0].changeName}" alt="대표이미지">
-            --%>
+            <c:if test="${not empty product.atList}">
+                <img src="${contextPath}${product.atList[0].filePath}${product.atList[0].changeName}" alt="대표이미지">
+            </c:if>
         </div>
 
         <!-- 상품 정보 영역 -->
         <div class="info-area">
             <div class="meta" style="font-weight:bold; color:#888;">
-                ${product.categoryNo}번 카테고리
+                ${product.categoryName}
             </div>
 
             <h2>${product.productTitle}</h2>
-            <div class="meta">${product.userNo} · <fmt:formatDate value="${product.uploadDate}" pattern="yyyy-MM-dd" /></div>
+            <div class="meta">
+                ${product.userId} · 
+                <fmt:formatDate value="${product.uploadDate}" pattern="yyyy-MM-dd" /> · 
+                조회수: ${product.productCount}
+            </div>
+
             <div class="price">
-                <fmt:formatNumber value="${product.price}" pattern="#,###" />원
+                <fmt:formatNumber value="${product.price}" pattern="#\,###" />원
             </div>
             <div class="desc">${product.productContent}</div>
 
-            <!-- 찜(좋아요) 버튼 영역 -->
+            <!-- 진( 좋아요) 버튼 영역 -->
             <div class="like-area">
-                채팅 0 · 조회 0
+                채팅 0 · 조회 ${product.productCount}
                 <form id="wishForm" style="display:inline;">
                     <input type="hidden" id="productNo" value="${product.productNo}" />
                     <button type="button" onclick="wishProduct();" class="like-btn">
-                        ❤️ 좋아요 (<span id="wishCount">0</span>)
+                        ❤️ 좋아요 (<span id="wishCount">${wishCount}</span>)
                     </button>
                 </form>
             </div>
@@ -151,8 +157,8 @@
     <!-- 작성자 정보 + 평점 -->
     <div class="writer-box">
         <div class="writer-info">
-            <strong>${product.userNo}</strong><br>
-            지역정보 없음
+            <strong>${product.userId}</strong><br>
+            ${product.coordAddress}
         </div>
         <div class="score">
             ★ <fmt:formatNumber value="${product.score}" pattern="#.0" /> / 5.0<br>
@@ -160,123 +166,85 @@
         </div>
     </div>
 
-
-
-        <!-- ▼ 댓글 영역 시작 ▼ -->
+    <!-- 댓글 영역 -->
     <div class="comment-section">
         <h4>💬 댓글</h4>
-
-        <!-- 댓글 입력란 -->
         <div class="mb-3">
-            <textarea id="replyContent" class="form-control"
-                      placeholder="댓글을 입력하세요" rows="3"
-                      style="width:100%;"></textarea>
-            <button onclick="insertReply();" type="button"
-                    class="btn btn-primary mt-2">등록</button>
+            <textarea id="replyContent" class="form-control" placeholder="댓글을 입력하세요" rows="3" style="width:100%;"></textarea>
+            <button onclick="insertReply();" type="button" class="btn btn-primary mt-2">등록</button>
         </div>
 
-        <!-- AJAX로 댓글 목록을 뿌려줄 컨테이너 (반드시 id="replyArea") -->
-        <div id="replyArea" class="mt-3">
-            <!-- selectReplyList()가 만들어 주는 댓글 HTML을 여기다 삽입 -->
-        </div>
+        <div id="replyArea" class="mt-3"></div>
     </div>
-    <!-- ▲ 댓글 영역 끝 ▲ -->
 </div>
 
-<!-- jQuery 라이브러리 (반드시 댓글 스크립트보다 먼저 로드) -->
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-
-<!-- 🧠 찜(좋아요) 기능용 스크립트 -->
 <script>
 function wishProduct() {
     const productNo = $("#productNo").val();
-
     $.post("${contextPath}/product/wish", { productNo: productNo }, function(result) {
         if (result === "not-login") {
             alert("로그인 후 이용하세요.");
         } else {
             const [state, count] = result.split(":");
             $("#wishCount").text(count);
-            alert(state === "liked" ? "찜 완료!" : "찜 취소됨");
+            alert(state === "liked" ? "좋아요 완료!" : "좋아요 취소됨");
         }
     });
 }
-</script>
 
-
-<script>
-    /**
-     * 댓글 등록 함수 (등록 버튼 클릭 시 호출)
-     */
-    function insertReply() {
-        $.ajax({
-            url: "${contextPath}/insertReply",
-            method: "post",
-            data: {
-                productNo: "${product.productNo}",   // JSP EL로 1회 치환 → 실제 값: “1”
-                replyText: $("#replyContent").val()
-                // userId는 JSP에서 보내지 말 것 (컨트롤러가 세션에서 꺼내도록 처리했으니까)
-            },
-            success: function(result) {
-                console.log("▶ insertReply 결과:", result);
-                if (result === "success") {
-                    // 댓글 등록 성공 시, 댓글 리스트를 다시 불러오기
-                    selectReplyList();
-                    $("#replyContent").val("");  // 입력창 초기화
-                } else {
-                    alert("❌ 댓글 등록 실패 (로그인 상태인지 확인하세요)");
-                }
-            },
-            error: function(xhr) {
-                alert("⚠️ 댓글 등록 중 오류 발생: HTTP " + xhr.status);
+function insertReply() {
+    $.ajax({
+        url: "${contextPath}/insertReply",
+        method: "post",
+        data: {
+            productNo: "${product.productNo}",
+            replyText: $("#replyContent").val()
+        },
+        success: function(result) {
+            if (result === "success") {
+                selectReplyList();
+                $("#replyContent").val("");
+            } else {
+                alert("이용하려면 로그인 필요");
             }
-        });
-    }
-
-    /**
-     * 댓글 목록을 Ajax로 가져와서 #replyArea에 렌더링
-     * (페이지 첫 로드 및 댓글 등록 성공 후 호출)
-     */
-    function selectReplyList() {
-        $.ajax({
-            url: "${contextPath}/replyList",
-            data: { productNo: "${product.productNo}" },
-            success: function(list) {
-                console.log("▶ selectReplyList()에 내려온 데이터:", list);
-
-                // ① 서버가 비정상 응답하거나 빈 배열일 때
-                if (!Array.isArray(list) || list.length === 0) {
-                    $("#replyArea").html("<p>댓글이 없습니다.</p>");
-                    return;
-                }
-
-                // ② 댓글 배열이 있으면 HTML 조각을 만들어 붙임
-                let str = "";
-                for (let r of list) {
-                    // r.userId, r.replyText, r.replyDate 값이 undefined인 경우 공백 처리
-                    const uid = r.userId    ? r.userId    : "";
-                    const txt = r.replyText ? r.replyText : "";
-                    const dt = r.replyDate 
-                    ? new Date(r.replyDate).toLocaleString('ko-KR') 
-                    : ""; 
-                    str += 
-                        '<div class="comment-box">'
-                          + '<b>' + uid + '</b>: ' + txt
-                          + ' <span style="color:gray;">[' + dt + ']</span>'
-                        + '</div>';
-                }
-                $("#replyArea").html(str);
-            },
-            error: function(xhr) {
-                console.log("댓글 목록 호출 실패. HTTP " + xhr.status);
-            }
-        });
-    }
-
-    // 페이지 로드 후 즉시 댓글 목록을 한 번 가져온다
-    $(document).ready(function() {
-        selectReplyList();
+        },
+        error: function(xhr) {
+            alert("댓글 등록 오류: HTTP " + xhr.status);
+        }
     });
+}
+
+function selectReplyList() {
+    $.ajax({
+        url: "${contextPath}/replyList",
+        data: { productNo: "${product.productNo}" },
+        success: function(list) {
+            if (!Array.isArray(list) || list.length === 0) {
+                $("#replyArea").html("<p>댓글이 없습니다.</p>");
+                return;
+            }
+            let str = "";
+            for (let r of list) {
+                const uid = r.userId || "";
+                const txt = r.replyText || "";
+                const dt = r.replyDate ? new Date(r.replyDate).toLocaleString('ko-KR') : "";
+                str += '<div class="comment-box">' +
+                       '<b>' + uid + '</b>: ' + txt +
+                       ' <span style="color:gray;">[' + dt + ']</span>' +
+                       '</div>';
+            }
+            $("#replyArea").html(str);
+        },
+        error: function(xhr) {
+            console.log("댓글 목록 호출 실패: HTTP " + xhr.status);
+        }
+    });
+}
+
+$(document).ready(function() {
+    selectReplyList();
+});
 </script>
 </body>
 </html>

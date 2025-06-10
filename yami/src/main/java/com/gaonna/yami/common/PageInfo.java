@@ -1,37 +1,22 @@
 
 package com.gaonna.yami.common;
 
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+
+@NoArgsConstructor
+@AllArgsConstructor
+@Data
 public class PageInfo {
-    private int listCount;
-    private int currentPage;
-    private int pageLimit;
-    private int boardLimit;
-    private int maxPage;
-    private int startPage;
-    private int endPage;
-    private int startRow;
-    private int endRow;
 
-    public PageInfo(int listCount, int currentPage, int pageLimit, int boardLimit,
-                    int maxPage, int startPage, int endPage, int startRow, int endRow) {
-        this.listCount = listCount;
-        this.currentPage = currentPage;
-        this.pageLimit = pageLimit;
-        this.boardLimit = boardLimit;
-        this.maxPage = maxPage;
-        this.startPage = startPage;
-        this.endPage = endPage;
-        this.startRow = startRow;
-        this.endRow = endRow;
-    }
+	private	int currentPage; //현재페이지
+	private	int listCount ; //총 게시글 개수
+	private int boardLimit; //한화면에 보여질 개수
+	private int pageLimit; //페이징바 하단에 표시될 페이징 바 개수
+	
+	private int maxPage; //최대페이지 개수
+	private int startPage; //페이징 바 시작수
+	private int endPage; // 페이징바 끝수
 
-    public int getListCount() { return listCount; }
-    public int getCurrentPage() { return currentPage; }
-    public int getPageLimit() { return pageLimit; }
-    public int getBoardLimit() { return boardLimit; }
-    public int getMaxPage() { return maxPage; }
-    public int getStartPage() { return startPage; }
-    public int getEndPage() { return endPage; }
-    public int getStartRow() { return startRow; }
-    public int getEndRow() { return endRow; }
 }

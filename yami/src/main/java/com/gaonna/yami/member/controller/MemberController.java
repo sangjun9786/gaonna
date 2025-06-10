@@ -1,6 +1,7 @@
 package com.gaonna.yami.member.controller;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 import java.util.List;
 
@@ -161,15 +162,17 @@ public class MemberController {
 	//로그인
 	@PostMapping("login.me")
 	public String loginMember(HttpServletRequest request
-			,HttpSession oldSession, Model model
+			, HttpServletResponse response, Model model
 			, String userId, String domain, String userPwd) {
 		try {
-			//혹시모를 세션 초기화
-			oldSession.invalidate();
+			//세션 초기화
+			HttpSession oldSession = request.getSession(false);
+		    if (oldSession != null) {
+		        oldSession.invalidate();
+		    }
 			HttpSession session = request.getSession(true);
 			
 			Member loginUser = service.loginMember(userId, domain, userPwd);
-			
 			if(loginUser != null) {
 				
 				switch(loginUser.getStatus()) {
@@ -195,12 +198,12 @@ public class MemberController {
 					//('superAdmin', 'admin', 'viewer')
 				}
 				
-				return "redirect:/";
+				return "redirect:" + response.encodeRedirectURL("/");
 				
 			}else{
 				//해당 유저 없음
 				session.setAttribute("alertMsg", "아이디와 비밀번호를 확인해 주세요.");
-				return "redirect:/login.me";
+				return "member/login";
 			}
 		} catch (Exception e) {
 			e.printStackTrace();

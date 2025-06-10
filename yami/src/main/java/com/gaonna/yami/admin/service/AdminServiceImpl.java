@@ -38,7 +38,9 @@ public class AdminServiceImpl implements AdminService{
 	//ajax 관리자 조회
 	@Override
 	public List<Member> searchAdmin(String select) {
-		return dao.searchAdmin(sqlSession, select);
+		List<Member> result = dao.searchAdmin(sqlSession, select);
+		new Member().memberSDF(result);
+		return result;
 	}
 	
 	//관리자 데이터 수정
@@ -103,6 +105,7 @@ public class AdminServiceImpl implements AdminService{
 		}else {
 			result = dao.searchMember(sqlSession,mapping);
 		}
+		new Member().memberSDF(result);
 		
 		return result;
 	}

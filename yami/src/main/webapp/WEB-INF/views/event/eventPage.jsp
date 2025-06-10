@@ -20,14 +20,44 @@
 	.wrapper {
 	    display: flex;
 	    justify-content: center;
-	    margin-top: 50px;
-	    margin-bottom: 200px;
+	    align-items: flex-start;
+	    gap: 20px;
+	    margin: 50px auto 200px auto;
+	    width: 100%;
+	    padding: 0 20px;
+	    box-sizing: border-box;
+	}
+	
+	.ad-left {
+	    position: fixed;
+	    top: 200px;
+	    left: 50px;
+	    width: 200px;
+	    background-color: #f0f0f0;
+	    text-align: center;
+	    padding: 10px;
+	    box-sizing: border-box;
+	    z-index: 100;
+	}
+	
+	.ad-right {
+	    position: fixed;
+	    top: 200px;
+	    right: 50px;
+	    width: 200px;
+	    background-color: #f0f0f0;
+	    text-align: center;
+	    padding: 10px;
+	    box-sizing: border-box;
+	    z-index: 100;
 	}
 		
 	.inner {
 	    display: flex;
-	    align-items: flex-start;
-	    gap: 60px;
+	    flex-direction: row;
+	    gap: 50px;
+	    max-width: 1100px;
+	    width: 100%;
 	    box-sizing: border-box;
 	}
 		
@@ -59,7 +89,8 @@
 	}
 		
 	.eventInfo {
-	    max-width: 500px;
+	    width: 100%;
+	    max-width: 600px; /* 또는 700px, 원하는 최대 너비 */
 	    background-color: #f7f9fc;
 	    padding: 20px;
 	    border-radius: 8px;
@@ -91,6 +122,10 @@
 	.eventInfo button:hover {
 	    background-color: #45a049;
 	}
+	
+	.event-content {
+	  flex-shrink: 0;
+	}
 	//이벤트 테이블 스타일 끝
 </style>
 </head>
@@ -112,9 +147,20 @@
     	});
     </script>
 	
-    <div class="wrapper">
-        <div class="inner">
+    	<div class="ad-left">
+	    	<img src="${root }/resources/img/광고(KAC정보교육원).png" style="width: 100%; height: auto;">
+	    	<img src="${root }/resources/img/광고(KAC정보교육원).png" style="width: 100%; height: auto;">
+    	</div>
         
+        <div class="ad-right">
+        	<img src="${root }/resources/img/광고(KAC정보교육원).png" style="width: 100%; height: auto;">
+        	<img src="${root }/resources/img/광고(KAC정보교육원).png" style="width: 100%; height: auto;">
+        </div>
+    	
+    <div class="wrapper">
+    
+        <div class="inner">
+        	<div class="event-content">
             <!-- 회원 로그인 여부에 따라 테이블 조건 분기 -->
             <c:choose>
                 <c:when test="${not empty sessionScope.loginUser }">
@@ -172,7 +218,8 @@
                     </table>
                 </c:otherwise>
             </c:choose>
-
+			</div>
+			
             <div class="eventInfo">
                 <h2>출석 이벤트 안내</h2>
                 <br>
@@ -188,6 +235,7 @@
             </div>
             
         </div>
+        
     </div>
 	
 </body>

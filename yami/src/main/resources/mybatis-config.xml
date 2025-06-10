@@ -5,11 +5,8 @@
 
 <configuration>
     <settings>
-    
-    <!-- ▼ 댓글 등록 기능 ▼ -->
-    <setting name="mapUnderscoreToCamelCase" value="true"/>
-    
-    
+        <!-- underscore → camelCase 자동 매핑 -->
+        <setting name="mapUnderscoreToCamelCase" value="true"/>
         <setting name="jdbcTypeForNull" value="NULL"/>
     </settings>
 
@@ -20,8 +17,10 @@
         <typeAlias type="com.gaonna.yami.location.vo.Coord" alias="Coord"/>
         <typeAlias type="com.gaonna.yami.location.vo.Location" alias="Location"/>
         <typeAlias type="com.gaonna.yami.product.vo.Product" alias="Product"/>
-
-          <!-- ⭐️ “Reply” alias 추가 -->
-       <typeAlias type="com.gaonna.yami.product.vo.Reply" alias="Reply"/>
+        <typeAlias type="com.gaonna.yami.product.vo.Reply" alias="Reply"/>
+        <typeAlias type="com.gaonna.yami.composite.vo.Category" alias="Category"/>
+        <typeAlias type="com.gaonna.yami.composite.vo.BoardCo" alias="BoardCo"/>
+        <typeAlias type="com.gaonna.yami.composite.vo.SearchForm" alias="SearchForm"/>
+        <typeAlias type="com.gaonna.yami.product.vo.Attachment" alias="Attachment"/>
     </typeAliases>
 </configuration>

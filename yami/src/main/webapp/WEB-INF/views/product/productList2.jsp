@@ -34,12 +34,18 @@
         }
 
         .photo-item {
-            background-color: #fff;
-            padding: 10px;
-            border-radius: 10px;
-            box-shadow: 0 0 8px rgba(0,0,0,0.1);
-            text-align: center;
-        }
+		    background-color: #fff;
+		    padding: 10px;
+		    border-radius: 10px;
+		    box-shadow: 0 0 8px rgba(0,0,0,0.1);
+		    /* 기존: text-align: center; 제거 */
+		    text-align: left; /* 왼쪽 정렬 적용 */
+		    cursor: pointer;
+		    display: flex;
+		    flex-direction: column;
+		    justify-content: space-between;
+		    height: 100%;
+		}
 
         .photo-item img {
             width: 100%;
@@ -51,6 +57,8 @@
         .photo-title {
             margin-top: 10px;
             font-weight: bold;
+            font-size: 16px;
+            min-height: 40px;
         }
 
         .photo-price {
@@ -59,10 +67,24 @@
             margin-top: 5px;
         }
 
-        .photo-location-category {
+        .photo-info {
+            margin-top: 8px;
             font-size: 14px;
-            color: #888;
-            margin-top: 3px;
+            color: #555;
+            display: flex;
+            flex-direction: column;
+            gap: 2px;
+            min-height: 65px;
+        }
+
+        .pagination .page-item.active .page-link {
+            background-color: #fd7e14;
+            border-color: #fd7e14;
+            color: white;
+        }
+
+        .pagination .page-link {
+            color: #fd7e14;
         }
     </style>
 </head>
@@ -72,29 +94,42 @@
 
 <div class="container-main">
 
-    <%@ include file="/WEB-INF/views/product/sidebar.jsp" %> <!-- 사이드바 인클루드 -->
+    <%@ include file="/WEB-INF/views/product/sidebar.jsp" %>
 
     <div class="content">
         <h2>📸 가온나 야미 리스트</h2>
         <div class="photo-grid">
-            <c:forEach var="photo" items="${photos}">
-                <div class="photo-item">
-    <a href="${pageContext.request.contextPath}/productDetail.pro?productNo=${photo.productNo}" style="text-decoration: none; color: inherit;">
-        <img src="${pageContext.request.contextPath}/resources/img/${photo.path}" alt="${photo.title}">
-        <div class="photo-title">${photo.title}</div>
-        <div class="photo-price">${photo.price}원</div>
-        <div class="photo-location-category">${photo.location} ${photo.category}</div>
-    </a>
-</div>
+            <c:forEach var="product" items="${list}">
+                <div class="photo-item"
+                     onclick="location.href='${pageContext.request.contextPath}/productDetail.pro?productNo=${product.productNo}'">
+
+                    <c:if test="${not empty product.atList}">
+                        <img src="${pageContext.request.contextPath}${product.atList[0].filePath}/${product.atList[0].changeName}" alt="${product.productTitle}">
+                    </c:if>
+                    <c:if test="${empty product.atList}">
+                        <img src="${pageContext.request.contextPath}/resources/img/default.png" alt="기본 이미지">
+                    </c:if>
+
+                    <div class="photo-title">${product.productTitle}</div>
+                    <div class="photo-price">${product.price}원</div>
+
+                    <div class="photo-info">
+                        <div>${product.coordAddress}</div>
+                        <div>${product.userId}</div>
+                        <div>${product.categoryName}</div>
+                    </div>
+                </div>
             </c:forEach>
         </div>
 
-        <!-- 페이지네이션 표시 -->
+        <!-- 페이지네이션 -->
         <nav aria-label="Page navigation" class="mt-4">
             <ul class="pagination justify-content-center">
                 <c:forEach var="i" begin="${pi.startPage}" end="${pi.endPage}">
                     <li class="page-item ${pi.currentPage == i ? 'active' : ''}">
-                        <a class="page-link" href="${pageContext.request.contextPath}/productList.pro?currentPage=${i}">${i}</a>
+                        <a class="page-link" href="${pageContext.request.contextPath}/productList2.pro?currentPage=${i}">
+                            ${i}
+                        </a>
                     </li>
                 </c:forEach>
             </ul>
