@@ -431,8 +431,68 @@ public class LocationServiceImpl implements LocationService{
 	
 	//댓글 조회
 	@Override
-	public List<BakeryComment> selectBakeryComment(int bakeryNo, int page) {
-		return null;
+	public List<BakeryComment> selectBakeryComment(String bakeryNo, int page) {
+		
+		//page 유효성 검사
+		if(page<=0) {
+			page=1;
+		}
+		
+		int startRow = (page-1)*10+1;
+		int endRow = page*10;
+		
+		Map<String, Object> map = new HashMap<>();
+		map.put("bakeryNo", bakeryNo);
+		map.put("startRow", startRow);
+		map.put("endRow", endRow);
+		
+		List<BakeryComment> result = dao.selectBakeryComment(sqlSession,map);
+		new BakeryComment().bakeryCommentSDF(result);
+		return result;
 	}
 	
+	@Override
+	public List<BakeryComment> selectBakeryRecomment(String bakeryNo, int page) {
+		
+		//page 유효성 검사
+		if(page<=0) {
+			page=1;
+		}
+		
+		int startRow = (page-1)*10+1;
+		int endRow = page*10;
+		
+		Map<String, Object> map = new HashMap<>();
+		map.put("bakeryNo", bakeryNo);
+		map.put("startRow", startRow);
+		map.put("endRow", endRow);
+		
+		List<BakeryComment> result = dao.selectBakeryRecomment(sqlSession,map);
+		new BakeryComment().bakeryCommentSDF(result);
+		return result;
+	}
+	
+	
+	//댓글 넣기
+	@Override
+	public int insertBakeryComment(Map<String, Object> map) {
+		//유효성 검사
+		if(((String)map.get("commentContent")).length() > 100) {
+			return 0;
+		}else if(!((String)map.get("bakeryLike")).equals("L")
+				&& !((String)map.get("bakeryLike")).equals("D")) {
+			return 0;
+		}
+		return dao.insertBakeryComment(sqlSession,map);
+	}
+	
+	//대댓글 넣기
+	@Override
+	public int insertBakeryRecomment(Map<String, Object> map) {
+		//유효성 검사
+		if(((String)map.get("commentContent")).length() > 100) {
+			return 0;
+		}
+		return dao.insertBakeryRecomment(sqlSession,map);
+	}
 }

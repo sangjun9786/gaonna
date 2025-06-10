@@ -136,6 +136,7 @@ public class LocationCotroller {
 		}
 	}
 	
+	//----------------------우리동네 나와바리----------------------
 	
 	//동네(location) 메인으로
 	@GetMapping("dongneMain.dn")
@@ -152,11 +153,9 @@ public class LocationCotroller {
 					break;
 				}
 			}
-			System.out.println("컨트롤러, 대표동네 : "+mainCoord);
 			
 			//model에 json형식으로 bakery조회
 			List<Bakery> bakeries = service.selectBakeries(mainCoord);
-			System.out.println("컨트롤러, bakeries : "+bakeries);
 			String bakeriesJson = new Gson().toJson(bakeries);
 			model.addAttribute("bakeriesJson", bakeriesJson);
 			
@@ -168,14 +167,20 @@ public class LocationCotroller {
 		}
 	}
 	
+	//댓글 조회
+	@ResponseBody
 	@PostMapping("selectBakeryComment.dn")
-	public Map<String, Object> selectBakeryComment(int bakeryNo, int page) {
+	public Map<String, Object> selectBakeryComment(String bakeryNo, int page) {
 		try {
-			List<BakeryComment> bakeryComments = service.selectBakeryComment(bakeryNo,page);
+			Map<String, Object> response = new HashMap<>();
 			
-		    Map<String, Object> response = new HashMap<>();
+			//댓글 리스트 조회해서 넣기
+			List<BakeryComment> bakeryComments = service.selectBakeryComment(bakeryNo,page);
 		    response.put("comments", bakeryComments);
-//		    response.put("hasNext", hasNext);
+		    
+		    //아직 조회될 리스트가 남았는지 알아보자
+		    boolean hasNext = bakeryComments.size() >= 10;
+		    response.put("hasNext", hasNext);
 		    response.put("status", "pass");
 		    return response;
 		} catch (Exception e) {
@@ -186,8 +191,83 @@ public class LocationCotroller {
 		}
 	}
 	
+	//대댓글 조회
+	@ResponseBody
+	@PostMapping("selectBakeryRecomment.dn")
+	public Map<String, Object> selectBakeryRecomment(String bakeryNo, int page) {
+		try {
+			Map<String, Object> response = new HashMap<>();
+			
+			//대댓글 리스트 조회해서 넣기
+			List<BakeryComment> bakeryComments = service.selectBakeryRecomment(bakeryNo,page);
+		    response.put("comments", bakeryComments);
+		    
+		    //아직 조회될 리스트가 남았는지 알아보자
+		    boolean hasNext = bakeryComments.size() >= 10;
+		    response.put("hasNext", hasNext);
+		    response.put("status", "pass");
+		    return response;
+		} catch (Exception e) {
+			e.printStackTrace();
+			Map<String, Object> response = new HashMap<>();
+			response.put("status", "noPass");
+			return response;
+		}
+	}
 	
+	//댓글 추가
+	@ResponseBody
+	@PostMapping("insertBakeryComment.dn")
+	public String insertBakeryComment(HttpSession session,
+			String content, String bakeryNo,String like) {
+		try {
+			int userNo = ((Member)session.getAttribute("loginUser")).getUserNo();
+			
+			Map<String, Object> map = new HashMap<>();
+			map.put("userNo", userNo);
+			map.put("commentContent", content.trim());
+			map.put("bakeryNo", bakeryNo);
+			map.put("bakeryLike", like);
+			
+			int result = service.insertBakeryComment(map);
+			
+			if(result>0) {
+				return "pass";
+			}else {
+				return "noPass";
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+			return "noPass";
+		}
+	}
 	
+	//대댓글 추가
+	@ResponseBody
+	@PostMapping("insertBakeryRecomment.dn")
+	public String insertBakeryRecomment(HttpSession session,
+			String content, int parentCommentNo,String bakeryNo) {
+		try {
+			int userNo = ((Member)session.getAttribute("loginUser")).getUserNo();
+			
+			Map<String, Object> map = new HashMap<>();
+			map.put("userNo", userNo);
+			map.put("commentContent", content.trim());
+			map.put("parentCommentNo", parentCommentNo);
+			map.put("bakeryNo", bakeryNo);
+			
+			int result = service.insertBakeryRecomment(map);
+			
+			if(result>0) {
+				return "pass";
+			}else {
+				return "noPass";
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+			return "noPass";
+		}
+	}
 	
 	
 	
