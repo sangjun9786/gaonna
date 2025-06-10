@@ -289,5 +289,18 @@
 			)
 	</insert>
 
-	
+	<update id="updateBakeryComment" parameterType="map">
+		update BAKERY_COMMENT
+		set comment_content = #{commentContent}
+		    comment_date = SYSDATE
+		    bakery_like = #{bakeryLike}
+		    status = 'M'
+		where comment_no = #{commentNo}
+	</update>
+
+	<delete id="deleteBakeryComment" parameterType="int">
+		update BAKERY_COMMENT
+		set status = 'N'
+		where comment_no = #{commentNo}
+	</delete>	
 </mapper>

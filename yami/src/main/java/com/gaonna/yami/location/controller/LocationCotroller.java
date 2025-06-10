@@ -269,7 +269,57 @@ public class LocationCotroller {
 		}
 	}
 	
+	//댓글 수정
+	@PostMapping("updateBakeryComment.dn")
+	public String updateBakeryComment(HttpSession session,
+			String content, int userNo, int commentNo, String bakeryLike) {
+		try {
+			//수정 권한이 있는지 확인
+			Member m = (Member)session.getAttribute("loginUser");
+			if(m.getUserNo() != userNo &&
+					m.getRoleType().equals("N")) {
+				return "noPass";
+			}
+			
+			Map<String, Object> map = new HashMap<>();
+			map.put("userNo", userNo);
+			map.put("commentContent", content.trim());
+			map.put("commentNo", commentNo);
+			map.put("bakeryLike", bakeryLike);
+			
+			if(service.updateBakeryComment(map)>0) {
+				return "pass";
+			}else {
+				return "noPass";
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+			return "noPass";
+		}
+	}
 	
+	//댓글 삭제
+	@PostMapping("deleteBakeryComment.dn")
+	public String deleteBakeryComment(HttpSession session,
+			int userNo, int commentNo) {
+		try {
+			//수정 권한이 있는지 확인
+			Member m = (Member)session.getAttribute("loginUser");
+			if(m.getUserNo() != userNo &&
+					m.getRoleType().equals("N")) {
+				return "noPass";
+			}
+			
+			if(service.deleteBakeryComment(commentNo)>0) {
+				return "pass";
+			}else {
+				return "noPass";
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+			return "noPass";
+		}
+	}
 	
 	
 	

@@ -495,4 +495,29 @@ public class LocationServiceImpl implements LocationService{
 		}
 		return dao.insertBakeryRecomment(sqlSession,map);
 	}
+	
+	//댓글 수정하기
+	@Override
+	public int updateBakeryComment(Map<String, Object> map) {
+		//유효성 검사
+		if(((String)map.get("commentContent")).length() > 100) {
+			return 0;
+		}
+		switch (((String)map.get("bakeryLike"))) {
+		case "L":
+		case "D":
+		case "P":
+			break;
+		default:
+			return 0;
+		}
+		
+		return dao.updateBakeryComment(sqlSession,map);
+	}
+	
+	//댓글 삭제하기
+	@Override
+	public int deleteBakeryComment(int commentNo) {
+		return dao.deleteBakeryComment(sqlSession,commentNo);
+	}
 }

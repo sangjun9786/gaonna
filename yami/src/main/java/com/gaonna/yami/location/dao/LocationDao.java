@@ -79,4 +79,12 @@ public class LocationDao {
 		return sqlSession.insert("locationMapper.insertBakeryRecomment", map);
 	}
 
+	public int updateBakeryComment(SqlSessionTemplate sqlSession, Map<String, Object> map) {
+		return sqlSession.update("locationMapper.updateBakeryComment", map);
+	}
+	
+	public int deleteBakeryComment(SqlSessionTemplate sqlSession, int commentNo) {
+		return sqlSession.update("locationMapper.deleteBakeryComment", commentNo);
+	}
+
 }

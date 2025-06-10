@@ -64,6 +64,10 @@ public interface LocationService {
 	//대댓글 넣기
 	int insertBakeryRecomment(Map<String, Object> map);
 
+	//댓글 수정하기
+	int updateBakeryComment(Map<String, Object> map);
 
+	//댓글 삭제하기
+	int deleteBakeryComment(int commentNo);
 
 }
