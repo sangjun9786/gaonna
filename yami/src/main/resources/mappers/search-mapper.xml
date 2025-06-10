@@ -46,6 +46,9 @@
 			<if test="price1 != null and price2 != null">
 				AND PRICE BETWEEN #{price1} AND #{price2}
 			</if>
+			<if test="keyword != ''">
+				AND (PRODUCT_TITLE LIKE '%'||#{keyword}||'%' OR PRODUCT_CONTENT LIKE '%'||#{keyword}||'%')
+			</if>
 		</where>
 	</select>
 	
@@ -96,6 +99,9 @@
 			</if>
 			<if test="price1 != null and price2 != null">
 				AND pb.PRICE BETWEEN #{price1} AND #{price2}
+			</if>
+			<if test="keyword != ''">
+				AND (PRODUCT_TITLE LIKE '%'||#{keyword}||'%' OR PRODUCT_CONTENT LIKE '%'||#{keyword}||'%')
 			</if>
 	    </where>
 	    ORDER BY pb.UPLOAD_DATE DESC

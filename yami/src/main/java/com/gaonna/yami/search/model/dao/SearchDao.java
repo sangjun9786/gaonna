@@ -33,23 +33,25 @@ public class SearchDao {
 		return (ArrayList)sqlSession.selectList("searchMapper.getLoca", userLoca);
 	}
 
-	public int getFilterCount(SqlSessionTemplate sqlSession, String location, int category, Integer price1, Integer price2) {
+	public int getFilterCount(SqlSessionTemplate sqlSession, String location, int category, Integer price1, Integer price2, String keyword) {
 		HashMap<String, Object> map = new HashMap<>();
 	    map.put("location", location);
 	    map.put("category", category);
 	    map.put("price1", price1);
 	    map.put("price2", price2);
+	    map.put("keyword", keyword);
 		
 		return sqlSession.selectOne("searchMapper.getFilterCount", map);
 	}
 
 	public ArrayList<Product> productFilter(SqlSessionTemplate sqlSession, String location, int category,
-			Integer price1, Integer price2, PageInfo pi) {
+			Integer price1, Integer price2, PageInfo pi, String keyword) {
 		HashMap<String, Object> map = new HashMap<>();
 	    map.put("location", location);
 	    map.put("category", category);
 	    map.put("price1", price1);
 	    map.put("price2", price2);
+	    map.put("keyword", keyword);
 		
 		int limit = pi.getBoardLimit();
 		int offset = (pi.getCurrentPage()-1)*limit;

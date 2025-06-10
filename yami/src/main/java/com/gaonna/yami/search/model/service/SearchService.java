@@ -16,8 +16,8 @@ public interface SearchService {
 
 	ArrayList<String> getLoca(String userLoca);
 
-	int getFilterCount(String location, int category, Integer price1, Integer price2);
+	int getFilterCount(String location, int category, Integer price1, Integer price2, String keyword);
 
-	ArrayList<Product> productFilter(String location, int category, Integer price1, Integer price2, PageInfo pi);
+	ArrayList<Product> productFilter(String location, int category, Integer price1, Integer price2, PageInfo pi, String keyword);
 
 }

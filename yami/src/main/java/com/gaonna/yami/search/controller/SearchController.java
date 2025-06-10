@@ -1,15 +1,16 @@
 package com.gaonna.yami.search.controller;
 
 import java.util.ArrayList;
-import java.util.List;
 
 import javax.servlet.http.HttpSession;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.gaonna.yami.common.PageInfo;
 import com.gaonna.yami.common.Pagination;
@@ -24,13 +25,14 @@ public class SearchController {
 	private SearchService service;
 	
 	@RequestMapping("get.ca")
-	public String getCategory(HttpSession session, Model model) {
+	public String getCategory(HttpSession session,
+							  Model model) {
 		
 		ArrayList<Category> list = service.getCategory();
-		
+		String keyword = (String)session.getAttribute("keyword"); 
 		if(!list.isEmpty()) {
 			session.setAttribute("cate", list);
-			return "redirect:/productList2.pro";
+			return "redirect:/filter.bo";
 		}else {
 			System.out.println(list);
 			model.addAttribute("errorMsg", "카테고리 정보 조회 실패~!");
@@ -40,9 +42,11 @@ public class SearchController {
 	}
 	
 	@RequestMapping("get.lo")
-	public String getLocation(HttpSession session, Model model) {
+	public String getLocation(HttpSession session,
+				  			  Model model) {
 		Member m = (Member)session.getAttribute("loginUser");
 		
+		String keyword = (String)session.getAttribute("keyword");
 		String userLoca = service.getUserLoca(m);
 		
 		ArrayList<String> list = service.getLoca(userLoca);
@@ -53,25 +57,26 @@ public class SearchController {
 		}else {
 			session.setAttribute("userLoca", userLoca);
 			session.setAttribute("loca", list);
-			return "redirect:/productList2.pro";
+			return "redirect:/filter.bo";
 		}
 	}
 	
 	@RequestMapping("filter.bo")
 	public String productFilter(@RequestParam(value = "currentPage", defaultValue = "1") 
 	 							int currentPage,
-	 							@RequestParam("location") String location,
-					            @RequestParam("category") int category,
+	 							@RequestParam(value = "location", defaultValue = "all") String location,
+					            @RequestParam(value = "category", defaultValue = "0") int category,
 					            @RequestParam(value = "price1", required = false) Integer price1,
 					            @RequestParam(value = "price2", required = false) Integer price2,
+					            HttpSession session,
 					            Model model) {
-        
-        int listCount = service.getFilterCount(location, category, price1, price2);
+        String keyword = (String)session.getAttribute("keyword");
+        int listCount = service.getFilterCount(location, category, price1, price2, keyword);
         int boardLimit = 2;
         int pageLimit = 5;
         PageInfo pi = Pagination.getPageInfo(listCount, currentPage, pageLimit, boardLimit);
         
-        ArrayList<Product> list = service.productFilter(location, category, price1, price2, pi);
+        ArrayList<Product> list = service.productFilter(location, category, price1, price2, pi, keyword);
         
         model.addAttribute("list", list);
         model.addAttribute("pi", pi);
@@ -83,5 +88,16 @@ public class SearchController {
         }
         return "product/productList2";
 	}
+	
+	@PostMapping(value="saveKeyword", produces = "text/html;charset=UTF-8")
+    @ResponseBody
+    public String saveKeywordToSession(@RequestParam("keyword") String keyword, HttpSession session) {
+        
+        // 1. 파라미터로 받은 keyword 값을 세션에 저장
+        session.setAttribute("keyword", keyword);
+        
+        // 2. 클라이언트(AJAX의 success 함수)에 성공 메시지 응답
+        return "success";
+    }
 	
 }

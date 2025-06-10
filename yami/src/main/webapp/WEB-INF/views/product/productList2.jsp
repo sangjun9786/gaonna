@@ -91,6 +91,7 @@
 <body>
 
 <%@ include file="/WEB-INF/views/common/header.jsp" %>
+<%@ include file="/WEB-INF/views/common/searchbar.jsp" %>
 
 <div class="container-main">
 
@@ -127,18 +128,9 @@
             <ul class="pagination justify-content-center">
                 <c:forEach var="i" begin="${pi.startPage}" end="${pi.endPage}">
                     <li class="page-item ${pi.currentPage == i ? 'active' : ''}">
-                    	<c:choose>
-                    		<c:when test="${selectedPrice1 != null and selectedPrice2 != null }">
-		                        <a class="page-link" href="${root}/filter.bo?currentPage=${i}&location=${selectedLocation}&category=${selectedCategory}&price1=${selectedPrice1}&price2=${selectedPrice2}">
-		                            ${i}
-		                        </a>
-                    		</c:when>
-                    		<c:otherwise>
-                    			<a class="page-link" href="${root}/filter.bo?currentPage=${i}&location=${selectedLocation}&category=${selectedCategory}">
-		                            ${i}
-		                        </a>
-                    		</c:otherwise>
-                    	</c:choose>
+                    	<a class="page-link" href="${root}/filter.bo?currentPage=${i}&location=${selectedLocation}&category=${selectedCategory}&price1=${selectedPrice1}&price2=${selectedPrice2}&keyword=${keyword}">
+		                    ${i}
+		                </a>
                     </li>
                 </c:forEach>
             </ul>
