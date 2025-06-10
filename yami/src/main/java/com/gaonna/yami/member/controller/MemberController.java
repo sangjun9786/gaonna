@@ -211,6 +211,8 @@ public class MemberController {
 		} catch (Exception e) {
 			e.printStackTrace();
 			return errorPage(model,"로그인에 실패하였습니다.");
+			
+			
 		}
 	}
 	

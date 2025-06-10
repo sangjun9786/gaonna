@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+    "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="replyMapper">
+    <select id="selectReplyList" parameterType="int" resultType="Reply">
+        SELECT
+          REPLY_NO   AS replyNo,
+          PRODUCT_NO AS productNo,
+          USER_ID    AS userId,
+          REPLY_TEXT AS replyText,
+          REPLY_DATE AS replyDate
+        FROM REPLY
+        WHERE PRODUCT_NO = #{productNo}
+        ORDER BY REPLY_DATE DESC
+    </select>
+
+    <insert id="insertReply" parameterType="Reply">
+        INSERT INTO REPLY
+          (REPLY_NO, PRODUCT_NO, USER_ID, REPLY_TEXT, REPLY_DATE)
+        VALUES
+          (SEQ_REPLY_NO.NEXTVAL, #{productNo}, #{userId}, #{replyText}, SYSDATE)
+    </insert>
+</mapper>

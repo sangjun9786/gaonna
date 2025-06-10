@@ -14,19 +14,19 @@ public class Product {
 	private int productNo;
 	private int categoryNo;
 	private double score;
-	private int userNo;
+	private int userNo; // 🔧 수정된 부분
 	private int price;
 	private Date uploadDate;
 	private int productCount;
 	private String productTitle;
 	private String productContent;
 	private String status;
-	private String coordAddress; //유저 위치정보값
+	
+	private String coordAddress; // 유저 위치 정보
 	private String userId;
 	private String userName;
 	private String categoryName;
 	
-    private ArrayList<Attachment> atList;
-//    private ArrayList<Comment> commentList;
-
+	private ArrayList<Attachment> atList;
+	// private ArrayList<Comment> commentList;
 }
