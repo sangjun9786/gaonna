@@ -29,7 +29,6 @@ public class SearchController {
 							  Model model) {
 		
 		ArrayList<Category> list = service.getCategory();
-		String keyword = (String)session.getAttribute("keyword"); 
 		if(!list.isEmpty()) {
 			session.setAttribute("cate", list);
 			return "redirect:/filter.bo";
@@ -46,7 +45,6 @@ public class SearchController {
 				  			  Model model) {
 		Member m = (Member)session.getAttribute("loginUser");
 		
-		String keyword = (String)session.getAttribute("keyword");
 		String userLoca = service.getUserLoca(m);
 		
 		ArrayList<String> list = service.getLoca(userLoca);
