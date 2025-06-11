@@ -40,7 +40,14 @@
     </select>
 
     <select id="selectListCount" resultType="_int">
-        SELECT COUNT(*) FROM NOTICE WHERE STATUS = 'Y'
+        SELECT COUNT(*)
+        FROM NOTICE
+        <where>
+        	STATUS = 'Y'
+        	<if test="keyword != ''">
+            	AND (NOTICE_TITLE LIKE '%'||#{keyword}||'%') OR (NOTICE_CONTENT LIKE '%'||#{keyword}||'%')
+            </if>
+        </where>
     </select>
 
     <select id="selectList" resultType="Notice">
@@ -57,7 +64,12 @@
                    N.STATUS
             FROM NOTICE N
             JOIN MEMBER M ON N.USER_NO = M.USER_NO
-            WHERE N.STATUS = 'Y'
+            <where>
+            	N.STATUS = 'Y'
+            	<if test="keyword != ''">
+            		AND (NOTICE_TITLE LIKE '%'||#{keyword}||'%') OR (NOTICE_CONTENT LIKE '%'||#{keyword}||'%')
+            	</if>
+            </where>
             ORDER BY N.NOTICE_NO DESC
         )
         WHERE RNUM BETWEEN #{startRow} AND #{endRow}
