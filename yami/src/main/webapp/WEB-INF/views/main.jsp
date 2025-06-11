@@ -139,7 +139,7 @@
 			<div class="row align-items-center mb-4">
 				<!-- 로고 영역 -->
 				<div class="col-auto pe-0">
-					<img src="${root}/resources/img/yami-logo.png" alt="YAMI!"
+					<img src="${root}/resources/icon/yami-logo.png" alt="YAMI!"
 						style="height: 200px; width: auto; display: block;" />
 				</div>
 				<!-- 검색창 영역: 남은 공간 모두 차지 -->
@@ -313,7 +313,7 @@
 				</a>
 			</div>
 			<div class="col">
-				<a href="#" class="text-decoration-none">
+				<a href="${root}/notice/list" class="text-decoration-none">
 					<div class="card text-center h-100 shadow-sm">
 						<div class="card-body">
 							<i class="bi bi-megaphone fs-1 text-danger"></i>
