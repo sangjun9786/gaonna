@@ -21,8 +21,8 @@
 	  display: flex;
 	  align-items: center;
 	  gap: 10px;
-	  margin-left: 300px;
-	  margin-right: 300px;
+	  margin-left: 400px;
+	  margin-right: 400px;
 	}
 	.select {
 		margin-top: 15px;
