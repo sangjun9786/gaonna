@@ -26,6 +26,8 @@ public class Product {
 	private String userId;
 	private String userName;
 	private String categoryName;
+	private String originName;   
+	private String changeName;   
 	
 	private ArrayList<Attachment> atList;
 	// private ArrayList<Comment> commentList;

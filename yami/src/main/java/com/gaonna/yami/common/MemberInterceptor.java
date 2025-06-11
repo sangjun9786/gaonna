@@ -12,6 +12,7 @@ public class MemberInterceptor implements HandlerInterceptor{
 	@Override
 	public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler)
 			throws Exception {
+	
 		//request : 사용자 요청
 		//response : 사용자에게 보낼 정보
 		//handler : 요청 처리 주체

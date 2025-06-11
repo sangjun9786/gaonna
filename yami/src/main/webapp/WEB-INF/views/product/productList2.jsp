@@ -105,7 +105,8 @@
                      onclick="location.href='${pageContext.request.contextPath}/productDetail.pro?productNo=${product.productNo}'">
 
                     <c:if test="${not empty product.atList}">
-                        <img src="${pageContext.request.contextPath}${product.atList[0].filePath}/${product.atList[0].changeName}" alt="${product.productTitle}">
+<%--                         <img src="/resources/uploadFiles/${product.atList[0].changeName}" alt="${product.productTitle}"> --%>
+							<img src="${pageContext.request.contextPath}/resources/uploadFiles/${product.atList[0].changeName}" alt="${product.productTitle}" />
                     </c:if>
                     <c:if test="${empty product.atList}">
                         <img src="${pageContext.request.contextPath}/resources/img/default.png" alt="기본 이미지">
