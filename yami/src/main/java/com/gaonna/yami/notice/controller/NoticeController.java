@@ -128,15 +128,16 @@ public class NoticeController {
     
     @GetMapping("/list")
     public String selectNoticeList(@RequestParam(value = "cpage", defaultValue = "1") int currentPage,
-                                   Model model) {
-
-        int listCount = noticeService.selectListCount(); 
+                                   Model model,
+                                   HttpSession session) {
+    	String keyword = (String)session.getAttribute("keyword");
+        int listCount = noticeService.selectListCount(keyword); 
         int pageLimit = 5;   
         int boardLimit = 10; 
 
         PageInfo pi = Pagination.getPageInfo(listCount, currentPage, pageLimit, boardLimit);
 
-        List<Notice> list = noticeService.selectList(pi);
+        List<Notice> list = noticeService.selectList(pi, keyword);
 
         model.addAttribute("list", list);
         model.addAttribute("pageInfo", pi);

@@ -50,22 +50,20 @@
 		</button>
 	</div>
 <script>
-	$(document).ready(function() { // DOM 로드 후 실행을 보장하는 표준 방식
-	
-		// 이벤트 위임을 사용하여 #warp 내의 #searchBtn 클릭 이벤트를 처리
+	$(document).ready(function() {
 		$('#warp').on('click', '#searchBtn', function (e) {
-			e.preventDefault(); // **가장 중요: 버튼의 기본 폼 제출 동작을 막습니다.**
+			e.preventDefault();
 	
-			console.log('Search button clicked!'); // 디버깅용 로그
+			console.log('Search button clicked!');
 	
-			let condition = $('#condition').val(); // ID 셀렉터 사용
-			let keyword = $('#keyword').val();     // ID 셀렉터 사용
+			let condition = $('#condition').val();
+			let keyword = $('#keyword').val();
 			let encodedKeyword = encodeURIComponent(keyword);
 				            
 			if (condition == 'resell') {
 				$.ajax({
 					type: 'POST',
-					url: '${root}/saveKeyword', // ${root}를 사용하여 절대 경로 지정
+					url: '${root}/saveKeyword',
 					data: {
 						keyword: keyword
 					},
@@ -78,33 +76,28 @@
 						alert('검색어 저장 중 오류가 발생했습니다.');
 					}
 				});
-			} else { // resell이 아닌 다른 조건일 경우
-				if (condition == 'location') {
-					url = '${root}/locationSearch?keyword=' + encodedKeyword;
-				} else if (condition == 'notice') {
-					$.ajax({
-						type: 'POST',
-						url: '${root}/saveKeyword', // ${root}를 사용하여 절대 경로 지정
-						data: {
-							keyword: keyword
-						},
-						success: function(response) {
-							console.log('세션에 키워드 저장 성공:', response);
-							location.href = '${root}/searchNotice';
-						},
-						error: function(xhr, status, error) {
-							console.error('세션 저장 실패:', error);
-							alert('검색어 저장 중 오류가 발생했습니다.');
-						}
-					});
-				} else if (condition == 'qna') {
-					url = '${root}/qnaSearch?keyword=' + encodedKeyword;
-				} else if (condition == 'report') {
-					url = '${root}/reportSearch?keyword=' + encodedKeyword;
-				}
-				if (url) { // url이 정의된 경우에만 이동
-					location.href = url;
-				}
+			} else if (condition == 'location') {
+				location.href = '${root}/locationSearch';
+			} else if (condition == 'notice') {
+				$.ajax({
+					type: 'POST',
+					url: '${root}/saveKeyword',
+					data: {
+						keyword: keyword
+					},
+					success: function(response) {
+						console.log('세션에 키워드 저장 성공:', response);
+						location.href = '${root}/notice/list';
+					},
+					error: function(xhr, status, error) {
+						console.error('세션 저장 실패:', error);
+						alert('검색어 저장 중 오류가 발생했습니다.');
+					}
+				});
+			} else if (condition == 'qna') {
+				location.href = '${root}/qnaSearch';
+			} else if (condition == 'report') {
+				location.href = '${root}/reportSearch';
 			}
 		});
 	});

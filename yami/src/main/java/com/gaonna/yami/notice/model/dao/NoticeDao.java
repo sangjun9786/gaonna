@@ -45,8 +45,8 @@ public class NoticeDao {
         return sqlSession.selectList("noticeMapper.selectList", pi);
     }
     
-    public int selectListCount(SqlSession sqlSession) {
-        return sqlSession.selectOne("noticeMapper.selectListCount");
+    public int selectListCount(SqlSession sqlSession, String keyword) {
+        return sqlSession.selectOne("noticeMapper.selectListCount", keyword);
     }
     
     public List<Notice> selectList(SqlSession sqlSession, Map<String, Object> paramMap) {
