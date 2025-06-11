@@ -75,8 +75,8 @@
         .file-names {
             margin-top: 10px;
             font-size: 14px;
-            font-weight: bold; /* 폰트 굵기 추가 */
-    		display: block;
+            font-weight: bold;
+            display: block;
         }
         .action-btn {
             background-color: #ff6600;
@@ -116,7 +116,7 @@
 
     <div class="form-container">
         <h2>상품 등록</h2>
-        <form method="post" action="${contextPath}/productEnrollForm.pr" enctype="multipart/form-data" onsubmit="return validateForm();">
+        <form method="post" action="${contextPath}/productEnrollForm.pr" enctype="multipart/form-data" onsubmit="return validateForm();" id="productForm">
             <input type="hidden" name="userNo" value="${loginUser.userNo}">
 
             <!-- 대표 이미지 -->
@@ -125,16 +125,16 @@
                 <label class="file-label" id="thumbnail-label">파일 선택</label>
                 <input type="file" name="thumbnail" class="form-control-file" id="thumbnail" accept="image/*" style="display: none;">
                 <div class="preview" id="preview-thumbnail"></div>
-                <div class="file-names" id="thumbnail-file-name" style="font-size:14px;"></div>
+                <div class="file-names" id="thumbnail-file-name"></div>
             </div>
 
             <!-- 상세 이미지 -->
             <div class="form-group">
                 <label class="form-label">상세 이미지</label>
-                <label for="detail-images" class="file-label">파일 선택</label>
-                <input type="file" name="uploadFiles" class="form-control-file" id="detail-images" accept="image/*" multiple style="display: none;">
+                <label for="detail-add" class="file-label">파일 선택</label>
+                <input type="file" id="detail-add" accept="image/*" style="display: none;">
                 <div class="preview" id="preview-detail"></div>
-                <div class="file-names" id="detail-file-names" style="font-size:14px;"></div>
+                <div class="file-names" id="detail-file-names"></div>
             </div>
 
             <!-- 제목, 설명 등 -->
@@ -168,7 +168,6 @@
 
 <script>
     const maxDetailImages = 3;
-    let detailFileList = [];
 
     $('#thumbnail-label').on('click', function () {
         $('#thumbnail').click();
@@ -199,42 +198,49 @@
         }
     });
 
-    $('#detail-images').on('change', function () {
-        console.log(this.files); // 파일 선택 확인용
-
+    $('#detail-add').on('change', function () {
         const files = Array.from(this.files);
         const preview = $('#preview-detail');
         const fileNameContainer = $('#detail-file-names');
+        const form = $('#productForm');
 
-        if (files.length + detailFileList.length > maxDetailImages) {
+        let currentCount = form.find('input[name="uploadFiles"]').length;
+
+        if (currentCount + files.length > maxDetailImages) {
             alert("상세 이미지는 최대 " + maxDetailImages + "개까지 등록 가능합니다.");
             return this.value = "";
         }
 
-        files.forEach((file) => {
+        files.forEach(file => {
             const reader = new FileReader();
             reader.onload = function (e) {
+                const id = Date.now() + Math.random();
                 const item = $('<div class="preview-item"></div>');
                 const img = $('<img>').attr('src', e.target.result);
                 const btn = $('<button class="remove-btn">x</button>').on('click', function () {
-                    const i = detailFileList.indexOf(file);
-                    if (i > -1) detailFileList.splice(i, 1);
+                    $(`#input-${id}`).remove();
                     item.remove();
                     nameItem.remove();
                 });
+
                 item.append(img).append(btn);
                 preview.append(item);
+
+                const input = $(`<input type="file" name="uploadFiles" style="display:none;" id="input-${id}">`);
+                const dt = new DataTransfer();
+                dt.items.add(file);
+                input[0].files = dt.files;
+                form.append(input);
+
+                nameItem = $('<div>').text("파일명: " + file.name);
+                fileNameContainer.append(nameItem);
             }
             reader.readAsDataURL(file);
-
-            detailFileList.push(file);
-            const nameItem = $('<div>').text("파일명" + detailFileList.length + ": " + file.name);
-            fileNameContainer.append(nameItem);
         });
 
         this.value = "";
     });
-	//이미지 없을시 유효성검사
+
     function validateForm() {
         if (!$('#thumbnail').val()) {
             alert("대표 이미지를 선택해주세요.");
@@ -246,4 +252,3 @@
 
 </body>
 </html>
-

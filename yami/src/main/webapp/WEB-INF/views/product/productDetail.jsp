@@ -1,11 +1,11 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
-<%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
+<%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt"%>
 <!DOCTYPE html>
 <html lang="ko">
 <head>
 <meta charset="UTF-8">
-<title>౰స్మ 상상 상세</title>
+<title>상품 상세보기</title>
 <style>
     body {
         font-family: '마르아고딕', sans-serif;
@@ -33,6 +33,7 @@
         width: 100%;
         border-radius: 10px;
         border: 1px solid #ddd;
+        cursor: pointer;
     }
     .info-area {
         width: 50%;
@@ -103,6 +104,37 @@
         cursor: pointer;
         font-weight: bold;
     }
+    #imageModal {
+        display: none;
+        position: fixed;
+        top: 0; left: 0;
+        width: 100%; height: 100%;
+        background: rgba(0,0,0,0.8);
+        z-index: 1000;
+        justify-content: center;
+        align-items: center;
+    }
+    #imageModalContent {
+        background: white;
+        padding: 20px;
+        border-radius: 10px;
+        max-width: 90%;
+        max-height: 90%;
+        overflow: auto;
+        text-align: center;
+    }
+    #modal-images img {
+        width: 300px;
+        height: 250px;
+        object-fit: cover;
+        margin: 10px;
+        border-radius: 5px;
+        border: 1px solid #ccc;
+        display: none;
+    }
+    #modal-controls {
+        margin-top: 15px;
+    }
 </style>
 </head>
 <body>
@@ -113,79 +145,78 @@
 
 <div class="container">
     <div class="flex">
-        <!-- 상품 이미지 영역 -->
         <div class="image-area">
             <c:if test="${not empty product.atList}">
-                <img src="${contextPath}${product.atList[0].filePath}${product.atList[0].changeName}" alt="대표이미지">
-           </c:if>
+                <img src="${contextPath}${product.atList[0].filePath}${product.atList[0].changeName}" alt="대표이미지" id="main-image">
+            </c:if>
         </div>
-        <!-- 상품 정보 영역 -->
         <div class="info-area">
-            <div class="meta" style="font-weight:bold; color:#888;">
-                ${product.categoryName}
-            </div>
+            <div class="meta" style="font-weight:bold; color:#888;">${product.categoryName}</div>
             <h2>${product.productTitle}</h2>
             <div class="meta">
-                ${product.userId} · 
-                <fmt:formatDate value="${product.uploadDate}" pattern="yyyy-MM-dd" /> · 
-                조회수: ${product.productCount}
+                ${product.userId} · <fmt:formatDate value="${product.uploadDate}" pattern="yyyy-MM-dd" /> · 조회수: ${product.productCount}
             </div>
-            <div class="price">
-                <fmt:formatNumber value="${product.price}" pattern="#\,###" />원
-            </div>
+            <div class="price"><fmt:formatNumber value="${product.price}" pattern="#\,###" />원</div>
             <div class="desc">${product.productContent}</div>
-            <!-- 진( 좋아요) 버튼 영역 -->
             <div class="like-area">
                 채팅 0 · 조회 ${product.productCount}
                 <form id="wishForm" style="display:inline;">
                     <input type="hidden" id="productNo" value="${product.productNo}" />
-                    <button type="button" onclick="wishProduct();" class="like-btn">
-                        ❤️ 좋아요 (<span id="wishCount">${wishCount}</span>)
-                    </button>
+                    <button type="button" onclick="wishProduct();" class="like-btn">❤️ 좋아요 (<span id="wishCount">${wishCount}</span>)</button>
                 </form>
             </div>
             <button class="action-btn" style="width:100%;">채팅으로 거래하기</button>
-            <!-- 삭제 버튼 (작성자 본인일 경우에만 노출) -->
-		<c:if test="${loginUser.userId eq product.userId}">
-		   <form id="deleteForm" method="post" action="${contextPath}/delete.pro" style="display:none;">
-		       <input type="hidden" name="productNo" value="${product.productNo}" />
-		       <input type="hidden" name="filePath" value="/resources/uploadFiles/${product.atList[0].changeName}" />
-		   </form>
-		   <button type="button" id="deleteBtn" class="action-btn" style="width:auto; float:right;">삭제하기</button>
-		</c:if>
+            <c:if test="${loginUser.userId eq product.userId}">
+                <form id="deleteForm" method="post" action="${contextPath}/delete.pro" style="display:none;">
+                    <input type="hidden" name="productNo" value="${product.productNo}" />
+                    <input type="hidden" name="filePath" value="/resources/uploadFiles/${product.atList[0].changeName}" />
+                </form>
+                <button type="button" id="deleteBtn" class="action-btn" style="width:auto; float:right;">삭제하기</button>
+            </c:if>
         </div>
     </div>
 
-    <!-- 작성자 정보 + 평점 -->
     <div class="writer-box">
         <div class="writer-info">
-            <strong>${product.userId}</strong><br>
-            ${product.coordAddress}
+            <strong>${product.userId}</strong><br>${product.coordAddress}
         </div>
-        <div class="score">
-            ★ <fmt:formatNumber value="${product.score}" pattern="#.0" /> / 5.0<br>
-            <span style="font-size: 12px; color: #666;">판매자 평점</span>
-        </div>
+        <div class="score">★ <fmt:formatNumber value="${product.score}" pattern="#.0" /> / 5.0<br><span style="font-size: 12px; color: #666;">판매자 평점</span></div>
     </div>
 
-    <!-- 댓글 영역 -->
     <div class="comment-section">
         <h4>💬 댓글</h4>
         <div class="mb-3">
-            <textarea id="replyContent" class="form-control" placeholder="댓글을 입력하세요" rows="3" style="width:100%;"></textarea>
+            <textarea id="replyContent" class="form-control" placeholder="댓글을 입력하세요" rows="3"></textarea>
             <button onclick="insertReply();" type="button" class="btn btn-primary mt-2">등록</button>
         </div>
-        <%-- <c:forEach var="c" items="${product.commentList}">
-        <div class="comment-box">${c.content}</div>
-        </c:forEach> --%>
-		<div id="replyArea" class="mt-3"></div>
+        <div id="replyArea" class="mt-3"></div>
+    </div>
+
+    <div id="hidden-images" style="display:none;">
+        <c:forEach var="img" items="${product.atList}">
+            <c:if test="${img.fileLevel == 2}">
+                <div class="detail-image-path" data-src="${contextPath}${img.filePath}${img.changeName}"></div>
+            </c:if>
+        </c:forEach>
+    </div>
+
+    <div id="imageModal" class="modal">
+        <div id="imageModalContent">
+            <h4>상세 이미지</h4>
+            <div id="modal-images"></div>
+            <div id="modal-controls">
+                <button onclick="prevImage()" class="btn btn-outline-secondary">이전</button>
+                <button onclick="nextImage()" class="btn btn-outline-secondary">다음</button>
+                <button onclick="closeModal()" class="btn btn-secondary">닫기</button>
+            </div>
+        </div>
     </div>
 </div>
 
-
-
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script>
+let currentIndex = 0;
+let imageElements = [];
 
 $(function () {
     $("#deleteBtn").click(function () {
@@ -193,12 +224,52 @@ $(function () {
             $("#deleteForm").submit();
         }
     });
+
+    $("#main-image").on("click", function () {
+        imageElements = [];
+        $(".detail-image-path").each(function () {
+            imageElements.push($(this).data("src"));
+        });
+
+        const container = $("#modal-images");
+        container.empty();
+
+        imageElements.forEach((src, index) => {
+            const img = $(`<img src="${src}" alt="상세이미지">`);
+            if (index === 0) img.show();
+            container.append(img);
+        });
+
+        currentIndex = 0;
+        $("#imageModal").css("display", "flex");
+    });
 });
 
+function closeModal() {
+    $("#imageModal").hide();
+}
+
+function prevImage() {
+    const images = $("#modal-images img");
+    if (currentIndex > 0) {
+        $(images[currentIndex]).hide();
+        currentIndex--;
+        $(images[currentIndex]).show();
+    }
+}
+
+function nextImage() {
+    const images = $("#modal-images img");
+    if (currentIndex < images.length - 1) {
+        $(images[currentIndex]).hide();
+        currentIndex++;
+        $(images[currentIndex]).show();
+    }
+}
 
 function wishProduct() {
     const productNo = $("#productNo").val();
-    $.post("${contextPath}/product/wish", { productNo: productNo }, function(result) {
+    $.post("${contextPath}/product/wish", { productNo }, function(result) {
         if (result === "not-login") {
             alert("로그인 후 이용하세요.");
         } else {
@@ -236,19 +307,14 @@ function selectReplyList() {
         url: "${contextPath}/replyList",
         data: { productNo: "${product.productNo}" },
         success: function(list) {
-            if (!Array.isArray(list) || list.length === 0) {
-                $("#replyArea").html("<p>댓글이 없습니다.</p>");
-                return;
-            }
             let str = "";
-            for (let r of list) {
-                const uid = r.userId || "";
-                const txt = r.replyText || "";
-                const dt = r.replyDate ? new Date(r.replyDate).toLocaleString('ko-KR') : "";
-                str += '<div class="comment-box">' +
-                       '<b>' + uid + '</b>: ' + txt +
-                       ' <span style="color:gray;">[' + dt + ']</span>' +
-                       '</div>';
+            if (!Array.isArray(list) || list.length === 0) {
+                str = "<p>댓글이 없습니다.</p>";
+            } else {
+                for (let r of list) {
+                    const dt = r.replyDate ? new Date(r.replyDate).toLocaleString('ko-KR') : "";
+                    str += `<div class="comment-box"><b>${r.userId}</b>: ${r.replyText} <span style="color:gray;">[${dt}]</span></div>`;
+                }
             }
             $("#replyArea").html(str);
         },
