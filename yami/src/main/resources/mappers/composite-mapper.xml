@@ -159,7 +159,7 @@
 			from (select
 					p.REPLY_NO
 					,p.PRODUCT_NO
-					,.PRODUCT_TITLE
+					,p.PRODUCT_TITLE
 					,p.USER_NO
 					,p.REPLY_TEXT
 					,p.REPLY_DATE

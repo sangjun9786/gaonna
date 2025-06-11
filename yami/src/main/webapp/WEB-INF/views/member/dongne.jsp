@@ -206,6 +206,7 @@ console.log(${loginUser.mainCoord});
 		//네 위치 내놔
         navigator.geolocation.getCurrentPosition(
             function(position) {
+            	enableHighAccuracy: true;
             	let latitude = position.coords.latitude;
             	let longitude = position.coords.longitude;
             	

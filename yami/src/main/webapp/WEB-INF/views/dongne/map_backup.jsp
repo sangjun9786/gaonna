@@ -110,16 +110,19 @@ ${pageScope.root}/selectBakeryComment.dn로 다음 10개 조회하기
 ${pageScope.root}/insertBakeryRecomment.dn로 보내기
 보낸 후 해당 팝업 창 다시 로딩
 
+
+댓글/대댓글 수정하기
 수정하기 버튼은 해당 댓글을 작성한 유저(${BakeryComment.userNo == loginUser.userNo})
 혹은 관리자(${loginUser.roleType != 'N'})일때 등장
 버튼이 있던 장소에 댓글 작성 폼과 '수정하기' 버튼 생성
 댓글이 앞뒤 공백을 제외하고 입력되어 있을 경우
 수정하기 버튼 활성화
 수정하기 버튼을 누르면 로딩 표시를 버튼에 표시하고,
-댓글 내용(content), 해당 팝업 창의 빵집번호(bakeryNo),
+댓글 내용(content), 댓글 식별번호(commentNo), 좋아요/싫어요(bakeryLike, 좋아요 : L, 싫어요 : D, 대댓글일 경우 : P),
 수정하기 전 댓글을 작성한 회원의 식별번호(BakeryComment.userNo)를
 ${pageScope.root}/updateBakeryComment.dn로 보내기
 보낸 후 해당 팝업 창 다시 로딩
+
 
 삭제하기 버튼은 해당 댓글을 작성한 유저(${BakeryComment.userNo == loginUser.userNo})
 혹은 관리자(${loginUser.roleType != 'N'})일때 등장

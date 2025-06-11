@@ -26,6 +26,8 @@
 		<result column="ROAD_ADDRESS" property="roadAddress"/>
 		<result column="JIBUN_ADDRESS" property="jibunAddress"/>
 		<result column="BAKERY_NAME" property="bakeryName"/>
+		<result column="LIKE_COUNT" property="likeCount"/>
+		<result column="DISLIKE_COUNT" property="dislikeCount"/>
 	</resultMap>
 	
 	<resultMap type="BakeryComment" id="bakeryCommentResultMap">
@@ -37,6 +39,7 @@
 		<result column="USER_NO" property="userNo"/>
 		<result column="USER_NAME" property="userName"/>
 		<result column="COMMENT_DATE" property="commentDate"/>
+		<result column="BAKERY_LIKE" property="bakeryLike"/>
 	</resultMap>
 	
 	<select id="selectUserDongne" parameterType="int" resultMap="coordResultMap">
@@ -117,31 +120,187 @@
 	
 	<!--             동네뽱집 나와바리              -->
 	
-	<select id="selectBakeries" parameterType="Coord">
-	    SELECT * FROM (
-	        SELECT 
-	            bakery_no,
-	            open_date,
-	            phone,
-	            road_address,
-	            jibun_address,
-	            bakery_name,
-	            latitude,
-	            longitude,
-	            ACOS(
-	                SIN(RADIANS(TO_NUMBER(latitude))) * SIN(RADIANS(#{latitude}))
-	                + COS(RADIANS(TO_NUMBER(latitude))) * COS(RADIANS(#{latitude}))
-	                * COS(RADIANS(TO_NUMBER(longitude)) - RADIANS(#{longitude}))
-	            ) * 6371 AS distance
-	        FROM bakery
-	        WHERE 
-	            TO_NUMBER(latitude) BETWEEN #{latitude} - 0.009 AND #{latitude} + 0.009
-	            AND TO_NUMBER(longitude) BETWEEN #{longitude} - (0.009 / COS(RADIANS(#{latitude}))) 
-	                AND #{longitude} + (0.009 / COS(RADIANS(#{latitude})))
-	    )
-	    WHERE distance &lt;= 1
-	    ORDER BY distance
+	<select id="selectBakeries" parameterType="Coord" resultMap="bakeryResultMap">
+	SELECT
+	    b.bakery_no,
+	    b.open_date,
+	    b.phone,
+	    b.road_address,
+	    b.jibun_address,
+	    b.bakery_name,
+	    b.latitude,
+	    b.longitude,
+	    NVL(like_count, 0) AS like_count,
+	    NVL(dislike_count, 0) AS dislike_count
+	FROM (
+	    SELECT
+	        bakery_no,
+	        open_date,
+	        phone,
+	        road_address,
+	        jibun_address,
+	        bakery_name,
+	        latitude,
+	        longitude,
+	        (6371 * ACOS(
+	            (COS(RADIANS(#{latitude})) * COS(RADIANS(latitude)))
+	            * COS(RADIANS(longitude) - RADIANS(#{longitude}))
+	            + (SIN(RADIANS(#{latitude})) * SIN(RADIANS(latitude)))
+	        )) AS distance
+	    FROM bakery
+	    WHERE
+	        longitude BETWEEN #{longitude} - 0.009 AND #{longitude} + 0.009
+	        AND latitude BETWEEN #{latitude} - 0.009 AND #{latitude} + 0.009
+	) b
+	LEFT JOIN (
+	    SELECT
+	        bakery_no,
+	        COUNT(CASE WHEN bakery_like = 'L' AND status IN ('Y', 'M') THEN 1 END) AS like_count,
+	        COUNT(CASE WHEN bakery_like = 'D' AND status IN ('Y', 'M') THEN 1 END) AS dislike_count
+	    FROM BAKERY_COMMENT
+	    GROUP BY bakery_no
+	) c
+	ON b.bakery_no = c.bakery_no
+	WHERE b.distance &lt;= 1
+	ORDER BY b.distance ASC
 	</select>
-
 	
+	<select id="selectBakeryComment" parameterType="map" resultMap="bakeryCommentResultMap">
+	select *
+	from(
+		select 
+			COMMENT_NO
+			,PARENT_COMMENT_NO
+			,COMMENT_CONTENT
+			,COMMENT_TYPE
+			,BAKERY_NO
+			,USER_NO
+			,USER_NAME
+			,COMMENT_DATE
+			,BAKERY_LIKE
+			,status
+			,rownum as rn
+		from (select
+				bc.COMMENT_NO
+				,bc.PARENT_COMMENT_NO
+				,bc.COMMENT_CONTENT
+				,bc.COMMENT_TYPE
+				,bc.BAKERY_NO
+				,bc.USER_NO
+				,m.USER_NAME
+				,bc.COMMENT_DATE
+				,bc.BAKERY_LIKE
+				,bc.status
+			from BAKERY_COMMENT bc
+			join member m on(m.user_no = bc.user_no)
+			where BAKERY_NO = #{bakeryNo}
+			and bc.status in('Y', 'M')
+			and COMMENT_TYPE = 'COMMENT'
+			order by bc.COMMENT_DATE desc
+			)
+		where rownum &lt;= #{endRow}
+		)
+	where rn &gt;= #{startRow}
+	</select>
+	
+	<select id="selectBakeryRecomment" parameterType="map" resultMap="bakeryCommentResultMap">
+	select *
+	from(
+		select 
+			COMMENT_NO
+			,PARENT_COMMENT_NO
+			,COMMENT_CONTENT
+			,COMMENT_TYPE
+			,BAKERY_NO
+			,USER_NO
+			,USER_NAME
+			,COMMENT_DATE
+			,BAKERY_LIKE
+			,status
+			,rownum as rn
+		from (select
+				bc.COMMENT_NO
+				,bc.PARENT_COMMENT_NO
+				,bc.COMMENT_CONTENT
+				,bc.COMMENT_TYPE
+				,bc.BAKERY_NO
+				,bc.USER_NO
+				,m.USER_NAME
+				,bc.COMMENT_DATE
+				,bc.BAKERY_LIKE
+				,bc.status
+			from BAKERY_COMMENT bc
+			join member m on(m.user_no = bc.user_no)
+			where BAKERY_NO = #{bakeryNo}
+			and bc.status in('Y', 'M')
+			and COMMENT_TYPE = 'RECOMMENT'
+			order by bc.COMMENT_DATE desc
+			)
+		where rownum &lt;= #{endRow}
+		)
+	where rn &gt;= #{startRow}
+	</select>
+	
+	<insert id="insertBakeryComment" parameterType="map">
+		insert into BAKERY_COMMENT(
+			COMMENT_NO
+			,COMMENT_CONTENT
+			,COMMENT_TYPE
+			,BAKERY_NO
+			,USER_NO
+			,COMMENT_DATE
+			,BAKERY_LIKE
+			,STATUS
+			)
+		values(
+			seq_bakery_comment.nextval
+			,#{commentContent}
+			,'COMMENT'
+			,#{bakeryNo}
+			,#{userNo}
+			,SYSDATE
+			,#{bakeryLike}
+			,'Y'
+			)
+	</insert>
+	
+	<insert id="insertBakeryRecomment" parameterType="map">
+		insert into BAKERY_COMMENT(
+			COMMENT_NO
+			,PARENT_COMMENT_NO
+			,COMMENT_CONTENT
+			,COMMENT_TYPE
+			,BAKERY_NO
+			,USER_NO
+			,COMMENT_DATE
+			,BAKERY_LIKE
+			,STATUS
+			)
+		values(
+			seq_bakery_comment.nextval
+			,#{parentCommentNo}
+			,#{commentContent}
+			,'RECOMMENT'
+			,#{bakeryNo}
+			,#{userNo}
+			,SYSDATE
+			,'P'
+			,'Y'
+			)
+	</insert>
+
+	<update id="updateBakeryComment" parameterType="map">
+		update BAKERY_COMMENT
+		set comment_content = #{commentContent}
+		    comment_date = SYSDATE
+		    bakery_like = #{bakeryLike}
+		    status = 'M'
+		where comment_no = #{commentNo}
+	</update>
+
+	<delete id="deleteBakeryComment" parameterType="int">
+		update BAKERY_COMMENT
+		set status = 'N'
+		where comment_no = #{commentNo}
+	</delete>	
 </mapper>

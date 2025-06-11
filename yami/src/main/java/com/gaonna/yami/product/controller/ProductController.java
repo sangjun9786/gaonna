@@ -5,6 +5,7 @@ import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
 import javax.servlet.http.HttpSession;
 
@@ -15,23 +16,34 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.gaonna.yami.common.PageInfo;
 import com.gaonna.yami.common.Pagination;
+import com.gaonna.yami.member.model.vo.Member;
 import com.gaonna.yami.product.service.ProductService;
+import com.gaonna.yami.product.service.ReplyService;
 import com.gaonna.yami.product.vo.Attachment;
 import com.gaonna.yami.product.vo.Category;
 import com.gaonna.yami.product.vo.Product;
+import com.gaonna.yami.product.vo.Reply;
+import com.gaonna.yami.wishlist.model.service.WishlistService;
 
 @Controller
 public class ProductController {
-	
-	//서비스 선언
-	@Autowired
-	private ProductService service;
+
+    @Autowired
+    private ProductService service;
+
+    @Autowired
+    private ReplyService replyService;
+    
+    @Autowired
+    private WishlistService wishlistService; // ✅ 이거 추가해줘야 빨간줄 사라짐
+
 	//test 리스트 
-	@RequestMapping("productList2.pro")
+    @RequestMapping("productList2.pro")
 	public String productList(@RequestParam(value = "currentPage", defaultValue = "1") 
 							 int currentPage
 							,@RequestParam(value = "selectedLocation", defaultValue = "0") 
@@ -68,94 +80,105 @@ public class ProductController {
 	    // 6. 렌더링할 JSP
 	    return "product/productList2";
 	}
+    
+    // 상세 페이지
+    @GetMapping("/productDetail.pro")
+    public String productDetail(@RequestParam("productNo") int productNo, Model model) {
+        int result = service.increaseCount(productNo);
+        if (result <= 0) {
+            model.addAttribute("errorMsg", "게시글 조회 실패!!");
+            return "common/errorPage";
+        }
 
-	// 상세 페이지
-
-	@GetMapping("/productDetail.pro")
-	public String productDetail(@RequestParam("productNo") 
-								int productNo
-								,Model model) {
-		// 1. 조회수 증가
-		int result = service.increaseCount(productNo);
-		
-		if (result <= 0) {
-	        model.addAttribute("errorMsg", "게시글 조회 실패!!");
-	        return "common/errorPage";
-		}
-		
-		// 2. 상품 정보 조회
-		Product product = service.selectProductDetail(productNo);
-
-		// 3. 첨부파일(사진) 리스트 조회
+        Product product = service.selectProductDetail(productNo);
         ArrayList<Attachment> atList = service.selectProductAttachments(productNo);
-
-		// 4. 상품 객체에 이미지 리스트 연결
         product.setAtList(atList);
+        
+     // ✅ 좋아요 개수 조회 추가
+        int count = wishlistService.getWishCount(productNo);
+        model.addAttribute("wishCount", count); // << 이거 추가
 
-		// 5. 모델에 담기
-		model.addAttribute("product", product);
+        model.addAttribute("product", product);
+        return "product/productDetail";
+    }
 
-		return "product/productDetail"; 
-	}
+    // 파일 업로드
+ 	public String saveFile(
+ 						   MultipartFile uploadFile, 
+ 						   HttpSession session) {
+ 		//1.원본 파일명 추출
+ 		String originName = uploadFile.getOriginalFilename();
+ 		
+ 		if (originName == null || originName.equals("")) {
+ 	        return null;
+ 	    }
 
-	// 파일 업로드
-	public String saveFile(
-						   MultipartFile uploadFile, 
-						   HttpSession session) {
-		//1.원본 파일명 추출
-		String originName = uploadFile.getOriginalFilename();
-		
-		if (originName == null || originName.equals("")) {
-	        return null;
-	    }
+ 	    // 2. 확장자 존재 여부 체크
+ 	    int dotIndex = originName.lastIndexOf(".");
+ 	    String ext = "";
+ 	    if (dotIndex != -1 && dotIndex < originName.length() - 1) {
+ 	        ext = originName.substring(dotIndex); // 예: ".jpg"
+ 	    } else {
+ 	        // 확장자가 없는 경우, 기본 확장자 설정 or 실패 처리
+ 	        ext = ""; // 또는 return null;
+ 	    }
+ 		
+ 		
+ 	
 
-	    // 2. 확장자 존재 여부 체크
-	    int dotIndex = originName.lastIndexOf(".");
-	    String ext = "";
-	    if (dotIndex != -1 && dotIndex < originName.length() - 1) {
-	        ext = originName.substring(dotIndex); // 예: ".jpg"
-	    } else {
-	        // 확장자가 없는 경우, 기본 확장자 설정 or 실패 처리
-	        ext = ""; // 또는 return null;
-	    }
-		//2.시간 형식 문자열로 추출
-		String currentTime = new SimpleDateFormat("yyyyMMddHHmmss").format(new Date());
+ 		//2.시간 형식 문자열로 추출
+ 		String currentTime = new SimpleDateFormat("yyyyMMddHHmmss").format(new Date());
 
-		//3.랜덤값 5자리 추출
-		int ranNum = (int) (Math.random() * 90000 + 10000);
+ 		//3.랜덤값 5자리 추출
+ 		int ranNum = (int) (Math.random() * 90000 + 10000);
+ 		//4.원본파일에서 확장자 추출
+// 		String ext = originName.substring(originName.lastIndexOf("."));
 
-		//5.합치기
-		String changeName = currentTime + ranNum + ext;
+ 		//5.합치기
+ 		String changeName = currentTime + ranNum + ext;
 
-//		//6. 서버에 업로드 처리할때 물리적인 경로 추출하기
-		String savePath = session.getServletContext().getRealPath("/resources/uploadFiles/");
-//							
-		System.out.println("실제 저장 경로 (savePath): " + savePath);
-		System.out.println("전체 파일 경로: " + savePath + changeName);
-		
-		//6. 외부 경로 쓰기위해 경로 설정
-//		String savePath = "C:/upload/";
-//		//6-1 저장 폴더 없으면 생성 
-//		File folder = new File(savePath);
-//		if(!folder.exists()){
-//			
-//	        folder.mkdirs(); // 폴더 생성
-//	    }
-		
-		//7.경로와 변경된 이름을 이용하여 파일 업로드 처리 메소드 수행
-		//MultipartFile 의 transferTo() 메소드 이용
+// 		//6. 서버에 업로드 처리할때 물리적인 경로 추출하기
+ 		String savePath = session.getServletContext().getRealPath("/resources/uploadFiles/");
+// 							
+ 		System.out.println("실제 저장 경로 (savePath): " + savePath);
+ 		System.out.println("전체 파일 경로: " + savePath + changeName);
+ 		
+ 		//6. 외부 경로 쓰기위해 경로 설정
+// 		String savePath = "C:/upload/";
+// 		//6-1 저장 폴더 없으면 생성 
+// 		File folder = new File(savePath);
+// 		if(!folder.exists()){
+// 			
+// 	        folder.mkdirs(); // 폴더 생성
+// 	    }
+ 		
+ 		//7.경로와 변경된 이름을 이용하여 파일 업로드 처리 메소드 수행
+ 		//MultipartFile 의 transferTo() 메소드 이용
 
-		try {
-			uploadFile.transferTo(new File(savePath + changeName));
-			return changeName;
-		} catch (IllegalStateException | IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-			return null; //저장 실패 시 null 반환
-		}
+ 		try {
+ 			uploadFile.transferTo(new File(savePath + changeName));
+ 			return changeName;
+ 		} catch (IllegalStateException | IOException e) {
+ 			// TODO Auto-generated catch block
+ 			e.printStackTrace();
+ 			return null; //저장 실패 시 null 반환
+ 		}
 
-		
-	}
+ 		
+ 	}
+
+    // 댓글 등록
+    @PostMapping("/insertReply")
+    @ResponseBody
+    public String insertReply(Reply r, HttpSession session) {
+        Member loginUser = (Member) session.getAttribute("loginUser");
+        if (loginUser == null) {
+            return "fail";
+        }
+        r.setUserId(loginUser.getUserId());
+        int result = replyService.insertReply(r);
+        return result > 0 ? "success" : "fail";
+    }
 
 	//등록 이동
 	@GetMapping("productEnrollForm.pr")
@@ -340,11 +363,13 @@ public class ProductController {
 		
 	}
 	
-
+    // 댓글 목록
+    @GetMapping("/replyList")
+    @ResponseBody
+    public List<Reply> replyList(@RequestParam("productNo") int productNo) {
+        System.out.println("📍 댓글 불러오기: " + productNo);
+        return replyService.selectReplyList(productNo);
+    }
 }
-
-
-
-
 
 

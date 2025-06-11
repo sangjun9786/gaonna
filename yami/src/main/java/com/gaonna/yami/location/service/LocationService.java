@@ -1,6 +1,7 @@
 package com.gaonna.yami.location.service;
 
 import java.util.List;
+import java.util.Map;
 
 import javax.servlet.http.HttpSession;
 
@@ -52,7 +53,21 @@ public interface LocationService {
 	List<Bakery> selectBakeries(Coord mainCoord);
 
 	//댓글 조회
-	List<BakeryComment> selectBakeryComment(int bakeryNo, int page);
+	List<BakeryComment> selectBakeryComment(String bakeryNo, int page);
 
+	//대댓글 조회
+	List<BakeryComment> selectBakeryRecomment(String bakeryNo, int page);
+	
+	//댓글 넣기
+	int insertBakeryComment(Map<String, Object> map);
+
+	//대댓글 넣기
+	int insertBakeryRecomment(Map<String, Object> map);
+
+	//댓글 수정하기
+	int updateBakeryComment(Map<String, Object> map);
+
+	//댓글 삭제하기
+	int deleteBakeryComment(int commentNo);
 
 }

@@ -2,28 +2,30 @@
 <!DOCTYPE configuration
   PUBLIC "-//mybatis.org//DTD Config 3.0//EN"
   "https://mybatis.org/dtd/mybatis-3-config.dtd">
-  
+
 <configuration>
-	<settings>
-		<setting name="jdbcTypeForNull" value="NULL"/>
-	</settings>
-		
-	<typeAliases>
-		<typeAlias type="com.gaonna.yami.member.model.vo.Member" alias="Member"/>
-		<typeAlias type="com.gaonna.yami.member.email.vo.MemberToken" alias="MemberToken"/>
-		<typeAlias type="com.gaonna.yami.event.model.vo.Event" alias="Event"/>
-		<typeAlias type="com.gaonna.yami.location.vo.Coord" alias="Coord"/>
-		<typeAlias type="com.gaonna.yami.location.vo.Location" alias="Location"/>
-		<typeAlias type="com.gaonna.yami.product.vo.Product" alias="Product"/>
-		<typeAlias type="com.gaonna.yami.composite.vo.Category" alias="Category"/>
-		<typeAlias type="com.gaonna.yami.composite.vo.BoardCo" alias="BoardCo"/>
-		<typeAlias type="com.gaonna.yami.composite.vo.SearchForm" alias="SearchForm"/>
-		<typeAlias type="com.gaonna.yami.product.vo.Category" alias="Categorylist"/>
-		<typeAlias type="com.gaonna.yami.composite.vo.ReplyCo" alias="ReplyCo"/>
+    <settings>
+        <!-- underscore → camelCase 자동 매핑 -->
+        <setting name="mapUnderscoreToCamelCase" value="true"/>
+        <setting name="jdbcTypeForNull" value="NULL"/>
+    </settings>
+
+    <typeAliases>
+        <typeAlias type="com.gaonna.yami.member.model.vo.Member" alias="Member"/>
+        <typeAlias type="com.gaonna.yami.member.email.vo.MemberToken" alias="MemberToken"/>
+        <typeAlias type="com.gaonna.yami.event.model.vo.Event" alias="Event"/>
+        <typeAlias type="com.gaonna.yami.location.vo.Coord" alias="Coord"/>
+        <typeAlias type="com.gaonna.yami.location.vo.Location" alias="Location"/>
+        <typeAlias type="com.gaonna.yami.product.vo.Product" alias="Product"/>
+        <typeAlias type="com.gaonna.yami.product.vo.Reply" alias="Reply"/>
+        <typeAlias type="com.gaonna.yami.composite.vo.Category" alias="Category"/>
+        <typeAlias type="com.gaonna.yami.composite.vo.BoardCo" alias="BoardCo"/>
+        <typeAlias type="com.gaonna.yami.composite.vo.SearchForm" alias="SearchForm"/>
+        <typeAlias type="com.gaonna.yami.product.vo.Attachment" alias="Attachment"/>
+        <typeAlias type="com.gaonna.yami.composite.vo.ReplyCo" alias="ReplyCo"/>
 		<typeAlias type="com.gaonna.yami.location.vo.Bakery" alias="Bakery"/>
 		<typeAlias type="com.gaonna.yami.location.vo.BakeryComment" alias="BakeryComment"/>
 		<typeAlias type="com.gaonna.yami.product.vo.Attachment" alias="Attachment"/>
-		
+		<typeAlias type="com.gaonna.yami.notice.model.vo.Notice" alias="Notice"/>
 	</typeAliases>
-	
 </configuration>

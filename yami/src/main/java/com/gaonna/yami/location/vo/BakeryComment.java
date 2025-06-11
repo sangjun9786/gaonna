@@ -20,7 +20,7 @@ public class BakeryComment {
 	private String userName; //member에서 조인
 	private Date commentDate;
 	private String commentDateStr;
-	private String like; //L:좋 D:싫 P:대댓글(좋/싫 없음)
+	private String bakeryLike; //L:좋 D:싫 P:대댓글(좋/싫 없음)
 	private String status; //Y:정상 N:삭제됨 M:수정됨 P:신고됨
 	
 	public void bakeryCommentSDF(List<BakeryComment> result) {

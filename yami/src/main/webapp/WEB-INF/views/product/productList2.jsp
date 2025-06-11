@@ -91,6 +91,7 @@
 <body>
 
 <%@ include file="/WEB-INF/views/common/header.jsp" %>
+<%@ include file="/WEB-INF/views/common/searchbar.jsp" %>
 
 <div class="container-main">
 
@@ -128,9 +129,9 @@
             <ul class="pagination justify-content-center">
                 <c:forEach var="i" begin="${pi.startPage}" end="${pi.endPage}">
                     <li class="page-item ${pi.currentPage == i ? 'active' : ''}">
-                        <a class="page-link" href="${pageContext.request.contextPath}/productList2.pro?currentPage=${i}">
-                            ${i}
-                        </a>
+                    	<a class="page-link" href="${root}/filter.bo?currentPage=${i}&location=${selectedLocation}&category=${selectedCategory}&price1=${selectedPrice1}&price2=${selectedPrice2}&keyword=${keyword}">
+		                    ${i}
+		                </a>
                     </li>
                 </c:forEach>
             </ul>

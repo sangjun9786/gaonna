@@ -121,6 +121,11 @@
 .disabled-location-card .card-body {
     cursor: pointer;
 }
+
+.select {
+	margin-right: 10px;
+	margin-top: 15px;
+}
 </style>
 </head>
 <body>
@@ -134,21 +139,69 @@
 			<div class="row align-items-center mb-4">
 				<!-- 로고 영역 -->
 				<div class="col-auto pe-0">
-					<img src="${root}/resources/img/yami-logo.png" alt="YAMI!"
+					<img src="${root}/resources/icon/yami-logo.png" alt="YAMI!"
 						style="height: 200px; width: auto; display: block;" />
 				</div>
 				<!-- 검색창 영역: 남은 공간 모두 차지 -->
 				<div class="col ps-2">
-					<form action="${root}/mainSearch" method="get">
-						<div class="input-group">
-							<input type="text" class="form-control form-control-lg"
-								name="keyword" placeholder="검색어를 입력하세요" aria-label="Search">
-							<button class="btn btn-primary btn-lg" type="submit">
-								<i class="bi bi-search"></i>
-							</button>
-						</div>
-					</form>
+					<div class="input-group">
+						<div class="select">
+		                    <select class="form-select form-select-lg mb-3" id="condition">
+		                        <option value="resell">Resell</option>
+		                        <option value="location">Location</option>
+		                        <option value="notice">Notice</option>
+		                        <option value="qna">QnA</option>
+		                        <option value="report">Report</option>
+		                    </select>
+		                </div>
+						<input type="text" class="form-control form-control-lg"
+							id="keyword" placeholder="제목 또는 내용으로 검색" aria-label="Search">
+						<button class="btn btn-primary btn-lg" type="submit" id="searchBtn">
+							<i class="bi bi-search"></i>
+						</button>
+					</div>
 				</div>
+				
+				<script>
+				    $(function () {
+				        $('#searchBtn').on('click', function () {
+				            let condition = $('#condition').val();
+				            let keyword = $('#keyword').val();
+				            let encodedKeyword = encodeURIComponent(keyword);
+				            
+				            if (condition == 'resell') {
+					            $.ajax({
+					                type: 'POST', // 데이터를 전송하므로 POST 방식 사용
+					                url: 'saveKeyword', // 세션 저장을 처리할 서버의 URL
+					                data: {
+					                    keyword: keyword // 서버로 보낼 데이터. { key: value } 형태
+					                },
+					                success: function(response) {
+					                    // 세션 저장이 성공하면 원래의 검색 로직을 실행합니다.
+					                    console.log('세션에 키워드 저장 성공:', response);
+					                    
+					                    // 2. 원래 의도했던 검색 기능 실행 (예: 검색 결과 페이지로 이동)
+					                    location.href = '${root}/filter.bo';
+					                },
+					                error: function(xhr, status, error) {
+					                    // 에러 처리
+					                    console.error('세션 저장 실패:', error);
+					                    alert('검색어 저장 중 오류가 발생했습니다.');
+					                }
+					            });
+				            } else if (condition == 'location') {
+				                url = '${root}/locationSearch?keyword=' + encodedKeyword;
+				            } else if (condition == 'notice') {
+				                url = '${root}/noticeSearch?keyword=' + encodedKeyword;
+				            } else if (condition == 'qna') {
+				                url = '${root}/qnaSearch?keyword=' + encodedKeyword;
+				            } else if (condition == 'report') {
+				                url = '${root}/reportSearch?keyword=' + encodedKeyword;
+				            }
+				        });
+				    });
+				</script>
+				
 			</div>
 		</div>
 
@@ -260,7 +313,7 @@
 				</a>
 			</div>
 			<div class="col">
-				<a href="#" class="text-decoration-none">
+				<a href="${root}/notice/list" class="text-decoration-none">
 					<div class="card text-center h-100 shadow-sm">
 						<div class="card-body">
 							<i class="bi bi-megaphone fs-1 text-danger"></i>
