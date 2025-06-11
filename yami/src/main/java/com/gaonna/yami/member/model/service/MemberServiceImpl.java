@@ -192,4 +192,10 @@ public class MemberServiceImpl implements MemberService{
 	public int selectUserNo(Member m) {
 		return dao.selectUserNo(sqlSession,m);
 	}
+	
+	
+	@Override
+	public String selectUserPwd(int userNo) {
+		return dao.selectUserPwd(sqlSession,userNo);
+	}
 }

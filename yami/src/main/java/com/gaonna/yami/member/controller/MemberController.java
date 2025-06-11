@@ -141,7 +141,9 @@ public class MemberController {
 		try {
 			Member m = (Member)session.getAttribute("loginUser");
 			
-			if(bcrypt.matches(inputPwd,m.getUserPwd())) {
+			String pwd = service.selectUserPwd(m.getUserNo());
+			
+			if(bcrypt.matches(inputPwd,pwd)) {
 				return "pass";
 			}else {
 				return "noPass";

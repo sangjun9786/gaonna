@@ -156,9 +156,9 @@ public class LocationCotroller {
 			
 			//model에 json형식으로 bakery조회
 			List<Bakery> bakeries = service.selectBakeries(mainCoord);
+			
 			String bakeriesJson = new Gson().toJson(bakeries);
 			model.addAttribute("bakeriesJson", bakeriesJson);
-			
 			return "dongne/map";
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -194,12 +194,11 @@ public class LocationCotroller {
 	//대댓글 조회
 	@ResponseBody
 	@PostMapping("selectBakeryRecomment.dn")
-	public Map<String, Object> selectBakeryRecomment(String bakeryNo, int page) {
+	public Map<String, Object> selectBakeryRecomment(String bakeryNo, int page, int parentCommentNo) {
 		try {
 			Map<String, Object> response = new HashMap<>();
-			
 			//대댓글 리스트 조회해서 넣기
-			List<BakeryComment> bakeryComments = service.selectBakeryRecomment(bakeryNo,page);
+			List<BakeryComment> bakeryComments = service.selectBakeryRecomment(bakeryNo,page,parentCommentNo);
 		    response.put("comments", bakeryComments);
 		    
 		    //아직 조회될 리스트가 남았는지 알아보자
@@ -270,6 +269,7 @@ public class LocationCotroller {
 	}
 	
 	//댓글 수정
+	@ResponseBody
 	@PostMapping("updateBakeryComment.dn")
 	public String updateBakeryComment(HttpSession session,
 			String content, int userNo, int commentNo, String bakeryLike) {
@@ -299,6 +299,7 @@ public class LocationCotroller {
 	}
 	
 	//댓글 삭제
+	@ResponseBody
 	@PostMapping("deleteBakeryComment.dn")
 	public String deleteBakeryComment(HttpSession session,
 			int userNo, int commentNo) {
@@ -309,7 +310,6 @@ public class LocationCotroller {
 					m.getRoleType().equals("N")) {
 				return "noPass";
 			}
-			
 			if(service.deleteBakeryComment(commentNo)>0) {
 				return "pass";
 			}else {
