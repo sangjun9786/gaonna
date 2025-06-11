@@ -109,30 +109,27 @@ public class ProductController {
  		//1.원본 파일명 추출
  		String originName = uploadFile.getOriginalFilename();
  		
- 		if (originName == null || originName.equals("")) {
- 	        return null;
- 	    }
-
- 	    // 2. 확장자 존재 여부 체크
- 	    int dotIndex = originName.lastIndexOf(".");
- 	    String ext = "";
- 	    if (dotIndex != -1 && dotIndex < originName.length() - 1) {
- 	        ext = originName.substring(dotIndex); // 예: ".jpg"
- 	    } else {
- 	        // 확장자가 없는 경우, 기본 확장자 설정 or 실패 처리
- 	        ext = ""; // 또는 return null;
- 	    }
- 		
- 		
- 	
-
+// 		if (originName == null || originName.equals("")) {
+// 	        return null;
+// 	    }
+//
+// 	    // 2. 확장자 존재 여부 체크
+// 	    int dotIndex = originName.lastIndexOf(".");
+// 	    String ext = "";
+// 	    if (dotIndex != -1 && dotIndex < originName.length() - 1) {
+// 	        ext = originName.substring(dotIndex); // 예: ".jpg"
+// 	    } else {
+// 	        // 확장자가 없는 경우, 기본 확장자 설정 or 실패 처리
+// 	        ext = ""; // 또는 return null;
+// 	    }
+// 
  		//2.시간 형식 문자열로 추출
  		String currentTime = new SimpleDateFormat("yyyyMMddHHmmss").format(new Date());
 
  		//3.랜덤값 5자리 추출
  		int ranNum = (int) (Math.random() * 90000 + 10000);
  		//4.원본파일에서 확장자 추출
-// 		String ext = originName.substring(originName.lastIndexOf("."));
+ 		String ext = originName.substring(originName.lastIndexOf("."));
 
  		//5.합치기
  		String changeName = currentTime + ranNum + ext;
