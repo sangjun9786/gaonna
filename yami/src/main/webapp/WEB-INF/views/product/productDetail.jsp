@@ -78,11 +78,10 @@
         color: white;
         border: none;
         padding: 12px;
-        width: 100%;
-        margin-top: 20px;
         font-size: 16px;
         cursor: pointer;
         border-radius: 4px;
+        margin-top: 10px;
     }
     .comment-section {
         margin-top: 40px;
@@ -118,27 +117,23 @@
         <div class="image-area">
             <c:if test="${not empty product.atList}">
                 <img src="${contextPath}${product.atList[0].filePath}${product.atList[0].changeName}" alt="대표이미지">
-            </c:if>
+           </c:if>
         </div>
-
         <!-- 상품 정보 영역 -->
         <div class="info-area">
             <div class="meta" style="font-weight:bold; color:#888;">
                 ${product.categoryName}
             </div>
-
             <h2>${product.productTitle}</h2>
             <div class="meta">
                 ${product.userId} · 
                 <fmt:formatDate value="${product.uploadDate}" pattern="yyyy-MM-dd" /> · 
                 조회수: ${product.productCount}
             </div>
-
             <div class="price">
                 <fmt:formatNumber value="${product.price}" pattern="#\,###" />원
             </div>
             <div class="desc">${product.productContent}</div>
-
             <!-- 진( 좋아요) 버튼 영역 -->
             <div class="like-area">
                 채팅 0 · 조회 ${product.productCount}
@@ -149,8 +144,15 @@
                     </button>
                 </form>
             </div>
-
-            <button class="action-btn">채팅으로 거래하기</button>
+            <button class="action-btn" style="width:100%;">채팅으로 거래하기</button>
+            <!-- 삭제 버튼 (작성자 본인일 경우에만 노출) -->
+		<c:if test="${loginUser.userId eq product.userId}">
+		   <form id="deleteForm" method="post" action="${contextPath}/delete.pro" style="display:none;">
+		       <input type="hidden" name="productNo" value="${product.productNo}" />
+		       <input type="hidden" name="filePath" value="/resources/uploadFiles/${product.atList[0].changeName}" />
+		   </form>
+		   <button type="button" id="deleteBtn" class="action-btn" style="width:auto; float:right;">삭제하기</button>
+		</c:if>
         </div>
     </div>
 
@@ -173,13 +175,27 @@
             <textarea id="replyContent" class="form-control" placeholder="댓글을 입력하세요" rows="3" style="width:100%;"></textarea>
             <button onclick="insertReply();" type="button" class="btn btn-primary mt-2">등록</button>
         </div>
-
-        <div id="replyArea" class="mt-3"></div>
+        <%-- <c:forEach var="c" items="${product.commentList}">
+        <div class="comment-box">${c.content}</div>
+        </c:forEach> --%>
+		<div id="replyArea" class="mt-3"></div>
     </div>
 </div>
 
+
+
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script>
+
+$(function () {
+    $("#deleteBtn").click(function () {
+        if (confirm("정말로 삭제하시겠습니까?")) {
+            $("#deleteForm").submit();
+        }
+    });
+});
+
+
 function wishProduct() {
     const productNo = $("#productNo").val();
     $.post("${contextPath}/product/wish", { productNo: productNo }, function(result) {

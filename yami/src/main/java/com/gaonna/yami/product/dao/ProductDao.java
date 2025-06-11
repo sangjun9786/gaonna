@@ -8,6 +8,7 @@ import org.springframework.stereotype.Repository;
 
 import com.gaonna.yami.common.PageInfo;
 import com.gaonna.yami.product.vo.Attachment;
+import com.gaonna.yami.product.vo.Category;
 import com.gaonna.yami.product.vo.Product;
 
 @Repository
@@ -35,7 +36,14 @@ public class ProductDao {
 	//첨부파일 
 	public int insertAttachment(SqlSessionTemplate sqlSession, Attachment at) {
 		// TODO Auto-generated method stub
-		return sqlSession.insert("productMapper.insertAttachment",at);
+		try {
+			return sqlSession.insert("productMapper.insertAttachment",at);
+
+		}catch(Exception e){
+			return 0;	
+		}
+		
+		
 	}
 	
 	//상세 리스트
@@ -72,6 +80,21 @@ public class ProductDao {
 	public int increaseCount(SqlSessionTemplate sqlSession, int productNo) {
 		// TODO Auto-generated method stub
 		return sqlSession.update("productMapper.increaseCount",productNo);
+	}
+
+	public ArrayList<Category> selectCategoryList(SqlSessionTemplate sqlSession) {
+		// TODO Auto-generated method stub
+		return (ArrayList)sqlSession.selectList("productMapper.selectCategoryList");
+	}
+
+	public int deleteProduct(SqlSessionTemplate sqlSession, int productNo) {
+		// TODO Auto-generated method stub
+		return sqlSession.delete("productMapper.deleteProduct",productNo);
+	}
+
+	public int productUpdate(SqlSessionTemplate sqlSession, Product p) {
+		// TODO Auto-generated method stub
+		return sqlSession.update("productMapper.productUpdate",p);
 	}
 
 

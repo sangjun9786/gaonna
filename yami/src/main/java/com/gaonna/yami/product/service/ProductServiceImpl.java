@@ -12,6 +12,7 @@ import com.gaonna.yami.common.PageInfo;
 import com.gaonna.yami.product.dao.ProductDao;
 import com.gaonna.yami.product.model.ProductDTO;
 import com.gaonna.yami.product.vo.Attachment;
+import com.gaonna.yami.product.vo.Category;
 import com.gaonna.yami.product.vo.Product;
 
 @Service
@@ -93,6 +94,29 @@ public class ProductServiceImpl implements ProductService {
 		return dao.selectProductAttachments(sqlSession,productNo);
 	}
     
+	//카테고리 목록
+	@Override
+	public ArrayList<Category> selectCategoryList() {
+		// TODO Auto-generated method stub
+		return dao.selectCategoryList(sqlSession);
+	}
+	
+	//삭제
+	@Override
+	public int deleteProduct(int productNo) {
+		// TODO Auto-generated method stub
+		
+		
+		return dao.deleteProduct(sqlSession,productNo);
+	}
+	
+	//수정
+	@Override
+	public int productUpdate(Product p) {
+		// TODO Auto-generated method stub
+		return dao.productUpdate(sqlSession,p);
+	}
+
 }
 
 //@Override
