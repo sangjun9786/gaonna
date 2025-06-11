@@ -9,6 +9,7 @@ import com.gaonna.yami.composite.vo.BoardCo;
 import com.gaonna.yami.composite.vo.Category;
 import com.gaonna.yami.composite.vo.ReplyCo;
 import com.gaonna.yami.composite.vo.SearchForm;
+import com.gaonna.yami.location.vo.BakeryComment;
 
 @Repository
 public class CompositeDao {
@@ -31,5 +32,21 @@ public class CompositeDao {
 
 	public List<ReplyCo> searchMyReply(SqlSessionTemplate sqlSession, SearchForm searchForm) {
 		return sqlSession.selectList("compositeMapper.searchMyReply",searchForm);
+	}
+
+	public int countMyReplyDongne(SqlSessionTemplate sqlSession, SearchForm searchForm) {
+		return sqlSession.selectOne("compositeMapper.countMyReplyDongne",searchForm);
+	}
+
+	public List<BakeryComment> searchMyReplyDongne(SqlSessionTemplate sqlSession, SearchForm searchForm) {
+		return sqlSession.selectList("compositeMapper.searchMyReplyDongne",searchForm);
+	}
+
+	public int countMyWishlist(SqlSessionTemplate sqlSession, SearchForm searchForm) {
+		return sqlSession.selectOne("compositeMapper.countMyWishlist",searchForm);
+	}
+
+	public List<BoardCo> searchMyWishlist(SqlSessionTemplate sqlSession, SearchForm searchForm) {
+		return sqlSession.selectList("compositeMapper.searchMyWishlist",searchForm);
 	}
 }
