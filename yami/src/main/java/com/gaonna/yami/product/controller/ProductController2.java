@@ -30,6 +30,46 @@ public class ProductController {
 	//서비스 선언
 	@Autowired
 	private ProductService service;
+
+////	리스트 조회
+//	@RequestMapping("productList.pr")
+//	public String productList(HttpSession session) {
+//	    
+//	
+//	    ArrayList<Product> list = service.selectProductList();
+//
+//	    session.setAttribute("list", list);
+//	    session.addAttribute("pi", pi);
+//
+//	    return "product/productList2";
+//	}
+//	
+//	
+//	@RequestMapping("productList2.pro")
+//	public String showProduct(HttpSession session) {
+//		return "product/productList2";
+//	}
+
+	
+//	//페이징
+//	@GetMapping("/productList.pr")
+//	public String productList(@RequestParam(value = "currentPage", defaultValue = "1") 
+//	int currentPage
+//	, Model model) {
+//		int listCount = service.getListCount(); // 가짜 데이터 개수 (예: 50개) 총 게시글 개수
+//		int boardLimit = 1; //보여줄 개수
+//		int pageLimit = 5; //페이징 바 개수
+//		
+//		PageInfo pi = Pagination.getPageInfo(listCount, currentPage, pageLimit, boardLimit);
+//		
+//		ArrayList<Product> list = service.
+//				
+//				model.addAttribute("list", list);
+//		model.addAttribute("pi", pi);
+//		
+//		return "product/productList";
+//	}
+	
 	//test 리스트 
 	@RequestMapping("productList2.pro")
 	public String productList(@RequestParam(value = "currentPage", defaultValue = "1") 
@@ -118,11 +158,17 @@ public class ProductController {
 	        // 확장자가 없는 경우, 기본 확장자 설정 or 실패 처리
 	        ext = ""; // 또는 return null;
 	    }
+		
+		
+	
+
 		//2.시간 형식 문자열로 추출
 		String currentTime = new SimpleDateFormat("yyyyMMddHHmmss").format(new Date());
 
 		//3.랜덤값 5자리 추출
 		int ranNum = (int) (Math.random() * 90000 + 10000);
+		//4.원본파일에서 확장자 추출
+//		String ext = originName.substring(originName.lastIndexOf("."));
 
 		//5.합치기
 		String changeName = currentTime + ranNum + ext;
