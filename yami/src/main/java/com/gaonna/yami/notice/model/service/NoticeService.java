@@ -19,7 +19,7 @@ public interface NoticeService {
 
     int deleteNotice(int noticeNo);
     
-    int selectListCount();
+    int selectListCount(String keyword);
     
-    List<Notice> selectList(PageInfo pi);
+    List<Notice> selectList(PageInfo pi, String keyword);
 }

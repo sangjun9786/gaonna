@@ -7,7 +7,7 @@
 <head>
   <title>공지사항 목록</title>
   <%@ include file="/WEB-INF/views/common/header.jsp" %>
-
+  <%@ include file="/WEB-INF/views/common/searchbar.jsp" %>
   <style>
     body {
       font-family: 'Noto Sans KR', sans-serif;

@@ -192,7 +192,21 @@
 				            } else if (condition == 'location') {
 				                url = '${root}/locationSearch?keyword=' + encodedKeyword;
 				            } else if (condition == 'notice') {
-				                url = '${root}/noticeSearch?keyword=' + encodedKeyword;
+								$.ajax({
+									type: 'POST',
+									url: '${root}/saveKeyword',
+									data: {
+										keyword: keyword
+									},
+									success: function(response) {
+										console.log('세션에 키워드 저장 성공:', response);
+										location.href = '${root}/notice/list';
+									},
+									error: function(xhr, status, error) {
+										console.error('세션 저장 실패:', error);
+										alert('검색어 저장 중 오류가 발생했습니다.');
+									}
+								});
 				            } else if (condition == 'qna') {
 				                url = '${root}/qnaSearch?keyword=' + encodedKeyword;
 				            } else if (condition == 'report') {

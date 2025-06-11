@@ -52,12 +52,12 @@ public class NoticeServiceImpl implements NoticeService {
     }
     
     @Override
-    public int selectListCount() {
-        return noticeDao.selectListCount(sqlSession);
+    public int selectListCount(String keyword) {
+        return noticeDao.selectListCount(sqlSession, keyword);
     }
     
     @Override
-    public List<Notice> selectList(PageInfo pi) {
+    public List<Notice> selectList(PageInfo pi, String keyword) {
         int startRow = (pi.getCurrentPage() - 1) * pi.getBoardLimit() + 1;
         int endRow = startRow + pi.getBoardLimit() - 1;
 
@@ -65,6 +65,7 @@ public class NoticeServiceImpl implements NoticeService {
         map.put("startRow", startRow);
         map.put("endRow", endRow);
         map.put("pi", pi); 
+        map.put("keyword", keyword);
 
         return noticeDao.selectList(sqlSession, map);
     }
