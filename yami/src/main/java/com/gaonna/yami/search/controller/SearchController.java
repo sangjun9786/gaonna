@@ -68,6 +68,8 @@ public class SearchController {
 					            @RequestParam(value = "price2", required = false) Integer price2,
 					            HttpSession session,
 					            Model model) {
+		
+		System.out.println(location);
         String keyword = (String)session.getAttribute("keyword");
         int listCount = service.getFilterCount(location, category, price1, price2, keyword);
         int boardLimit = 2;
