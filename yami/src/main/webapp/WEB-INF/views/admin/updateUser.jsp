@@ -221,8 +221,8 @@ $(function(){
           <td>\${m.userName}</td>
           <td>\${m.phone ?? ''}</td>
           <td>\${m.point ?? 0}</td>
-          <td>\${m.enrollDate ?? ''}</td>
-          <td>\${m.modifyDate ?? ''}</td>
+          <td>\${m.enrollDateStr ?? ''}</td>
+          <td>\${m.modifyDateStr ?? ''}</td>
           <td>\${m.status ?? ''}</td>
           <td>
 	          <button class="btn btn-outline-success btn-sm coord-btn" 

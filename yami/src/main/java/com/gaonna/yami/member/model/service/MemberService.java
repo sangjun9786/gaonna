@@ -44,5 +44,8 @@ public interface MemberService {
 
 	//유저 아이디로 회원식별번호 알아내기
 	int selectUserNo(Member m);
+
+	//유저 번호로 비밀번호 조회
+	String selectUserPwd(int userNo);
 	
 }

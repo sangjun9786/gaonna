@@ -131,4 +131,10 @@
 		where user_id = #{userId}
 		and status = 'Y'
 	</select>
+	
+	<select id="selectUserPwd" parameterType="int" resultType="string">
+		select user_pwd
+		from member
+		where user_no = #{userNo}
+	</select>
 </mapper>
