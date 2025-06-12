@@ -57,7 +57,10 @@ public class MemberDao {
 	}
 
 	public int selectUserNo(SqlSessionTemplate sqlSession, Member m) {
-		
 		return sqlSession.selectOne("memberMapper.selectUserNo",m);
+	}
+
+	public String selectUserPwd(SqlSessionTemplate sqlSession, int userNo) {
+		return sqlSession.selectOne("memberMapper.selectUserPwd",userNo);
 	}
 }

@@ -52,6 +52,7 @@
  		</script>
 	</c:if>
     <h4>위치</h4>
+    <h5>${userLoca }</h5>
 	<input type="radio" name="location" value="all"
   	${selectedLocation == 'all' ? 'checked' : ''}> 전체<br>
 	

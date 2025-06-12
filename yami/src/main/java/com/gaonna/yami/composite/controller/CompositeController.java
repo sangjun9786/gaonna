@@ -9,6 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.gaonna.yami.composite.service.CompositeService;
@@ -77,7 +78,7 @@ public class CompositeController {
 		}
 	}
 	
-	//ajax - 댓글 조회
+	//ajax - 판매게시판 댓글 조회
 	@ResponseBody
 	@GetMapping("searchMyReply.co")
 	public Map<String, Object> searchMyReply(HttpSession session,Model model
@@ -94,9 +95,65 @@ public class CompositeController {
 		}
 	}
 	
+	//ajax - 우리동네빵집 댓글 조회
+	@ResponseBody
+	@GetMapping("searchMyReplyDongne.co")
+	public Map<String, Object> searchMyReplyDongne(HttpSession session,Model model
+			,SearchForm searchForm) {
+		try {
+			//loginUser의 userNo따서 searchForm에 넣기
+			searchForm.setUserNo(((Member)session
+					.getAttribute("loginUser")).getUserNo());
+			Map<String, Object> result = service.searchMyReplyDongne(searchForm);
+			return result;
+		} catch (Exception e) {
+			e.printStackTrace();
+			return null;
+		}
+	}
+	
+	//우리동네빵집 댓글 바로가기
+	@GetMapping("myReplyDongneDetail.co")
+	public String myReplyDongneDetail(Model model, HttpSession session,
+			int commentNo, int userNo, String bakeryNo) {
+		try {
+			//유효성 검사
+			int loginUserNo = ((Member)session.getAttribute("loginUser")).getUserNo();
+			if(userNo != loginUserNo) {
+				model.addAttribute("errorMsg","잘못된 접근입니다.");
+				return "common/errorPage";
+			}
+			
+			model.addAttribute("targetBakeryNo", bakeryNo);
+			model.addAttribute("targetCommentNo", commentNo);
+			
+			return "member/myReplyDongneDetail";
+		} catch (Exception e) {
+			e.printStackTrace();
+			model.addAttribute("errorMsg","500 err");
+			return "common/errorPage";
+		}
+	}
 	
 	
 	
+	//ajax - 찜 조회
+	@ResponseBody
+	@PostMapping("wishlist.co")
+	public Map<String, Object> myWishlist(Model model
+			,HttpSession session, SearchForm searchForm) {
+		try {
+			//loginUser의 userNo따서 searchForm에 넣기
+			searchForm.setUserNo(((Member)session
+					.getAttribute("loginUser")).getUserNo());
+			Map<String, Object> result = service.searchMyWishlist(searchForm);
+			return result;
+		} catch (Exception e) {
+			e.printStackTrace();
+			model.addAttribute("errorMsg","500 err");
+			return null;
+		}
+	}
 	
 	
 	

@@ -447,12 +447,35 @@ public class LocationServiceImpl implements LocationService{
 		map.put("endRow", endRow);
 		
 		List<BakeryComment> result = dao.selectBakeryComment(sqlSession,map);
+		
+		
+		
+		//parentCommentNo를 기반으로 bakeryComment조회하기
+		Map<String, Object> map2 = new HashMap<>();
+		map2.put("bakeryNo", bakeryNo);
+		map2.put("startRow", 1);
+		map2.put("endRow", 10);
+		List<BakeryComment> recomment = new ArrayList<>();
+		List<BakeryComment> tempList = new ArrayList<>(); //임시 저장용
+		
+		//parentCommentNo 반복문 돌려서 대댓글 추가하기
+		if(result.size()>0) {
+			for(BakeryComment comment : result) {
+				map2.put("parentCommentNo", comment.getCommentNo());
+				recomment = dao.selectBakeryRecomment(sqlSession,map2);
+				tempList.addAll(recomment);
+			}
+			
+			result.addAll(tempList);
+		}
+		
 		new BakeryComment().bakeryCommentSDF(result);
 		return result;
 	}
 	
+	//대댓글 조회
 	@Override
-	public List<BakeryComment> selectBakeryRecomment(String bakeryNo, int page) {
+	public List<BakeryComment> selectBakeryRecomment(String bakeryNo, int page, int parentCommentNo) {
 		
 		//page 유효성 검사
 		if(page<=0) {
@@ -466,6 +489,7 @@ public class LocationServiceImpl implements LocationService{
 		map.put("bakeryNo", bakeryNo);
 		map.put("startRow", startRow);
 		map.put("endRow", endRow);
+		map.put("parentCommentNo", parentCommentNo);
 		
 		List<BakeryComment> result = dao.selectBakeryRecomment(sqlSession,map);
 		new BakeryComment().bakeryCommentSDF(result);
@@ -511,7 +535,6 @@ public class LocationServiceImpl implements LocationService{
 		default:
 			return 0;
 		}
-		
 		return dao.updateBakeryComment(sqlSession,map);
 	}
 	
