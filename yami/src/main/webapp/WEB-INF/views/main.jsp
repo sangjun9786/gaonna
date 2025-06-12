@@ -132,68 +132,34 @@
 	<c:set var="root" value="${pageContext.request.contextPath}" />
 	<c:set var="loginUser" value="${sessionScope.loginUser}" />
 
-	<div
-		class="container min-vh-100 d-flex flex-column justify-content-center align-items-center">
-
-		<div class="container" style="max-width: 700px;">
-			<div class="row align-items-center mb-4">
-				<!-- 로고 영역 -->
-				<div class="col-auto pe-0">
-					<img src="${root}/resources/icon/yami-logo.png" alt="YAMI!"
-						style="height: 200px; width: auto; display: block;" />
-				</div>
-				<!-- 검색창 영역: 남은 공간 모두 차지 -->
-				<div class="col ps-2">
-					<div class="input-group">
-						<div class="select">
-		                    <select class="form-select form-select-lg mb-3" id="condition">
-		                        <option value="resell">Resell</option>
-		                        <option value="location">Location</option>
-		                        <option value="notice">Notice</option>
-		                        <option value="qna">QnA</option>
-		                        <option value="report">Report</option>
-		                    </select>
-		                </div>
-						<input type="text" class="form-control form-control-lg"
-							id="keyword" placeholder="제목 또는 내용으로 검색" aria-label="Search">
-						<button class="btn btn-primary btn-lg" type="submit" id="searchBtn">
-							<i class="bi bi-search"></i>
-						</button>
-					</div>
-				</div>
-				
-				<script>
-				    $(function () {
-				        $('#searchBtn').on('click', function () {
-				            let condition = $('#condition').val();
-				            let keyword = $('#keyword').val();
-				            let encodedKeyword = encodeURIComponent(keyword);
-				            let url = '';
-				            if (condition == 'resell') {
-				            	let selectedLocation = 'all';
-				                let selectedCategory = 0;
-				                let root = '${root}';
-				                url = root + '/filter.bo?keyword=' + encodedKeyword
-			                    + '&condition=' + condition
-			                    + '&location=all&category=0';
-				            } else if (condition == 'location') {
-								location.href = '${root}/locationSearch';
-							} else if (condition == 'notice') {
-								url = '${root}/notice/list?keyword=' + encodedKeyword + '&condition=' + condition;
-				            } else if (condition == 'qna') {
-				                url = '${root}/qnaSearch?keyword=' + encodedKeyword;
-				            } else if (condition == 'report') {
-				                url = '${root}/reportSearch?keyword=' + encodedKeyword;
-				            }
-				            if (url) {
-				                location.href = url;
-				            }
-				        });
-				    });
-				</script>
-				
-			</div>
-		</div>
+<div class="container mx-auto" style="max-width: 700px;">
+    <!-- 1행: 로고만 -->
+    <div class="row justify-content-center mb-2">
+        <div class="col-auto">
+            <img src="${root}/resources/icon/YAMI-logo-3.png" alt="YAMI!"
+                style="height: 200px; width: auto; display: block;" />
+        </div>
+    </div>
+    <!-- 2행: 검색창만 -->
+    <div class="row mb-4">
+        <div class="col">
+            <div class="input-group">
+                <div class="select">
+                    <select class="form-select form-select-lg mb-3" id="condition">
+                        <option value="resell">Resell</option>
+                        <option value="location">Location</option>
+                        <option value="notice">Notice</option>
+                        <option value="qna">QnA</option>
+                        <option value="report">Report</option>
+                    </select>
+                </div>
+                <input type="text" class="form-control form-control-lg"
+                    id="keyword" placeholder="제목 또는 내용으로 검색" aria-label="Search">
+                <button class="btn btn-primary btn-lg" type="submit" id="searchBtn">
+                    <i class="bi bi-search"></i>
+                </button>
+            </div>
+        </div>
 
 		<!-- 서비스 카드: 아이콘 + 링크 (회원 카드 포함) -->
 		<div
@@ -336,9 +302,8 @@
 
 		<hr>
 		<a href="${root}/lab">실험실</a>
-
-
-
+	</div>
+</div>
 
 
 
@@ -357,6 +322,35 @@ document.addEventListener('DOMContentLoaded', function () {
     });
 });
 
+
+
+$(function () {
+    $('#searchBtn').on('click', function () {
+        let condition = $('#condition').val();
+        let keyword = $('#keyword').val();
+        let encodedKeyword = encodeURIComponent(keyword);
+        let url = '';
+        if (condition == 'resell') {
+        	let selectedLocation = 'all';
+            let selectedCategory = 0;
+            let root = '${root}';
+            url = root + '/filter.bo?keyword=' + encodedKeyword
+            + '&condition=' + condition
+            + '&location=all&category=0';
+        } else if (condition == 'location') {
+			location.href = '${root}/locationSearch';
+		} else if (condition == 'notice') {
+			url = '${root}/notice/list?keyword=' + encodedKeyword + '&condition=' + condition;
+        } else if (condition == 'qna') {
+            url = '${root}/qnaSearch?keyword=' + encodedKeyword;
+        } else if (condition == 'report') {
+            url = '${root}/reportSearch?keyword=' + encodedKeyword;
+        }
+        if (url) {
+            location.href = url;
+        }
+    });
+});
 </script>
 <c:remove var="alertMsg"/>
 
