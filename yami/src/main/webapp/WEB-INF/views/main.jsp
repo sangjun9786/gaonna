@@ -168,49 +168,25 @@
 				            let condition = $('#condition').val();
 				            let keyword = $('#keyword').val();
 				            let encodedKeyword = encodeURIComponent(keyword);
-				            
+				            let url = '';
 				            if (condition == 'resell') {
-					            $.ajax({
-					                type: 'POST', // 데이터를 전송하므로 POST 방식 사용
-					                url: 'saveKeyword', // 세션 저장을 처리할 서버의 URL
-					                data: {
-					                    keyword: keyword // 서버로 보낼 데이터. { key: value } 형태
-					                },
-					                success: function(response) {
-					                    // 세션 저장이 성공하면 원래의 검색 로직을 실행합니다.
-					                    console.log('세션에 키워드 저장 성공:', response);
-					                    
-					                    // 2. 원래 의도했던 검색 기능 실행 (예: 검색 결과 페이지로 이동)
-					                    location.href = '${root}/filter.bo';
-					                },
-					                error: function(xhr, status, error) {
-					                    // 에러 처리
-					                    console.error('세션 저장 실패:', error);
-					                    alert('검색어 저장 중 오류가 발생했습니다.');
-					                }
-					            });
+				            	let selectedLocation = 'all';
+				                let selectedCategory = 0;
+				                let root = '${root}';
+				                url = root + '/filter.bo?keyword=' + encodedKeyword
+			                    + '&condition=' + condition
+			                    + '&location=all&category=0';
 				            } else if (condition == 'location') {
 								location.href = '${root}/locationSearch';
 							} else if (condition == 'notice') {
-								$.ajax({
-									type: 'POST',
-									url: '${root}/saveKeyword',
-									data: {
-										keyword: keyword
-									},
-									success: function(response) {
-										console.log('세션에 키워드 저장 성공:', response);
-										location.href = '${root}/notice/list';
-									},
-									error: function(xhr, status, error) {
-										console.error('세션 저장 실패:', error);
-										alert('검색어 저장 중 오류가 발생했습니다.');
-									}
-								});
+								url = '${root}/notice/list?keyword=' + encodedKeyword + '&condition=' + condition;
 				            } else if (condition == 'qna') {
 				                url = '${root}/qnaSearch?keyword=' + encodedKeyword;
 				            } else if (condition == 'report') {
 				                url = '${root}/reportSearch?keyword=' + encodedKeyword;
+				            }
+				            if (url) {
+				                location.href = url;
 				            }
 				        });
 				    });
@@ -225,7 +201,7 @@
 			style="max-width: 800px;">
 			<!-- 1행 -->
 			<div class="col">
-				<a href="${root}/productList2.pro"
+				<a href="${root}/filter.bo"
 					class="card text-center h-100 shadow-sm text-decoration-none">
 					<div class="card-body">
 						<i class="bi bi-bag fs-1 text-primary"></i>

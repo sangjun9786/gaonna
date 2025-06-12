@@ -11,6 +11,6 @@ public interface RecommendService {
 
 	ArrayList<Product> recommendProduct();
 
-//	ArrayList<Product> recommendMember();s
+//	ArrayList<Product> recommendMember();
 
 }
