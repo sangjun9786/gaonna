@@ -33,6 +33,8 @@
         width: 100%;
         border-radius: 10px;
         border: 1px solid #ddd;
+        cursor: pointer;
+        
     }
     .info-area {
         width: 50%;
@@ -103,6 +105,71 @@
         cursor: pointer;
         font-weight: bold;
     }
+    
+    #imageModal {
+	   display: none;
+	   position: fixed;
+	   top: 0; left: 0;
+	   width: 100%; height: 100%;
+	   background: rgba(0, 0, 0, 0.9);
+	   z-index: 1000;
+	   justify-content: center;
+	   align-items: center;
+	   cursor: pointer;
+	   
+	}
+	
+	#imageModalContent {
+	    background: none;
+	    padding: 0;
+	    text-align: center;
+	    position: relative;
+	}
+
+	#modalImage {
+	     max-width: 90%;
+	    max-height: 90%;
+	    object-fit: contain;
+	}
+	
+	.arrow {
+	    position: absolute;
+	    top: 50%;
+	    transform: translateY(-50%);
+	    color: white;
+	    font-size: 50px;
+	    font-weight: bold;
+	    cursor: pointer;
+	    user-select: none;
+	    z-index: 1001;
+	    padding: 0 15px;
+	}
+	
+	#leftArrow {
+	    left: 0;
+	}
+	
+	#rightArrow {
+	    right: 0;
+	}
+	
+	.close-btn {
+	    position: absolute;
+	    top: 25px;
+	    right: 40px;
+	    font-size: 40px;
+	    color: white;
+	    font-weight: bold;
+	    cursor: pointer;
+	    z-index: 2001;
+	    user-select: none;
+	    background: transparent;
+	    border: none;
+	    padding: 0;
+	    line-height: 1;
+	}
+	
+	
 </style>
 </head>
 <body>
@@ -116,7 +183,7 @@
         <!-- 상품 이미지 영역 -->
         <div class="image-area">
             <c:if test="${not empty product.atList}">
-                <img src="${contextPath}${product.atList[0].filePath}${product.atList[0].changeName}" alt="대표이미지">
+                <img id="main-image" src="${contextPath}${product.atList[0].filePath}${product.atList[0].changeName}" alt="대표이미지">
            </c:if>
         </div>
         <!-- 상품 정보 영역 -->
@@ -144,7 +211,10 @@
                     </button>
                 </form>
             </div>
+            <!--  관리자나 ,로그인 안되어있을때 안보이도록 처리 -->
+            <c:if test="${not empty loginUser and loginUser.roleType != 'superAdmin' and loginUser.roleType != 'admin' and loginUser.roleType != 'viewer'}">
             <button class="action-btn" style="width:100%;">채팅으로 거래하기</button>
+            </c:if>
             <!-- 삭제 버튼 (작성자 본인일 경우에만 노출) -->
 		<c:if test="${loginUser.userId eq product.userId}">
 		   <form id="deleteForm" method="post" action="${contextPath}/delete.pro" style="display:none;">
@@ -182,8 +252,31 @@
     </div>
 </div>
 
+<!-- 상세 이미지 리스트 -->
+    <c:set var="count" value="0" />
+		<c:forEach var="img" items="${product.atList}">
+		    <c:if test="${img.fileLevel == 2 and count lt 3}">
+		        <div class="slide-image" data-src="${contextPath}${img.filePath}${img.changeName}"></div>
+		        <c:set var="count" value="${count + 1}" />
+		    </c:if>
+	</c:forEach>
 
-
+    <!-- 이미지 모달 -->
+    <div id="imageModal">
+    	<span id="closeModalBtn" class="close-btn">&times;</span>
+    	<div id="leftArrow" class="arrow">&#10094;</div>
+        <div id="imageModalContent">
+            <h4>상세 이미지</h4>
+            <img id="modalImage" src="" alt="상세 이미지">
+<!--             <div id="modal-controls"> -->
+<!-- <!--                 <button id="prevBtn" class="btn btn-outline-secondary">이전</button> --> -->
+<!-- <!--                 <button id="nextBtn" class="btn btn-outline-secondary">다음</button> --> -->
+<!--                 <button onclick="closeModal()" class="btn btn-secondary">닫기</button> -->
+<!--             </div> -->
+        </div>
+        <div id="rightArrow" class="arrow">&#10095;</div>
+    </div>
+</div>
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script>
 
@@ -193,8 +286,49 @@ $(function () {
             $("#deleteForm").submit();
         }
     });
+    
+ // 대표 이미지 클릭 시 모달 열기
+    $("#main-image").on("click", function () {
+        detailImages = $(".slide-image").map(function () {
+            return $(this).data("src");
+        }).get();
+
+        if (detailImages.length === 0) {
+            alert("상세 이미지가 없습니다.");
+            return;
+        }
+
+        currentIndex = 0;
+        $("#modalImage").attr("src", detailImages[currentIndex]);
+        $("#imageModal").css("display", "flex");
+    });
+ 
+    $("#leftArrow").on("click", function (e) {
+        e.stopPropagation(); // 이미지 클릭 이벤트 방지
+        if (detailImages.length > 0) {
+            currentIndex = (currentIndex - 1 + detailImages.length) % detailImages.length;
+            $("#modalImage").attr("src", detailImages[currentIndex]);
+        }
+    });
+
+    $("#rightArrow").on("click", function (e) {
+        e.stopPropagation();
+        if (detailImages.length > 0) {
+            currentIndex = (currentIndex + 1) % detailImages.length;
+            $("#modalImage").attr("src", detailImages[currentIndex]);
+        }
+    });
+    
+    //버튼 클릭시 닫기
+    $("#closeModalBtn").on("click", function (e) {
+        e.stopPropagation();
+        closeModal();
+    })
 });
 
+function closeModal() {
+    $("#imageModal").hide();
+}
 
 function wishProduct() {
     const productNo = $("#productNo").val();
@@ -261,6 +395,7 @@ function selectReplyList() {
 $(document).ready(function() {
     selectReplyList();
 });
+
 </script>
 </body>
 </html>
