@@ -21,26 +21,35 @@
     </update>
 
     <!-- 상세 페이지 -->
-    <select id="selectProductDetail" resultMap="productResultMap">
-        SELECT 
-            pb.PRODUCT_NO,
-            pb.CATEGORY_NO,
-            pb.SCORE,
-            pb.USER_NO,
-            pb.PRICE,
-            pb.UPLOAD_DATE,
-            pb.PRODUCT_COUNT,
-            pb.PRODUCT_TITLE,
-            pb.PRODUCT_CONTENT,
-            pb.STATUS,
-            m.USER_ID,
-            c.COORD_ADDRESS,
-            ct.CATEGORY_NAME
-        FROM PRODUCT_BOARD pb
-        JOIN MEMBER m ON pb.USER_NO = m.USER_NO
-        LEFT JOIN COORDS c ON m.MAIN_COORD = c.COORD_NO
-        JOIN CATEGORY ct ON pb.CATEGORY_NO = ct.CATEGORY_NO
-        WHERE pb.PRODUCT_NO = #{productNo}
+    <select id="selectProductDetail" resultMap="productAttachmentMap">
+	    SELECT 
+	        pb.PRODUCT_NO,
+	        pb.CATEGORY_NO,
+	        pb.SCORE,
+	        pb.USER_NO,
+	        pb.PRICE,
+	        pb.UPLOAD_DATE,
+	        pb.PRODUCT_COUNT,
+	        pb.PRODUCT_TITLE,
+	        pb.PRODUCT_CONTENT,
+	        pb.STATUS AS PB_STATUS,
+	        m.USER_ID,
+	        c.COORD_ADDRESS,
+	        ct.CATEGORY_NAME,
+	        at.FILE_NO,
+	        at.PRODUCT_NO,
+	        at.ORIGIN_NAME,
+	        at.CHANGE_NAME,
+	        at.FILE_PATH,
+	        at.UPLOAD_DATE AS AT_UPLOAD_DATE,
+	        at.FILE_LEVEL,
+	        at.STATUS AS AT_STATUS
+	    FROM PRODUCT_BOARD pb
+	    JOIN MEMBER m ON pb.USER_NO = m.USER_NO
+	    LEFT JOIN COORDS c ON m.MAIN_COORD = c.COORD_NO
+	    JOIN CATEGORY ct ON pb.CATEGORY_NO = ct.CATEGORY_NO
+	    LEFT JOIN ATTATCHMENT at ON pb.PRODUCT_NO = at.PRODUCT_NO AND at.STATUS = 'Y'
+	    WHERE pb.PRODUCT_NO = #{productNo}
     </select>
 
     <!-- 상품게시글 번호 추출 -->
