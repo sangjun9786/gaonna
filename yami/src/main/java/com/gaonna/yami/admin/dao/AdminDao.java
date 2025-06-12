@@ -97,28 +97,4 @@ public class AdminDao {
 	public List<BakeryComment> searchReplyDongne(SqlSessionTemplate sqlSession, SearchForm searchForm) {
 		return sqlSession.selectList("adminMapper.searchReplyDongne", searchForm);
 	}
-	
-	public int countBoardMember(SqlSessionTemplate sqlSession, SearchForm searchForm) {
-		return sqlSession.selectOne("adminMapper.countBoardMember", searchForm);
-	}
-
-	public List<BoardCo> searchBoardMember(SqlSessionTemplate sqlSession, SearchForm searchForm) {
-		return sqlSession.selectOne("adminMapper.searchBoardMember", searchForm);
-	}
-
-	public int countReplyMember(SqlSessionTemplate sqlSession, SearchForm searchForm) {
-		return sqlSession.selectOne("adminMapper.countReplyMember", searchForm);
-	}
-	
-	public List<ReplyCo> searchReplyMember(SqlSessionTemplate sqlSession, SearchForm searchForm) {
-		return sqlSession.selectList("adminMapper.searchReplyMember", searchForm);
-	}
-
-	public int countReplyDongneMember(SqlSessionTemplate sqlSession, SearchForm searchForm) {
-		return sqlSession.selectOne("adminMapper.countReplyDongneMember", searchForm);
-	}
-	
-	public List<BakeryComment> searchReplyDongneMember(SqlSessionTemplate sqlSession, SearchForm searchForm) {
-		return sqlSession.selectList("adminMapper.searchReplyDongneMember", searchForm);
-	}
 }

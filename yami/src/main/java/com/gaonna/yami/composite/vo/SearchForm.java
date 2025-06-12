@@ -13,18 +13,18 @@ public class SearchForm {
 	//CATEGORY_NO는 0부터 10까지만 유효성 검사됨
 	
 	private String searchType2; //전체/제목/내용
-	private String searchTypeMember; //관리자 페이지 전용 
-	
 	private String searchKeyword; //검색어
 	private int page; //이동할 페이지
 	private int searchCount; //페이지 당 보여줄 수
 	private int resultCount; //검색결과 수
-	
 	private int endRow; //끝 행
 	private int startRow; //시작 행
-	
 	private int userNo; //로그인한 회원의 회원번호
+	
 	private String userId; //로그인한 회원의 아이디(댓글용)
+	
+	private String searchTypeMember; //관리자 페이지 전용 
+	private String searchKeywordMember; //관리자 페이지 전용 
 	
 	//SearchForm은 정상화당했다!
 	public boolean normalize() {

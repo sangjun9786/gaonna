@@ -91,32 +91,6 @@
 				                    </c:choose>
 				                </a>
 				            </div>
-				            
-				            <div class="col-md-6">
-				                <a href="${root}/updateBoardMember.ad" class="btn btn-outline-primary w-100 d-flex align-items-center">
-				                    <c:choose>
-				                        <c:when test="${loginUser.roleType != 'viewer'}">
-						                    <i class="bi bi-journal-text me-2"></i>특정 회원이 작성한 게시글 조회/수정
-				                        </c:when>
-				                        <c:otherwise>
-				                            <i class="bi bi-journal-text me-2"></i>특정 회원이 작성한 게시글 조회
-				                        </c:otherwise>
-				                    </c:choose>
-				                </a>
-				            </div>
-				            
-				            <div class="col-md-6">
-				                <a href="${root}/updateReplyMember.ad" class="btn btn-outline-primary w-100 d-flex align-items-center">
-				                    <c:choose>
-				                        <c:when test="${loginUser.roleType != 'viewer'}">
-						                    <i class="bi bi-chat-dots me-2"></i>특정 회원이 작성한 댓글 조회/수정
-				                        </c:when>
-				                        <c:otherwise>
-				                            <i class="bi bi-chat-dots me-2"></i>특정 회원이 작성한 댓글 조회
-				                        </c:otherwise>
-				                    </c:choose>
-				                </a>
-				            </div>
 				        </div>
 				    </div>
 				</div>

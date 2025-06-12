@@ -62,8 +62,6 @@ public class AdminController {
 				commandType = "login";
 				break;
 			default:
-				userId=command;
-				commandType = "login";
 				break;
 			}
 			
@@ -333,58 +331,4 @@ public class AdminController {
 			return null;
 		}
 	}
-	
-	//특정 회원이 작성한 게시글 조회/수정 페이지로
-	@GetMapping("updateBoardMember.ad")
-	public String goUpdateBoardMember() {
-		return "admin/updateBoardMember";
-	}
-	
-	//특정 회원이 작성한 댓글 조회/수정 페이지로
-	@GetMapping("updateReplyMember.ad")
-	public String goUpdateReplyMember() {
-		return "admin/updateReplyMember";
-	}
-	
-	//ajax - 특정 회원이 작성한 게시글 조회
-	@ResponseBody
-	@GetMapping("searchBoardMember.ad")
-	public Map<String, Object> searchBoardMember(SearchForm searchForm) {
-		try {
-			return service.searchBoardMember(searchForm);
-		} catch (Exception e) {
-			e.printStackTrace();
-			return null;
-		}
-	}
-	
-	//ajax - 특정 회원이 작성한 판매게시판 댓글 조회
-	@ResponseBody
-	@PostMapping("searchReplyMember.ad")
-	public Map<String, Object> searchReplyMember(HttpSession session,Model model
-			,SearchForm searchForm) {
-		try {
-			Map<String, Object> result = service.searchReplyMember(searchForm);
-			return result;
-		} catch (Exception e) {
-			e.printStackTrace();
-			return null;
-		}
-	}
-	
-	//ajax - 특정 회원이 작성한 우리동네빵집 댓글 조회
-	@ResponseBody
-	@PostMapping("searchReplyDongneMember.ad")
-	public Map<String, Object> searchReplyDongneMember(HttpSession session,Model model
-			,SearchForm searchForm) {
-		try {
-			Map<String, Object> result = service.searchReplyDongneMember(searchForm);
-			return result;
-		} catch (Exception e) {
-			e.printStackTrace();
-			return null;
-		}
-	}
-	
-	
 }

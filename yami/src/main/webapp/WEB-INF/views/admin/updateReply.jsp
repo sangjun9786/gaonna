@@ -16,55 +16,76 @@
     <div class="col-md-11 col-lg-10">
       <div class="card shadow-lg mb-4">
         <div class="card-header bg-primary text-white">
-          <h4 class="mb-0"><i class="bi bi-pencil-square me-2"></i>댓글 조회</h4>
+          <h4 class="mb-0">
+            <i class="bi bi-pencil-square me-2"></i>댓글 조회
+          </h4>
         </div>
-        <div class="card-body">
-          <form id="searchForm" class="row g-3 align-items-center" autocomplete="off">
-            <div class="col-md-3">
-              <select class="form-select" id="searchType1" name="searchType1" required>
-                <option value="all">전체 판매 게시판</option>
-                <!-- AJAX로 카테고리 옵션 추가됨 -->
-                <option value="dongne">우리동네 빵집 게시판</option>
-              </select>
+        <div class="card-body p-4">
+          <form id="searchForm" autocomplete="off">
+            <div class="row g-3 align-items-center mb-2">
+              <div class="col-md-2">
+                <select class="form-select" id="searchType1" name="searchType1" required>
+                  <option value="all">전체 게시판</option>
+                  <option value="dongne">우리동네 빵집</option>
+                </select>
+              </div>
+              <div class="col-md-6">
+                <input type="text" class="form-control" id="searchKeyword" name="searchKeyword" placeholder="검색어 입력"/>
+              </div>
+              <div class="col-md-2">
+                <select class="form-select" id="searchCount" name="searchCount" required>
+                  <option value="10">10개</option>
+                  <option value="30">30개</option>
+                  <option value="50">50개</option>
+                  <option value="100">100개</option>
+                </select>
+              </div>
+              <div class="col-md-2">
+                <button type="submit" class="btn btn-success w-100" id="searchreply">
+                  <i class="bi bi-search"></i> 검색
+                </button>
+              </div>
             </div>
-            <div class="col-md-3">
-              <input type="text" class="form-control" id="searchKeyword" name="searchKeyword" placeholder="검색어를 입력해주세요"/>
-            </div>
-            <div class="col-md-2">
-              <select class="form-select" id="searchCount" name="searchCount" required>
-                <option value="10">10개</option>
-                <option value="30">30개</option>
-                <option value="50">50개</option>
-                <option value="100">100개</option>
-              </select>
+            <div class="row g-3 align-items-center">
+              <div class="col-md-2">
+                <select class="form-select" name="searchTypeMember" required>
+                  <option value="all">전체 회원</option>
+                  <option value="no">번호</option>
+                  <option value="name">이름</option>
+                  <option value="id">아이디</option>
+                </select>
+              </div>
+              <div class="col-md-6">
+                <input type="text" class="form-control" name="searchKeywordMember" placeholder="회원 검색"/>
+              </div>
+              <div class="col-md-2 d-flex align-items-center">
+                <span id="replyResultCount" class="text-secondary small ms-1">
+                  검색결과 <span class="fw-bold">0</span>건
+                </span>
+              </div>
+              <div class="col-md-2">
+                <button type="button" class="btn btn-outline-primary w-100" id="resetBtn">
+                  <i class="bi bi-arrow-clockwise"></i> 초기화
+                </button>
+              </div>
             </div>
             <input type="hidden" id="page" name="page" value="1">
-            <div class="col-md-2">
-              <button type="submit" class="btn btn-success w-100" id="searchreply">
-                <i class="bi bi-search"></i> 조회하기
-              </button>
-            </div>
           </form>
         </div>
       </div>
 
-      <div class="mb-3 text-end text-secondary small">
-        <span id="replyResultCount">검색결과 <span class="fw-bold">0</span>건</span>
-      </div>
-
-      <!-- 게시글 카드 리스트 -->
+      <!-- 댓글 리스트 영역 -->
       <div id="replyList" class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4 mb-4">
-        <!-- JS로 카드 동적 생성 -->
         <div class="col">
           <div class="alert alert-info mb-0">검색 결과가 이곳에 표시됩니다.</div>
         </div>
       </div>
-
       <!-- 페이지네이션 -->
       <nav id="paginationNav" class="mt-4 d-flex justify-content-center"></nav>
     </div>
   </div>
 </div>
+
 
 <script>
 $(function(){
@@ -289,6 +310,29 @@ $(function(){
 	  });
 	}
 
+});
+
+//초기화
+document.addEventListener('DOMContentLoaded', function() {
+  document.getElementById('resetBtn').addEventListener('click', function() {
+    const form = document.getElementById('searchForm');
+    form.reset(); // 폼 전체 초기화
+
+    // 혹시 select에 기본값이 아닌 option이 선택되어 있다면 아래처럼 명시적으로도 가능
+    document.getElementById('searchType1').value = 'all';
+    document.getElementById('searchCount').value = '10';
+    form.page.value = '1';
+
+    // 검색결과 카운트 및 리스트 초기화 (필요시)
+    document.getElementById('replyResultCount').innerHTML = '검색결과 <span class="fw-bold">0</span>건';
+    document.getElementById('replyList').innerHTML = `
+      <div class="col">
+        <div class="alert alert-info mb-0">검색 결과가 이곳에 표시됩니다.</div>
+      </div>
+    `;
+    // 만약 자동으로 검색을 다시 하고 싶으면 아래 코드 사용
+    // form.submit();
+  });
 });
 </script>
 </body>

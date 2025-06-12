@@ -49,13 +49,4 @@ public interface AdminService {
 	
 	//ajax 뽱집댓글 조회
 	Map<String, Object> searchReplyDongne(SearchForm searchForm);
-
-	//ajax - 특정 회원이 작성한 게시글 조회
-	Map<String, Object> searchBoardMember(SearchForm searchForm);
-
-	//ajax - 특정 회원이 작성한 판매게시판 댓글 조회
-	Map<String, Object> searchReplyMember(SearchForm searchForm);
-
-	//ajax - 특정 회원이 작성한 우리동네빵집 댓글 조회
-	Map<String, Object> searchReplyDongneMember(SearchForm searchForm);
 }
