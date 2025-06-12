@@ -101,8 +101,6 @@ public class ProductController {
      // 로그인유저 체크
         Member loginUser = (Member) session.getAttribute("loginUser");
         if(loginUser != null) {
-            System.out.println("[로그] loginUser.roleType = " + loginUser.getRoleType());
-            System.out.println("[로그] loginUser.roleType 타입 = " + (loginUser.getRoleType() == null ? "null" : loginUser.getRoleType().getClass().getName()));
         }
 
         model.addAttribute("product", product);
@@ -374,6 +372,55 @@ public class ProductController {
         System.out.println("📍 댓글 불러오기: " + productNo);
         return replyService.selectReplyList(productNo);
     }
+    
+    // 구매하기
+    @GetMapping("/buyProduct")
+    public String buyProduct(@RequestParam("productNo") 
+    						  int productNo
+    						  ,Model model
+    						  ,HttpSession session) {
+        // 1. 상품 정보 조회
+        Product product = service.selectProductDetail(productNo);
+        ArrayList<Attachment> atList = service.selectProductAttachments(productNo);
+        product.setAtList(atList);
+
+        // 2. (옵션) 로그인 유저 정보 (세션에서 꺼낼 수 있음)
+        Member loginUser = (Member) session.getAttribute("loginUser");
+
+        // 3. 모델에 상품/유저 정보 담기
+        model.addAttribute("product", product);
+        model.addAttribute("loginUser", loginUser);
+
+        // 4. 구매 폼 페이지로 이동
+        return "product/productBuy";
+    }
+    
+    //결제 페이지
+    @PostMapping("/productPay")
+    public String productPay(
+        @RequestParam("productNo") int productNo,
+        @RequestParam("buyerName") String buyerName,
+        @RequestParam("buyerPhone") String buyerPhone,
+        @RequestParam(value = "meetLocation", required = false) String meetLocation,
+        @RequestParam(value = "message", required = false) String message,
+        Model model
+    ) {
+        // 1. 상품 정보 불러오기
+        Product product = service.selectProductDetail(productNo);
+        ArrayList<Attachment> atList = service.selectProductAttachments(productNo);
+        product.setAtList(atList);
+
+        // 2. 결제 페이지에 필요한 데이터 model에 담기
+        model.addAttribute("product", product);
+        model.addAttribute("buyerName", buyerName);
+        model.addAttribute("buyerPhone", buyerPhone);
+        model.addAttribute("meetLocation", meetLocation);
+        model.addAttribute("message", message);
+
+        // 3. 결제 페이지로 이동
+        return "product/productPay";
+    }
+
 }
 
 

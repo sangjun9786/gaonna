@@ -215,14 +215,22 @@
             <c:if test="${not empty loginUser and loginUser.roleType != 'superAdmin' and loginUser.roleType != 'admin' and loginUser.roleType != 'viewer'}">
             <button class="action-btn" style="width:100%;">채팅으로 거래하기</button>
             </c:if>
-            <!-- 삭제 버튼 (작성자 본인일 경우에만 노출) -->
-		<c:if test="${loginUser.userId eq product.userId}">
-		   <form id="deleteForm" method="post" action="${contextPath}/delete.pro" style="display:none;">
-		       <input type="hidden" name="productNo" value="${product.productNo}" />
-		       <input type="hidden" name="filePath" value="/resources/uploadFiles/${product.atList[0].changeName}" />
-		   </form>
-		   <button type="button" id="deleteBtn" class="action-btn" style="width:auto; float:right;">삭제하기</button>
-		</c:if>
+       <!-- 삭제/구매 버튼 영역 -->
+			<div style="display: flex; flex-direction: row-reverse; gap: 8px; margin-top: 8px;">
+			    <c:if test="${loginUser.userId eq product.userId}">
+			        <form id="deleteForm" method="post" action="${contextPath}/delete.pro" style="display:none;">
+			            <input type="hidden" name="productNo" value="${product.productNo}" />
+			            <input type="hidden" name="filePath" value="/resources/uploadFiles/${product.atList[0].changeName}" />
+			        </form>
+			        <button type="button" id="deleteBtn" class="action-btn" style="width:auto;">삭제하기</button>
+			    </c:if>
+			    <c:if test="${not empty loginUser and loginUser.roleType != 'superAdmin' and loginUser.roleType != 'admin' and loginUser.roleType != 'viewer' and loginUser.userId ne product.userId}">
+			        <form id="buyForm" method="get" action="${contextPath}/buyProduct" style="display:inline;">
+			            <input type="hidden" name="productNo" value="${product.productNo}" />
+			            <button type="submit" class="action-btn" style="width:auto;">구매하기</button>
+			        </form>
+			    </c:if>
+			</div>
         </div>
     </div>
 
