@@ -23,5 +23,8 @@ public interface CompositeService {
 
 	//ajax - 찜 조회
 	Map<String, Object> searchMyWishlist(SearchForm searchForm);
+
+	//ajax - 찜 삭제
+	int deleteMyWishlist(int productNo, int userNo);
 	
 }
