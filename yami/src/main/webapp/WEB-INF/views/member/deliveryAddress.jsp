@@ -31,9 +31,9 @@
   <!-- 상단 타이틀 & 버튼 -->
   <div class="d-flex justify-content-between align-items-center mb-3">
     <h4 class="mb-0 fw-bold">
-      <i class="bi bi-geo-alt-fill me-2 text-primary"></i>배송지 설정
+      <i class="bi bi-geo-alt-fill me-2 text-warning"></i>배송지 설정
     </h4>
-    <a href="insertLocationForm.me" class="btn btn-primary">
+    <a href="insertLocationForm.me" class="btn btn-warning">
       <i class="bi bi-plus-lg me-1"></i>배송지 추가하기
     </a>
   </div>
@@ -46,9 +46,9 @@
           <div class="card dongne-card ${location.locationNo == loginUser.mainLocation ? 'main-dongne' : ''} h-100">
             <div class="card-body p-2">
               <div class="fw-semibold text-secondary mb-1">
-                <i class="bi bi-geo-alt-fill me-1 text-primary"></i>
+                <i class="bi bi-geo-alt-fill me-1 text-warning"></i>
                 배송지 정보
-                <span class="badge bg-light text-dark border border-primary ms-2">
+                <span class="badge bg-light text-dark border border-warning ms-2">
                   우편번호 ${location.zipCode}
                 </span>
               </div>

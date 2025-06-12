@@ -1,7 +1,10 @@
 package com.gaonna.yami.admin.service;
 
 import java.util.List;
+import java.util.Map;
 
+import com.gaonna.yami.composite.vo.BoardCo;
+import com.gaonna.yami.composite.vo.SearchForm;
 import com.gaonna.yami.location.vo.Coord;
 import com.gaonna.yami.location.vo.Location;
 import com.gaonna.yami.member.model.vo.Member;
@@ -37,5 +40,22 @@ public interface AdminService {
 
 	//ajax 유저 배송지 조회
 	List<Location> userLocation(int userNo);
+
+	//ajax 게시글 조회
+	Map<String, Object> searchBoard(SearchForm searchForm);
+
+	//ajax 댓글 조회
+	Map<String, Object> searchReply(SearchForm searchForm);
 	
+	//ajax 뽱집댓글 조회
+	Map<String, Object> searchReplyDongne(SearchForm searchForm);
+
+	//ajax - 특정 회원이 작성한 게시글 조회
+	Map<String, Object> searchBoardMember(SearchForm searchForm);
+
+	//ajax - 특정 회원이 작성한 판매게시판 댓글 조회
+	Map<String, Object> searchReplyMember(SearchForm searchForm);
+
+	//ajax - 특정 회원이 작성한 우리동네빵집 댓글 조회
+	Map<String, Object> searchReplyDongneMember(SearchForm searchForm);
 }

@@ -70,4 +70,7 @@ public interface LocationService {
 	//댓글 삭제하기
 	int deleteBakeryComment(int commentNo);
 
+	//bakeryNo로 뽱집 조회하기
+	Bakery selectBakeryInfo(String bakeryNo);
+
 }

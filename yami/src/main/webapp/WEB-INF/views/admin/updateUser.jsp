@@ -13,7 +13,7 @@
   <div class="row justify-content-center">
     <div class="col-md-11 col-lg-10">
       <div class="card shadow-lg mb-4">
-        <div class="card-header bg-primary text-white">
+        <div class="card-header bg-success text-white">
           <h4 class="mb-0"><i class="bi bi-person-lines-fill me-2"></i>회원 정보 조회</h4>
         </div>
         <div class="card-body">
@@ -225,7 +225,7 @@ $(function(){
           <td>\${m.modifyDateStr ?? ''}</td>
           <td>\${m.status ?? ''}</td>
           <td>
-	          <button class="btn btn-outline-success btn-sm coord-btn" 
+	          <button class="btn btn-outline-warning btn-sm coord-btn" 
 	        	  data-user-no="\${m.userNo}">동네</button>
           </td>
           <td>

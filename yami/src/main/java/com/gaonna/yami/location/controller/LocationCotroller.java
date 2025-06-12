@@ -321,6 +321,26 @@ public class LocationCotroller {
 		}
 	}
 	
+	//ajax - 빵집 정보 조회(마이페이지 댓글)
+	@ResponseBody
+	@PostMapping("selectBakeryInfo.dn")
+	public Map<String, Object> selectBakeryInfo(String bakeryNo){
+		try {
+			Map<String, Object> response = new HashMap<>();
+			//뽱집 정보 조회해서 넣기
+			Bakery bakery = service.selectBakeryInfo(bakeryNo);
+			
+		    response.put("bakery", bakery);
+		    response.put("status", "pass");
+		    return response;
+		} catch (Exception e) {
+			e.printStackTrace();
+			Map<String, Object> response = new HashMap<>();
+			response.put("status", "noPass");
+			return response;
+		}
+	}
+	
 	
 	
 }

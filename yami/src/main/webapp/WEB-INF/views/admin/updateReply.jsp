@@ -6,7 +6,7 @@
 <link rel="stylesheet"
 	href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
 <meta charset="UTF-8">
-<title>나의 댓글</title>
+<title>댓글 조회 및 수정</title>
 </head>
 <body>
 <%@include file="/WEB-INF/views/common/header.jsp"%>
@@ -16,7 +16,7 @@
     <div class="col-md-11 col-lg-10">
       <div class="card shadow-lg mb-4">
         <div class="card-header bg-primary text-white">
-          <h4 class="mb-0"><i class="bi bi-pencil-square me-2"></i>나의 댓글</h4>
+          <h4 class="mb-0"><i class="bi bi-pencil-square me-2"></i>댓글 조회</h4>
         </div>
         <div class="card-body">
           <form id="searchForm" class="row g-3 align-items-center" autocomplete="off">
@@ -25,8 +25,10 @@
                 <option value="all">전체 판매 게시판</option>
                 <!-- AJAX로 카테고리 옵션 추가됨 -->
                 <option value="dongne">우리동네 빵집 게시판</option>
-                
               </select>
+            </div>
+            <div class="col-md-3">
+              <input type="text" class="form-control" id="searchKeyword" name="searchKeyword" placeholder="검색어를 입력해주세요"/>
             </div>
             <div class="col-md-2">
               <select class="form-select" id="searchCount" name="searchCount" required>
@@ -110,7 +112,7 @@ $(function(){
       if(searchType1 == 'dongne'){
     	  //우리동네 빵집 댓글조회
 	      response = await $.ajax({
-	        url: '${root}/searchMyReplyDongne.co',
+	        url: '${root}/searchReplyDongne.ad',
 	        method: 'POST',
 	        data: params,
 	      });
@@ -127,9 +129,9 @@ $(function(){
 	      renderPagination(totalCount, page, pageSize);
     	  
       }else{
-    	  //판매게시판 댓글조회
+    	  //판매게새판 댓글조회
 	      response = await $.ajax({
-	        url: '${root}/searchMyReply.co',
+	        url: '${root}/searchReply.ad',
 	        method: 'POST',
 	        data: params,
 	      });

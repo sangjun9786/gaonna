@@ -16,18 +16,18 @@
                 <!-- 최고관리자 전용 -->
                 <c:if test="${loginUser.roleType == 'superAdmin'}">
                     <div class="card shadow-sm mb-4">
-                        <div class="card-header bg-primary text-white">
+                        <div class="card-header bg-secondary text-white">
                             <h4 class="mb-0"><i class="bi bi-shield-lock me-2"></i>시스템 관리</h4>
                         </div>
                         <div class="card-body">
                             <div class="row g-3">
                                 <div class="col-md-6">
-                                    <a href="${root}/updateAdmin.ad" class="btn btn-outline-primary w-100 d-flex align-items-center">
+                                    <a href="${root}/updateAdmin.ad" class="btn btn-outline-secondary w-100 d-flex align-items-center">
                                         <i class="bi bi-people-fill me-2"></i>관리자 조회/수정
                                     </a>
                                 </div>
                                 <div class="col-md-6">
-                                    <a href="${root}/insertAdmin.ad" class="btn btn-outline-primary w-100 d-flex align-items-center">
+                                    <a href="${root}/insertAdmin.ad" class="btn btn-outline-secondary w-100 d-flex align-items-center">
                                         <i class="bi bi-person-plus me-2"></i>관리자 추가
                                     </a>
                                 </div>
@@ -58,6 +58,68 @@
                         </div>
                     </div>
                 </div>
+                
+				<!-- 게시글 관리 등등 -->
+				<div class="card shadow-sm mb-4 mt-4">
+				    <div class="card-header bg-primary text-white">
+				        <h4 class="mb-0"><i class="bi bi-journal-text me-2"></i>게시글 관리</h4>
+				    </div>
+				    <div class="card-body">
+				        <div class="row g-3">
+				            <div class="col-md-6">
+				                <a href="${root}/updateBoard.ad" class="btn btn-outline-primary w-100 d-flex align-items-center">
+				                    <c:choose>
+				                        <c:when test="${loginUser.roleType != 'viewer'}">
+				                            <i class="bi bi-journal-text me-2"></i>게시글 조회/수정
+				                        </c:when>
+				                        <c:otherwise>
+				                            <i class="bi bi-journal-text me-2"></i>게시글 조회
+				                        </c:otherwise>
+				                    </c:choose>
+				                </a>
+				            </div>
+				            
+				            <div class="col-md-6">
+				                <a href="${root}/updateReply.ad" class="btn btn-outline-primary w-100 d-flex align-items-center">
+				                    <c:choose>
+				                        <c:when test="${loginUser.roleType != 'viewer'}">
+						                    <i class="bi bi-chat-dots me-2"></i>댓글 조회/수정
+				                        </c:when>
+				                        <c:otherwise>
+				                            <i class="bi bi-chat-dots me-2"></i>댓글 조회
+				                        </c:otherwise>
+				                    </c:choose>
+				                </a>
+				            </div>
+				            
+				            <div class="col-md-6">
+				                <a href="${root}/updateBoardMember.ad" class="btn btn-outline-primary w-100 d-flex align-items-center">
+				                    <c:choose>
+				                        <c:when test="${loginUser.roleType != 'viewer'}">
+						                    <i class="bi bi-journal-text me-2"></i>특정 회원이 작성한 게시글 조회/수정
+				                        </c:when>
+				                        <c:otherwise>
+				                            <i class="bi bi-journal-text me-2"></i>특정 회원이 작성한 게시글 조회
+				                        </c:otherwise>
+				                    </c:choose>
+				                </a>
+				            </div>
+				            
+				            <div class="col-md-6">
+				                <a href="${root}/updateReplyMember.ad" class="btn btn-outline-primary w-100 d-flex align-items-center">
+				                    <c:choose>
+				                        <c:when test="${loginUser.roleType != 'viewer'}">
+						                    <i class="bi bi-chat-dots me-2"></i>특정 회원이 작성한 댓글 조회/수정
+				                        </c:when>
+				                        <c:otherwise>
+				                            <i class="bi bi-chat-dots me-2"></i>특정 회원이 작성한 댓글 조회
+				                        </c:otherwise>
+				                    </c:choose>
+				                </a>
+				            </div>
+				        </div>
+				    </div>
+				</div>
 
             </div>
         </div>

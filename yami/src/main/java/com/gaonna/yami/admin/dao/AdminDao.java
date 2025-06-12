@@ -6,6 +6,10 @@ import java.util.Map;
 import org.mybatis.spring.SqlSessionTemplate;
 import org.springframework.stereotype.Repository;
 
+import com.gaonna.yami.composite.vo.BoardCo;
+import com.gaonna.yami.composite.vo.ReplyCo;
+import com.gaonna.yami.composite.vo.SearchForm;
+import com.gaonna.yami.location.vo.BakeryComment;
 import com.gaonna.yami.location.vo.Coord;
 import com.gaonna.yami.location.vo.Location;
 import com.gaonna.yami.member.model.vo.Member;
@@ -70,4 +74,51 @@ public class AdminDao {
 		return sqlSession.selectList("adminMapper.userLocation", userNo);
 	}
 
+	public int countBoard(SqlSessionTemplate sqlSession, SearchForm searchForm) {
+		return sqlSession.selectOne("adminMapper.countBoard", searchForm);
+	}
+
+	public List<BoardCo> searchBoard(SqlSessionTemplate sqlSession, SearchForm searchForm) {
+		return sqlSession.selectList("adminMapper.searchBoard",searchForm);
+	}
+
+	public int countReply(SqlSessionTemplate sqlSession, SearchForm searchForm) {
+		return sqlSession.selectOne("adminMapper.countReply", searchForm);
+	}
+
+	public List<ReplyCo> searchReply(SqlSessionTemplate sqlSession, SearchForm searchForm) {
+		return sqlSession.selectList("adminMapper.searchReply", searchForm);
+	}
+
+	public int countReplyDongne(SqlSessionTemplate sqlSession, SearchForm searchForm) {
+		return sqlSession.selectOne("adminMapper.countReplyDongne", searchForm);
+	}
+
+	public List<BakeryComment> searchReplyDongne(SqlSessionTemplate sqlSession, SearchForm searchForm) {
+		return sqlSession.selectList("adminMapper.searchReplyDongne", searchForm);
+	}
+	
+	public int countBoardMember(SqlSessionTemplate sqlSession, SearchForm searchForm) {
+		return sqlSession.selectOne("adminMapper.countBoardMember", searchForm);
+	}
+
+	public List<BoardCo> searchBoardMember(SqlSessionTemplate sqlSession, SearchForm searchForm) {
+		return sqlSession.selectOne("adminMapper.searchBoardMember", searchForm);
+	}
+
+	public int countReplyMember(SqlSessionTemplate sqlSession, SearchForm searchForm) {
+		return sqlSession.selectOne("adminMapper.countReplyMember", searchForm);
+	}
+	
+	public List<ReplyCo> searchReplyMember(SqlSessionTemplate sqlSession, SearchForm searchForm) {
+		return sqlSession.selectList("adminMapper.searchReplyMember", searchForm);
+	}
+
+	public int countReplyDongneMember(SqlSessionTemplate sqlSession, SearchForm searchForm) {
+		return sqlSession.selectOne("adminMapper.countReplyDongneMember", searchForm);
+	}
+	
+	public List<BakeryComment> searchReplyDongneMember(SqlSessionTemplate sqlSession, SearchForm searchForm) {
+		return sqlSession.selectList("adminMapper.searchReplyDongneMember", searchForm);
+	}
 }

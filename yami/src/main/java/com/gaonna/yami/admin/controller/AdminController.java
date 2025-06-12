@@ -2,6 +2,7 @@ package com.gaonna.yami.admin.controller;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 import javax.servlet.http.HttpSession;
 import javax.servlet.http.HttpServletRequest;
@@ -16,6 +17,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.gaonna.yami.admin.service.AdminService;
+import com.gaonna.yami.composite.vo.SearchForm;
 import com.gaonna.yami.location.service.LocationService;
 import com.gaonna.yami.member.model.service.MemberService;
 import com.gaonna.yami.location.vo.Coord;
@@ -273,6 +275,111 @@ public class AdminController {
 			List<Location> Location = service.userLocation(userNoToInt);
 			return Location;
 			
+		} catch (Exception e) {
+			e.printStackTrace();
+			return null;
+		}
+	}
+	
+	
+	//게시글 조회/수정 페이지로
+	@GetMapping("updateBoard.ad")
+	public String goUpdateBoard() {
+		return "admin/updateBoard";
+	}
+	
+	//ajax 게시글 조회
+	@ResponseBody
+	@GetMapping("searchBoard.ad")
+	public Map<String, Object> searchBoard(SearchForm searchForm) {
+		try {
+			return service.searchBoard(searchForm);
+		} catch (Exception e) {
+			e.printStackTrace();
+			return null;
+		}
+	}
+	
+	//댓글 조회/수정 페이지로
+	@GetMapping("updateReply.ad")
+	public String goUpdateReply() {
+		return "admin/updateReply";
+	}
+	
+	//ajax - 판매게시판 댓글 조회
+	@ResponseBody
+	@PostMapping("searchReply.ad")
+	public Map<String, Object> searchMyReply(HttpSession session,Model model
+			,SearchForm searchForm) {
+		try {
+			Map<String, Object> result = service.searchReply(searchForm);
+			return result;
+		} catch (Exception e) {
+			e.printStackTrace();
+			return null;
+		}
+	}
+	
+	//ajax - 우리동네빵집 댓글 조회
+	@ResponseBody
+	@PostMapping("searchReplyDongne.ad")
+	public Map<String, Object> searchMyReplyDongne(HttpSession session,Model model
+			,SearchForm searchForm) {
+		try {
+			Map<String, Object> result = service.searchReplyDongne(searchForm);
+			return result;
+		} catch (Exception e) {
+			e.printStackTrace();
+			return null;
+		}
+	}
+	
+	//특정 회원이 작성한 게시글 조회/수정 페이지로
+	@GetMapping("updateBoardMember.ad")
+	public String goUpdateBoardMember() {
+		return "admin/updateBoardMember";
+	}
+	
+	//특정 회원이 작성한 댓글 조회/수정 페이지로
+	@GetMapping("updateReplyMember.ad")
+	public String goUpdateReplyMember() {
+		return "admin/updateReplyMember";
+	}
+	
+	//ajax - 특정 회원이 작성한 게시글 조회
+	@ResponseBody
+	@GetMapping("searchBoardMember.ad")
+	public Map<String, Object> searchBoardMember(SearchForm searchForm) {
+		try {
+			return service.searchBoardMember(searchForm);
+		} catch (Exception e) {
+			e.printStackTrace();
+			return null;
+		}
+	}
+	
+	//ajax - 특정 회원이 작성한 판매게시판 댓글 조회
+	@ResponseBody
+	@PostMapping("searchReplyMember.ad")
+	public Map<String, Object> searchReplyMember(HttpSession session,Model model
+			,SearchForm searchForm) {
+		try {
+			Map<String, Object> result = service.searchReplyMember(searchForm);
+			return result;
+		} catch (Exception e) {
+			e.printStackTrace();
+			return null;
+		}
+	}
+	
+	//ajax - 특정 회원이 작성한 우리동네빵집 댓글 조회
+	@ResponseBody
+	@PostMapping("searchReplyDongneMember.ad")
+	public Map<String, Object> searchReplyDongneMember(HttpSession session,Model model
+			,SearchForm searchForm) {
+		try {
+			Map<String, Object> result = service.searchReplyDongneMember(searchForm);
+			return result;
 		} catch (Exception e) {
 			e.printStackTrace();
 			return null;
