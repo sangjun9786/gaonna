@@ -190,8 +190,8 @@
 					                }
 					            });
 				            } else if (condition == 'location') {
-				                url = '${root}/locationSearch?keyword=' + encodedKeyword;
-				            } else if (condition == 'notice') {
+								location.href = '${root}/locationSearch';
+							} else if (condition == 'notice') {
 								$.ajax({
 									type: 'POST',
 									url: '${root}/saveKeyword',
@@ -265,7 +265,7 @@
 			</div>
 
 			<div class="col">
-				<a href="#" class="text-decoration-none">
+				<a href="${root }/recommend.bo" class="text-decoration-none">
 					<div class="card text-center h-100 shadow-sm">
 						<div class="card-body">
 							<i class="bi bi-star fs-1 text-warning"></i>
