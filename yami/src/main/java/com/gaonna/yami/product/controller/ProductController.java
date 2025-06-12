@@ -201,32 +201,6 @@ public class ProductController {
 		
 		ArrayList<Attachment> atList = new ArrayList<>(); //천부파일 정보들 등록할 리스트
 		
-//		int count =1;
-//		for(MultipartFile m : uploadFiles) {
-//			if (m == null || m.isEmpty()) continue;
-//			String changeName = saveFile(m,session);
-//			//저장실패시 처리중단 및 에러페이지 반환
-//			if (changeName == null) {
-//	            session.setAttribute("alertMsg", "파일 저장 중 오류가 발생했습니다.");
-//	            return "common/errorPage";
-//		    }
-//			
-//			String originName = m.getOriginalFilename(); //원본 파일명 추출
-//			
-//			//파일정보 객체 생성하여 리스트에 추가하기
-//			Attachment at = new Attachment();
-//			at.setChangeName(changeName);
-//			at.setOriginName(originName);
-//			at.setFilePath("/resources/uploadFiles/");
-//			if(count==1) {
-//				at.setFileLevel(count++); //1번 대표사진 설정
-//			}else {
-//				at.setFileLevel(2); //나머지
-//			}
-//			
-//			atList.add(at); //리스트에 추가
-//		}
-		
 		//대표 이미지
 	    if (!thumbnail.isEmpty()) {
 	        String changeName = saveFile(thumbnail, session);

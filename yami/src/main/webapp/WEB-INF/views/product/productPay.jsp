@@ -1,4 +1,4 @@
-<%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
+<%@ page language="java" contentType="text/html; charset=UTF-8"%>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
 <!DOCTYPE html>
@@ -22,7 +22,9 @@
     .pay-btn { background-color: #ff6600; color: white; border: none; padding: 14px 0; font-size: 18px; width: 100%; border-radius: 6px; cursor: pointer; margin-top: 15px;}
     .form-group { margin-bottom: 16px;}
     .form-group label { display: block; font-weight: bold; margin-bottom: 5px;}
-    .form-group input[type=text], .form-group select { width: 100%; padding: 8px; border-radius: 4px; border: 1px solid #ddd;}
+    .form-group input[type=text], .form-group input[type=number] { width: 100%; padding: 8px; border-radius: 4px; border: 1px solid #ddd;}
+    .point-guide { color: #ff6600; font-size: 14px; margin-bottom: 5px;}
+    .final-amount { font-size: 20px; color: #333; margin-top: 20px; font-weight: bold;}
 </style>
 </head>
 <body>
@@ -67,26 +69,55 @@
             <label>휴대폰</label>
             <input type="text" value="${loginUser.phone}" readonly>
         </div>
+        <div class="form-group">
+            <label>사용 가능한 포인트</label>
+            <input type="text" value="<fmt:formatNumber value='${loginUser.point}' pattern='#,###'/> P" readonly style="color:#ff6600;font-weight:bold;">
+        </div>
     </div>
-    <!-- 결제 방식 선택 -->
-    <form action="${contextPath}/payProduct" method="post" class="pay-form">
+
+    <!-- 포인트 입력/차감 및 결제 -->
+    <form action="${contextPath}/payProduct" method="post" class="pay-form" id="payForm">
         <input type="hidden" name="productNo" value="${product.productNo}">
-        <input type="hidden" name="price" value="${product.price}">
+        <input type="hidden" name="price" id="originPrice" value="${product.price}">
         <div class="section">
-            <div class="section-title">결제수단 선택</div>
+            <div class="section-title">포인트 사용</div>
             <div class="form-group">
-                <select name="payType" required>
-                    <option value="">결제수단 선택</option>
-                    <option value="card">신용카드</option>
-                    <option value="bank">계좌이체</option>
-                    <option value="kakaopay">카카오페이</option>
-                    <option value="naverpay">네이버페이</option>
-                </select>
+                <span class="point-guide">
+                    사용 가능한 포인트: <fmt:formatNumber value="${loginUser.point}" pattern="#,###"/>P
+                </span>
+                <input type="number" name="usePoint" id="usePoint" class="form-control"
+                       min="0"
+                       max="${loginUser.point}"
+                       value="0"
+                       placeholder="포인트를 입력하세요">
+            </div>
+            <div class="final-amount">
+                결제 금액: <span id="finalPrice"><fmt:formatNumber value="${product.price}" pattern="#,###"/></span> 원
             </div>
         </div>
         <button type="submit" class="pay-btn">결제하기</button>
     </form>
 </div>
 
+<script>
+$(function() {
+    // 포인트 입력할 때마다 결제 금액 자동 계산
+    $("#usePoint").on("input", function() {
+        let originPrice = parseInt($("#originPrice").val()) || 0;
+        let usePoint = parseInt($("#usePoint").val()) || 0;
+        // 입력값 제한: 0 이상, 보유포인트 이하, 상품금액 이하
+        const maxPoint = Math.min(
+            parseInt("${loginUser.point}"),
+            originPrice
+        );
+        if(usePoint < 0) usePoint = 0;
+        if(usePoint > maxPoint) usePoint = maxPoint;
+        $("#usePoint").val(usePoint);
+
+        let finalPrice = originPrice - usePoint;
+        $("#finalPrice").text(finalPrice.toLocaleString());
+    });
+});
+</script>
 </body>
 </html>
