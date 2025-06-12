@@ -212,7 +212,7 @@
                 </form>
             </div>
             <!--  관리자나 ,로그인 안되어있을때 안보이도록 처리 -->
-            <c:if test="${not empty loginUser and loginUser.roleType != '0' and loginUser.roleType != '-1' and loginUser.roleType != '9' and loginUser.roleType != '-2'}">
+            <c:if test="${not empty loginUser and loginUser.roleType != 'superAdmin' and loginUser.roleType != 'admin' and loginUser.roleType != 'viewer'}">
             <button class="action-btn" style="width:100%;">채팅으로 거래하기</button>
             </c:if>
             <!-- 삭제 버튼 (작성자 본인일 경우에만 노출) -->
