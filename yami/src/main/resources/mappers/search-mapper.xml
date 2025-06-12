@@ -178,7 +178,12 @@
 			    JOIN CATEGORY ct ON pb.CATEGORY_NO = ct.CATEGORY_NO
 			    JOIN WISHLIST w ON pb.PRODUCT_NO = w.PRODUCT_NO
 			    WHERE pb.STATUS = 'N'
-			    AND w.WISH_COUNT &gt; 10
+			    AND pb.PRODUCT_NO IN (
+				    SELECT PRODUCT_NO
+				    FROM WISHLIST
+				    GROUP BY PRODUCT_NO
+				    HAVING COUNT(*) > 10
+				)
 			    ORDER BY (pb.PRODUCT_COUNT / w.WISH_COUNT) DESC
 		)
 		WHERE ROWNUM &lt;= 12

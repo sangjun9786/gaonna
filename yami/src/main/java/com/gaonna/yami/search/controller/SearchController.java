@@ -1,5 +1,7 @@
 package com.gaonna.yami.search.controller;
 
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
 import java.util.ArrayList;
 
 import javax.servlet.http.HttpSession;
@@ -26,12 +28,15 @@ public class SearchController {
 	
 	@RequestMapping("get.ca")
 	public String getCategory(HttpSession session,
-							  Model model) {
-		
+							  Model model) throws UnsupportedEncodingException {
+		System.out.println("응이이이이익");
 		ArrayList<Category> list = service.getCategory();
+		System.out.println(list);
 		if(!list.isEmpty()) {
 			session.setAttribute("cate", list);
-			return "redirect:/filter.bo";
+			String keyword = "팝니다";
+			keyword = URLEncoder.encode(keyword, "UTF-8");
+			return "redirect:/filter.bo?keyword="+keyword;
 		}else {
 			System.out.println(list);
 			model.addAttribute("errorMsg", "카테고리 정보 조회 실패~!");
@@ -44,7 +49,7 @@ public class SearchController {
 	public String getLocation(HttpSession session,
 				  			  Model model) {
 		Member m = (Member)session.getAttribute("loginUser");
-		
+		System.out.println("호호호호호호");
 		String userLoca = service.getUserLoca(m);
 		
 		ArrayList<String> list = service.getLoca(userLoca);
@@ -66,16 +71,31 @@ public class SearchController {
 					            @RequestParam(value = "category", defaultValue = "0") int category,
 					            @RequestParam(value = "price1", required = false) Integer price1,
 					            @RequestParam(value = "price2", required = false) Integer price2,
-					            HttpSession session,
-					            Model model) {
-		
-        String keyword = (String)session.getAttribute("keyword");
+					            @RequestParam(value = "keyword", defaultValue = "") String keyword,
+					            @RequestParam(value = "condition", defaultValue = "resell") String condition,
+					            Model model,
+					            HttpSession session) {
         int listCount = service.getFilterCount(location, category, price1, price2, keyword);
         int boardLimit = 2;
         int pageLimit = 5;
         PageInfo pi = Pagination.getPageInfo(listCount, currentPage, pageLimit, boardLimit);
         
         ArrayList<Product> list = service.productFilter(location, category, price1, price2, pi, keyword);
+        
+//        ArrayList<Category> clist = service.getCategory();
+//		if(!clist.isEmpty()) {
+//			model.addAttribute("cate", clist);
+//		}
+        Member m = (Member)session.getAttribute("loginUser");
+        
+		if(m!=null) {
+			String userLoca = service.getUserLoca(m);
+			
+			ArrayList<String> lcList = service.getLoca(userLoca);
+	        
+			model.addAttribute("userLoca", userLoca);
+			model.addAttribute("loca", lcList);
+		}
         
         model.addAttribute("list", list);
         model.addAttribute("pi", pi);
@@ -85,6 +105,9 @@ public class SearchController {
 	        model.addAttribute("selectedPrice1", price1);
 	        model.addAttribute("selectedPrice2", price2);
         }
+        model.addAttribute("keyword", keyword);
+        model.addAttribute("condition", condition);
+        
         return "product/productList2";
 	}
 	
