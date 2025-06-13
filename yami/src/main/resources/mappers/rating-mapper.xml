@@ -42,5 +42,24 @@
     )
     WHERE PRODUCT_NO = #{productNo}
   </update>
-
+  
+  
+  <select id="count" parameterType="map" resultType="int">
+  	SELECT COUNT(*)
+  	FROM SCORE
+  	WHERE USER_NO = #{userNo}
+  </select>
+  
+  <insert id="insert" parameterType="map">
+    INSERT INTO SCORE(SCORE_NO, USER_NO, COUNT, RATING)
+    VALUES(SEQ_SNO.NEXTVAL, #{userNo}, 1, #{score})    
+  </insert>
+  
+  <update id="rating" parameterType="map">
+  	UPDATE SCORE
+  	SET COUNT = COUNT + 1,
+  	RATING = RATING + #{score}
+  	WHERE USER_NO = #{userNo}
+  </update>
+  
 </mapper>

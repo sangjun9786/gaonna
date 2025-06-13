@@ -1,5 +1,6 @@
 package com.gaonna.yami.rating.model.service;
 
+import org.mybatis.spring.SqlSessionTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -12,6 +13,8 @@ public class RatingServiceImpl implements RatingService {
 
     @Autowired
     private RatingDao ratingDao;
+    @Autowired
+	private SqlSessionTemplate sqlSession;
 
     /**
      * 1) RATING 테이블에 INSERT
@@ -27,5 +30,10 @@ public class RatingServiceImpl implements RatingService {
             ratingDao.updateAvgScore(rating.getProductNo());
         }
         return inserted;
+    }
+    
+    @Override
+    public int rating(String userNo, int score) {
+    	return ratingDao.rating(sqlSession, userNo, score);
     }
 }
