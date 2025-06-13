@@ -33,7 +33,7 @@ public class SearchDao {
 		return (ArrayList)sqlSession.selectList("searchMapper.getLoca", userLoca);
 	}
 
-	public int getFilterCount(SqlSessionTemplate sqlSession, String location, int category, Integer price1, Integer price2, String keyword) {
+	public int getFilterCount(SqlSessionTemplate sqlSession, String location, int category, Long price1, Long price2, String keyword) {
 		HashMap<String, Object> map = new HashMap<>();
 	    map.put("location", location);
 	    map.put("category", category);
@@ -45,7 +45,7 @@ public class SearchDao {
 	}
 
 	public ArrayList<Product> productFilter(SqlSessionTemplate sqlSession, String location, int category,
-			Integer price1, Integer price2, PageInfo pi, String keyword) {
+			Long price1, Long price2, PageInfo pi, String keyword) {
 		HashMap<String, Object> map = new HashMap<>();
 	    map.put("location", location);
 	    map.put("category", category);
