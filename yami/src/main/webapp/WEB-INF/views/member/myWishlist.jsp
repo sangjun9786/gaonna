@@ -108,14 +108,16 @@ $(function(){
     }
 
     $.each(wishlist, function(idx, board){
-      let title = board.productTitle.length > 10 ? board.productTitle.substring(0,10) + '...' : board.productTitle;
-      let content = board.productContent.length > 30 ? board.productContent.substring(0,30) + '...' : board.productContent;
-      let isDeleted = board.status !== 'Y';
+      let title = board.productTitle.length > 15 ? board.productTitle.substring(0,15) + '...' : board.productTitle;
+      let content = board.productContent.length > 20 ? board.productContent.substring(0,20) + '...' : board.productContent;
+      let isDeleted = board.status == 'Y';
+      let blurDivStart = isDeleted ? `<div class="card-blur-target">` : `<div>`;
+      let blurDivEnd = `</div>`;
 
       let cardHtml = `
         <div class="col">
           <div class="card h-100 shadow-sm position-relative" data-product-no="\${board.productNo}">
-            <div class="card-blur-target">
+            \${blurDivStart}
               <div class="card-body">
                 <div class="d-flex justify-content-between align-items-center mb-2">
                   <h5 class="card-title mb-0 text-truncate" style="max-width: 70%;">\${title}</h5>
@@ -124,24 +126,19 @@ $(function(){
                 <p class="card-text text-truncate" style="max-width: 100%;">\${content}</p>
               </div>
               <div class="card-footer small text-muted d-flex justify-content-between align-items-center" style="visibility:hidden;height:0;padding:0;border:none;"></div>
-            </div>
+            \${blurDivEnd}
             <div class="card-bottom-btns">
               <button type="button" class="btn btn-outline-danger btn-sm wishlist-delete-btn" title="찜 삭제">
                 <i class="bi bi-trash"></i>
               </button>
             </div>
-            <div class="card-date-center">\${board.uploadDateStr}</div>
             <a href="${root}/productDetail.pro?productNo=\${board.productNo}" class="stretched-link"></a>
             \${isDeleted ? `<div class="card-status-message" data-product-no="\${board.productNo}">삭제된 게시글입니다</div>` : ''}
           </div>
         </div>
       `;
-      $wishlistList.append(cardHtml);
 
-      // 삭제된 게시글이면 카드 내용만 블러 처리
-      if(isDeleted) {
-        $wishlistList.find('.col:last .card-blur-target').addClass('card-blur-target');
-      }
+      $wishlistList.append(cardHtml);
     });
   }
 

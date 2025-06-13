@@ -644,7 +644,7 @@ function renderCommentActions(comment, isRecomment) {
     let html = '';
     if (comment.status === 'Y' || comment.status === 'M') {
         if (!isRecomment) html += `<button class="btn btn-outline-secondary btn-sm me-1" onclick="showRecommentForm(\${comment.commentNo})">대댓글 작성</button>`;
-        if (comment.userNo === loginUser.userNo || loginUser.roleType !== 'N') {
+        if (comment.userNo == loginUser.userNo || loginUser.roleType !== 'N') {
             html += `<button class="btn btn-outline-primary btn-sm me-1" onclick="showEditForm(\${comment.commentNo}, \${isRecomment}, \${comment.userNo})">수정</button>`;
             html += `<button class="btn btn-outline-danger btn-sm me-1" onclick="deleteComment(\${comment.commentNo}, \${comment.userNo})">삭제</button>`;
         }

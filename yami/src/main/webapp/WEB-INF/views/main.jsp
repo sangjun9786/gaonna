@@ -134,7 +134,7 @@
 
 <div class="container mx-auto" style="max-width: 700px;">
     <!-- 1행: 로고 -->
-	<div class="row justify-content-center mb-2" style="margin-top: 100px;">
+	<div class="row justify-content-center mb-2" style="margin-top: 5rem;">
         <div class="col-auto">
             <a href="${root}/lab" style="display: block;">
                 <img src="${root}/resources/icon/YAMI-logo-3.png" alt="YAMI!"
@@ -177,7 +177,7 @@
 		</div>
 		<div class="col">
 		    <c:choose>
-		        <c:when test="${loginUser.mainCoord == 0}">
+		        <c:when test="${empty loginUser || loginUser.mainCoord == 0}">
 		            <a href="${root}/dongne.me" 
 		               class="text-decoration-none disabled-location-card"
 		               style="pointer-events:auto;">
