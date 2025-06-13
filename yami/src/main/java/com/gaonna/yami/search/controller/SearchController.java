@@ -69,15 +69,15 @@ public class SearchController {
 	 							int currentPage,
 	 							@RequestParam(value = "location", defaultValue = "all") String location,
 					            @RequestParam(value = "category", defaultValue = "0") int category,
-					            @RequestParam(value = "price1", required = false) Integer price1,
-					            @RequestParam(value = "price2", required = false) Integer price2,
+					            @RequestParam(value = "price1", required = false) Long price1,
+					            @RequestParam(value = "price2", required = false) Long price2,
 					            @RequestParam(value = "keyword", defaultValue = "") String keyword,
 					            @RequestParam(value = "condition", defaultValue = "resell") String condition,
 					            Model model,
 					            HttpSession session) {
         int listCount = service.getFilterCount(location, category, price1, price2, keyword);
-        int boardLimit = 2;
-        int pageLimit = 5;
+        int boardLimit = 12;
+        int pageLimit = 10;
         PageInfo pi = Pagination.getPageInfo(listCount, currentPage, pageLimit, boardLimit);
         
         ArrayList<Product> list = service.productFilter(location, category, price1, price2, pi, keyword);
