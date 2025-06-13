@@ -44,7 +44,14 @@
 				AND CATEGORY_NO = #{category}
 			</if>
 			<if test="price1 != null and price2 != null">
-				AND PRICE BETWEEN #{price1} AND #{price2}
+			    <choose>
+			        <when test="price1 &lt;= price2">
+			            AND PRICE BETWEEN #{price1} AND #{price2}
+			        </when>
+			        <otherwise>
+			            AND PRICE BETWEEN #{price2} AND #{price1}
+			        </otherwise>
+			    </choose>
 			</if>
 			<if test="keyword != ''">
 				AND (PRODUCT_TITLE LIKE '%'||#{keyword}||'%' OR PRODUCT_CONTENT LIKE '%'||#{keyword}||'%')
@@ -98,7 +105,14 @@
 				AND pb.CATEGORY_NO = #{category}
 			</if>
 			<if test="price1 != null and price2 != null">
-				AND pb.PRICE BETWEEN #{price1} AND #{price2}
+			    <choose>
+			        <when test="price1 &lt;= price2">
+			            AND pb.PRICE BETWEEN #{price1} AND #{price2}
+			        </when>
+			        <otherwise>
+			            AND pb.PRICE BETWEEN #{price2} AND #{price1}
+			        </otherwise>
+			    </choose>
 			</if>
 			<if test="keyword != ''">
 				AND (PRODUCT_TITLE LIKE '%'||#{keyword}||'%' OR PRODUCT_CONTENT LIKE '%'||#{keyword}||'%')
@@ -184,9 +198,21 @@
 				    GROUP BY PRODUCT_NO
 				    HAVING COUNT(*) > 10
 				)
-			    ORDER BY (pb.PRODUCT_COUNT / w.WISH_COUNT) DESC
+			    ORDER BY (pb.PRODUCT_COUNT / NULLIF(w.WISH_COUNT, 0)) DESC
 		)
 		WHERE ROWNUM &lt;= 12
+	</select>
+	
+	<select id="searchBread" parameterType="string" resultType="int">
+		SELECT COUNT(*)
+		FROM BAKERY
+		WHERE BAKERY_NAME = #{keyword}
+	</select>
+	
+	<select id="getBread" parameterType="string" resultType="string">
+		SELECT BAKERY_NO
+		FROM BAKERY
+		WHERE BAKERY_NAME = #{keyword}
 	</select>
 	
 </mapper>

@@ -60,4 +60,12 @@ public class SearchDao {
 		return (ArrayList)sqlSession.selectList("searchMapper.productFilter", map, rowBounds);
 	}
 
+	public int searchBread(SqlSessionTemplate sqlSession, String keyword) {
+		return sqlSession.selectOne("searchMapper.searchBread", keyword);
+	}
+
+	public String getBread(SqlSessionTemplate sqlSession, String keyword) {
+		return sqlSession.selectOne("searchMapper.getBread", keyword);
+	}
+
 }
