@@ -46,4 +46,13 @@ public class SearchServiceImpl implements SearchService {
 		return dao.productFilter(sqlSession, location, category, price1, price2, pi, keyword);
 	}
 	
+	@Override
+	public int searchBread(String keyword) {
+		return dao.searchBread(sqlSession, keyword);
+	}
+	
+	@Override
+	public String getBread(String keyword) {
+		return dao.getBread(sqlSession, keyword);
+	}
 }

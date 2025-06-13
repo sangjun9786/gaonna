@@ -82,10 +82,10 @@ public class SearchController {
         
         ArrayList<Product> list = service.productFilter(location, category, price1, price2, pi, keyword);
         
-//        ArrayList<Category> clist = service.getCategory();
-//		if(!clist.isEmpty()) {
-//			model.addAttribute("cate", clist);
-//		}
+        ArrayList<Category> clist = service.getCategory();
+		if(!clist.isEmpty()) {
+			model.addAttribute("cate", clist);
+		}
         Member m = (Member)session.getAttribute("loginUser");
         
 		if(m!=null) {
@@ -111,15 +111,19 @@ public class SearchController {
         return "product/productList2";
 	}
 	
-	@PostMapping(value="saveKeyword", produces = "text/html;charset=UTF-8")
-    @ResponseBody
-    public String saveKeywordToSession(@RequestParam("keyword") String keyword, HttpSession session) {
-        
-        // 1. 파라미터로 받은 keyword 값을 세션에 저장
-        session.setAttribute("keyword", keyword);
-        
-        // 2. 클라이언트(AJAX의 success 함수)에 성공 메시지 응답
-        return "success";
-    }
+	@ResponseBody
+	@RequestMapping(value="ajax.do", produces = "text/html;charset=UTF-8")
+	public String searchBread(String keyword) {
+		
+		int count = service.searchBread(keyword);
+		System.out.println(count);
+		if(count == 1) {
+			String str = service.getBread(keyword);
+			System.out.println(str);
+			return str;
+		}else {
+			return null;
+		}
+	}
 	
 }

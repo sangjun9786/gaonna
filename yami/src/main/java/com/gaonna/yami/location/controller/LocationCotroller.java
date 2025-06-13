@@ -140,7 +140,9 @@ public class LocationCotroller {
 	
 	//동네(location) 메인으로
 	@GetMapping("dongneMain.dn")
-	public String dongneMain(HttpSession session,Model model){
+	public String dongneMain(HttpSession session,Model model,
+							 @RequestParam(value = "keyword", defaultValue = "") String keyword,
+				             @RequestParam(value = "condition", defaultValue = "location") String condition){
 		try {
 			List<Coord> coords = (List<Coord>)session.getAttribute("coords");
 			Member m = (Member)session.getAttribute("loginUser");
@@ -159,6 +161,9 @@ public class LocationCotroller {
 			
 			String bakeriesJson = new Gson().toJson(bakeries);
 			model.addAttribute("bakeriesJson", bakeriesJson);
+			
+			model.addAttribute("keyword", keyword);
+	        model.addAttribute("condition", condition);
 			return "dongne/map";
 		} catch (Exception e) {
 			e.printStackTrace();
