@@ -82,10 +82,10 @@ public class SearchController {
         
         ArrayList<Product> list = service.productFilter(location, category, price1, price2, pi, keyword);
         
-//        ArrayList<Category> clist = service.getCategory();
-//		if(!clist.isEmpty()) {
-//			model.addAttribute("cate", clist);
-//		}
+        ArrayList<Category> clist = service.getCategory();
+		if(!clist.isEmpty()) {
+			model.addAttribute("cate", clist);
+		}
         Member m = (Member)session.getAttribute("loginUser");
         
 		if(m!=null) {

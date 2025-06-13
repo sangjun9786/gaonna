@@ -38,11 +38,11 @@
     <!-- 글작성 버튼 -->
     <a href="${pageContext.request.contextPath}/productEnrollForm.pr" class="write-btn">글작성</a>
     <c:if test="${empty cate}">
-  		<script>
-	  	  $(function() {
-		     location.href = "${root}/get.ca";
-		  });
-	  </script>
+<!--   		<script> -->
+// 	  	  $(function() {
+// 		     location.href = "${root}/get.ca";
+// 		  });
+<!-- 	  </script> -->
 	</c:if>
 	<c:if test="${not empty loginUser and empty loca}">
 <!-- 		<script> -->

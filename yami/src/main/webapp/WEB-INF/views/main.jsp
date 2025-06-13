@@ -321,7 +321,8 @@ document.addEventListener('DOMContentLoaded', function () {
 
 
 $(function () {
-    $('#searchBtn').on('click', function () {
+    $('#searchBtn').on('click', function (e) {
+    	e.preventDefault();
         let condition = $('#condition').val();
         let keyword = $('#keyword').val();
         let encodedKeyword = encodeURIComponent(keyword);
