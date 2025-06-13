@@ -130,9 +130,9 @@
 			const userId = document.getElementById("userId").value;
 			const domain = document.getElementById("domainList").value;
 			const email = userId && domain ? userId + "@" + domain : "";
-		    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+			const emailRegex = /^[A-Za-z0-9]+@[A-Za-z0-9.]+$/;
 		    
-		    if (emailRegex.test(email)) {
+		    if (emailRegex.test(email) && email.length <= 30) {
 		    	if(document.getElementById("domainList").value !=""){
 			    	debounce();
 		    	}else{
