@@ -133,175 +133,171 @@
 	<c:set var="loginUser" value="${sessionScope.loginUser}" />
 
 <div class="container mx-auto" style="max-width: 700px;">
-    <!-- 1행: 로고만 -->
-    <div class="row justify-content-center mb-2">
+    <!-- 1행: 로고 -->
+	<div class="row justify-content-center mb-2" style="margin-top: 100px;">
         <div class="col-auto">
-            <img src="${root}/resources/icon/YAMI-logo-3.png" alt="YAMI!"
-                style="height: 200px; width: auto; display: block;" />
+            <a href="${root}/lab" style="display: block;">
+                <img src="${root}/resources/icon/YAMI-logo-3.png" alt="YAMI!"
+                    style="height: 200px; width: auto; display: block; cursor: pointer;" />
+            </a>
         </div>
     </div>
-    <!-- 2행: 검색창만 -->
+    <!-- 2행: 검색창 (select 옵션 포함) -->
     <div class="row mb-4">
         <div class="col">
-            <div class="input-group">
-                <div class="select">
-                    <select class="form-select form-select-lg mb-3" id="condition">
-                        <option value="resell">Resell</option>
-                        <option value="location">Location</option>
-                        <option value="notice">Notice</option>
-                        <option value="qna">QnA</option>
-                        <option value="report">Report</option>
-                    </select>
-                </div>
-                <input type="text" class="form-control form-control-lg"
-                    id="keyword" placeholder="제목 또는 내용으로 검색" aria-label="Search">
-                <button class="btn btn-primary btn-lg" type="submit" id="searchBtn">
+            <form class="input-group input-group-lg">
+                <select class="form-select" id="condition" style="max-width: 140px;">
+                    <option value="resell">Resell</option>
+                    <option value="location">Location</option>
+                    <option value="notice">Notice</option>
+                    <option value="qna">QnA</option>
+                    <option value="report">Report</option>
+                </select>
+                <input type="text" class="form-control" id="keyword" placeholder="제목 또는 내용으로 검색" aria-label="Search">
+                <button class="btn btn-primary" type="submit" id="searchBtn">
                     <i class="bi bi-search"></i>
                 </button>
-            </div>
+            </form>
         </div>
+    </div>
 
-		<!-- 서비스 카드: 아이콘 + 링크 (회원 카드 포함) -->
-		<div
-			class="row row-cols-2 row-cols-md-4 g-3 mb-4 justify-content-center"
-			style="max-width: 800px;">
-			<!-- 1행 -->
-			<div class="col">
-				<a href="${root}/filter.bo"
-					class="card text-center h-100 shadow-sm text-decoration-none">
+	<!-- 서비스 카드: 아이콘 + 링크 (회원 카드 포함) -->
+	<div
+		class="row row-cols-2 row-cols-md-4 g-3 mb-4 justify-content-center"
+		style="max-width: 800px;">
+		<!-- 1행 -->
+		<div class="col">
+			<a href="${root}/filter.bo"
+				class="card text-center h-100 shadow-sm text-decoration-none">
+				<div class="card-body">
+					<i class="bi bi-bag fs-1 text-primary"></i>
+					<h6 class="card-title mt-2 mb-0">Resell</h6>
+				</div>
+			</a>
+		</div>
+		<div class="col">
+		    <c:choose>
+		        <c:when test="${loginUser.mainCoord == 0}">
+		            <a href="${root}/dongne.me" 
+		               class="text-decoration-none disabled-location-card"
+		               style="pointer-events:auto;">
+		                <div class="card text-center h-100 shadow-sm bg-secondary bg-opacity-25"
+		                     style="cursor:pointer;">
+		                    <div class="card-body position-relative"
+		                         data-bs-toggle="tooltip" 
+		                         data-bs-placement="top" 
+		                         title="먼저 대표동네를 설정해 주세요">
+		                        <i class="bi bi-geo-alt fs-1 text-secondary"></i>
+		                        <h6 class="card-title mt-2 mb-0 text-secondary">Location</h6>
+		                    </div>
+		                </div>
+		            </a>
+		        </c:when>
+		        <c:otherwise>
+		            <a href="${root}/dongneMain.dn" class="text-decoration-none">
+		                <div class="card text-center h-100 shadow-sm">
+		                    <div class="card-body">
+		                        <i class="bi bi-geo-alt fs-1 text-success"></i>
+		                        <h6 class="card-title mt-2 mb-0">Location</h6>
+		                    </div>
+		                </div>
+		            </a>
+		        </c:otherwise>
+		    </c:choose>
+		</div>
+
+		<div class="col">
+			<a href="${root }/recommend.bo" class="text-decoration-none">
+				<div class="card text-center h-100 shadow-sm">
 					<div class="card-body">
-						<i class="bi bi-bag fs-1 text-primary"></i>
-						<h6 class="card-title mt-2 mb-0">Resell</h6>
-					</div>
-				</a>
-			</div>
-			<div class="col">
-			    <c:choose>
-			        <c:when test="${loginUser.mainCoord == 0}">
-			            <a href="${root}/dongne.me" 
-			               class="text-decoration-none disabled-location-card"
-			               style="pointer-events:auto;">
-			                <div class="card text-center h-100 shadow-sm bg-secondary bg-opacity-25"
-			                     style="cursor:pointer;">
-			                    <div class="card-body position-relative"
-			                         data-bs-toggle="tooltip" 
-			                         data-bs-placement="top" 
-			                         title="먼저 대표동네를 설정해 주세요">
-			                        <i class="bi bi-geo-alt fs-1 text-secondary"></i>
-			                        <h6 class="card-title mt-2 mb-0 text-secondary">Location</h6>
-			                    </div>
-			                </div>
-			            </a>
-			        </c:when>
-			        <c:otherwise>
-			            <a href="${root}/dongneMain.dn" class="text-decoration-none">
-			                <div class="card text-center h-100 shadow-sm">
-			                    <div class="card-body">
-			                        <i class="bi bi-geo-alt fs-1 text-success"></i>
-			                        <h6 class="card-title mt-2 mb-0">Location</h6>
-			                    </div>
-			                </div>
-			            </a>
-			        </c:otherwise>
-			    </c:choose>
-			</div>
-
-			<div class="col">
-				<a href="${root }/recommend.bo" class="text-decoration-none">
-					<div class="card text-center h-100 shadow-sm">
-						<div class="card-body">
-							<i class="bi bi-star fs-1 text-warning"></i>
-							<h6 class="card-title mt-2 mb-0">Recommend</h6>
-						</div>
-					</div>
-				</a>
-			</div>
-
-			<!-- 회원 카드 -->
-			<div class="col">
-				<div class="card text-center h-100 shadow-sm bg-light">
-					<div
-						class="card-body d-flex flex-column justify-content-center align-items-center p-2">
-						<c:choose>
-							<c:when test="${empty loginUser}">
-								<div class="user-menu-links d-flex gap-4 mb-2">
-									<a class="user-menu-link" href="${root}/login.me" title="로그인">
-										<i class="bi bi-box-arrow-in-right fs-3"></i> <span
-										class="menu-label">로그인</span>
-									</a> <a class="user-menu-link" href="${root}/insert.me"
-										title="회원가입"> <i class="bi bi-person-plus fs-3"></i> <span
-										class="menu-label">회원가입</span>
-									</a>
-								</div>
-							</c:when>
-							<c:otherwise>
-								<div id="user-name-label" class="mb-2">${loginUser.userName}님</div>
-								<div class="user-menu-links d-flex gap-4">
-									<c:if test="${loginUser.roleType != 'N'}">
-										<a class="user-menu-link" href="${root}/adminPage.ad"
-											title="운영실"> <i class="bi bi-shield-lock fs-3"></i> <span
-											class="menu-label">운영실</span>
-										</a>
-									</c:if>
-									<a class="user-menu-link" href="${root}/mypage.me"
-										title="마이페이지"> <i class="bi bi-person-gear fs-3"></i> <span
-										class="menu-label">마이페이지</span>
-									</a> <a class="user-menu-link" href="${root}/logout.me"
-										title="로그아웃"> <i class="bi bi-box-arrow-right fs-3"></i> <span
-										class="menu-label">로그아웃</span>
-									</a>
-								</div>
-							</c:otherwise>
-						</c:choose>
+						<i class="bi bi-star fs-1 text-warning"></i>
+						<h6 class="card-title mt-2 mb-0">Recommend</h6>
 					</div>
 				</div>
-			</div>
+			</a>
+		</div>
 
-			<!-- 2행 -->
-			<div class="col">
-				<a href="${root}/event.ev" class="text-decoration-none">
-					<div class="card text-center h-100 shadow-sm">
-						<div class="card-body">
-							<i class="bi bi-calendar-event fs-1 text-secondary"></i>
-							<h6 class="card-title mt-2 mb-0">Event</h6>
-						</div>
-					</div>
-				</a>
-			</div>
-			<div class="col">
-				<a href="${root}/notice/list" class="text-decoration-none">
-					<div class="card text-center h-100 shadow-sm">
-						<div class="card-body">
-							<i class="bi bi-megaphone fs-1 text-danger"></i>
-							<h6 class="card-title mt-2 mb-0">Notice</h6>
-						</div>
-					</div>
-				</a>
-			</div>
-			<div class="col">
-				<a href="#" class="text-decoration-none">
-					<div class="card text-center h-100 shadow-sm">
-						<div class="card-body">
-							<i class="bi bi-question-circle fs-1 text-info"></i>
-							<h6 class="card-title mt-2 mb-0">QnA</h6>
-						</div>
-					</div>
-				</a>
-			</div>
-			<div class="col">
-				<a href="#" class="text-decoration-none">
-					<div class="card text-center h-100 shadow-sm">
-						<div class="card-body">
-							<i class="bi bi-exclamation-triangle fs-1 text-warning"></i>
-							<h6 class="card-title mt-2 mb-0">Report</h6>
-						</div>
-					</div>
-				</a>
+		<!-- 회원 카드 -->
+		<div class="col">
+			<div class="card text-center h-100 shadow-sm bg-light">
+				<div
+					class="card-body d-flex flex-column justify-content-center align-items-center p-2">
+					<c:choose>
+						<c:when test="${empty loginUser}">
+							<div class="user-menu-links d-flex gap-4 mb-2">
+								<a class="user-menu-link" href="${root}/login.me" title="로그인">
+									<i class="bi bi-box-arrow-in-right fs-3"></i> <span
+									class="menu-label">로그인</span>
+								</a> <a class="user-menu-link" href="${root}/insert.me"
+									title="회원가입"> <i class="bi bi-person-plus fs-3"></i> <span
+									class="menu-label">회원가입</span>
+								</a>
+							</div>
+						</c:when>
+						<c:otherwise>
+							<div id="user-name-label" class="mb-2">${loginUser.userName}님</div>
+							<div class="user-menu-links d-flex gap-4">
+								<c:if test="${loginUser.roleType != 'N'}">
+									<a class="user-menu-link" href="${root}/adminPage.ad"
+										title="운영실"> <i class="bi bi-shield-lock fs-3"></i> <span
+										class="menu-label">운영실</span>
+									</a>
+								</c:if>
+								<a class="user-menu-link" href="${root}/mypage.me"
+									title="마이페이지"> <i class="bi bi-person-gear fs-3"></i> <span
+									class="menu-label">마이페이지</span>
+								</a> <a class="user-menu-link" href="${root}/logout.me"
+									title="로그아웃"> <i class="bi bi-box-arrow-right fs-3"></i> <span
+									class="menu-label">로그아웃</span>
+								</a>
+							</div>
+						</c:otherwise>
+					</c:choose>
+				</div>
 			</div>
 		</div>
 
-		<hr>
-		<a href="${root}/lab">실험실</a>
+		<!-- 2행 -->
+		<div class="col">
+			<a href="${root}/event.ev" class="text-decoration-none">
+				<div class="card text-center h-100 shadow-sm">
+					<div class="card-body">
+						<i class="bi bi-calendar-event fs-1 text-secondary"></i>
+						<h6 class="card-title mt-2 mb-0">Event</h6>
+					</div>
+				</div>
+			</a>
+		</div>
+		<div class="col">
+			<a href="${root}/notice/list" class="text-decoration-none">
+				<div class="card text-center h-100 shadow-sm">
+					<div class="card-body">
+						<i class="bi bi-megaphone fs-1 text-danger"></i>
+						<h6 class="card-title mt-2 mb-0">Notice</h6>
+					</div>
+				</div>
+			</a>
+		</div>
+		<div class="col">
+			<a href="#" class="text-decoration-none">
+				<div class="card text-center h-100 shadow-sm">
+					<div class="card-body">
+						<i class="bi bi-question-circle fs-1 text-info"></i>
+						<h6 class="card-title mt-2 mb-0">QnA</h6>
+					</div>
+				</div>
+			</a>
+		</div>
+		<div class="col">
+			<a href="#" class="text-decoration-none">
+				<div class="card text-center h-100 shadow-sm">
+					<div class="card-body">
+						<i class="bi bi-exclamation-triangle fs-1 text-warning"></i>
+						<h6 class="card-title mt-2 mb-0">Report</h6>
+					</div>
+				</div>
+			</a>
+		</div>
 	</div>
 </div>
 
@@ -354,7 +350,7 @@ $(function () {
 </script>
 <c:remove var="alertMsg"/>
 
-<%---------------콘솔 나와바리--------------------%>
+<%--------------------------콘솔 나와바리----------------------------%>
 
 <!-- 콘솔 오버레이 -->
 <div id="consoleOverlay">
