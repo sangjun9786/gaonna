@@ -38,6 +38,12 @@ public class MemberController {
 	@Autowired
 	private BCryptPasswordEncoder bcrypt;
 	
+	//메인 페이지로 이동
+	@RequestMapping("/")
+	public String home() {
+	    return "redirect:/";
+	}
+	
 	//실험실 이동
 	@GetMapping("lab")
 	public String lab() {

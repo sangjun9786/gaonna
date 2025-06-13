@@ -332,38 +332,38 @@
 	<bind name="searchPattern" value="'%' + searchKeyword + '%'" />
 	<bind name="searchPatternMember" value="'%' + searchKeywordMember + '%'" />
 		select count(*)
-		from PRODUCT_BOARD
-		join member using (user_no)
+		from PRODUCT_BOARD PB
+		JOIN MEMBER M ON PB.USER_NO = M.USER_NO
 		where 1=1
 		<choose>
         <!-- 검색 타입1이 'all'이 아닌 경우 -->
 			<when test="searchType1 != 'all'">
-				and CATEGORY_NO = #{searchType1}
+				and PB.CATEGORY_NO = #{searchType1}
 				<choose>
-					<when test="searchType2 = 'title'">
-						and PRODUCT_TITLE LIKE #{searchPattern}
+					<when test="searchType2 == 'title'">
+						and PB.PRODUCT_TITLE LIKE #{searchPattern}
 					</when>
-					<when test="searchType2 = 'content'">
-						and PRODUCT_CONTENT LIKE #{searchPattern}
+					<when test="searchType2 == 'content'">
+						and PB.PRODUCT_CONTENT LIKE #{searchPattern}
 					</when>
 					<otherwise>
-						and (PRODUCT_TITLE LIKE #{searchPattern} 
-							OR PRODUCT_CONTENT LIKE #{searchPattern})
+						and (PB.PRODUCT_TITLE LIKE #{searchPattern} 
+							OR PB.PRODUCT_CONTENT LIKE #{searchPattern})
 					</otherwise>
 				</choose>
 			</when>
 			<!-- 검색 타입1이 'all'인 경우 -->
 			<otherwise>
 				<choose>
-					<when test="searchType2 = 'title'">
-                         and PRODUCT_TITLE LIKE #{searchPattern}
+					<when test="searchType2 == 'title'">
+                         and PB.PRODUCT_TITLE LIKE #{searchPattern}
 					</when>
-					<when test="searchType2 = 'content'">
-                         and PRODUCT_CONTENT LIKE #{searchPattern}
+					<when test="searchType2 == 'content'">
+                         and PB.PRODUCT_CONTENT LIKE #{searchPattern}
 					</when>
 					<otherwise>
-                         and (PRODUCT_TITLE LIKE #{searchPattern} 
-                              OR PRODUCT_CONTENT LIKE #{searchPattern})
+                         and (PB.PRODUCT_TITLE LIKE #{searchPattern} 
+                              OR PB.PRODUCT_CONTENT LIKE #{searchPattern})
 					</otherwise>
 				</choose>
 			</otherwise>
@@ -371,19 +371,19 @@
 		
 		<!-- 회원으로 검색 -->
 		<choose>
-			<when test="searchTypeMember = 'no'">
-            	and user_no like #{searchPatternMember}
+			<when test="searchTypeMember == 'no'">
+            	and TO_CHAR(m.user_no) like #{searchPatternMember}
 			</when>
-			<when test="searchTypeMember = 'name'">
-                and user_name like #{searchPatternMember}
+			<when test="searchTypeMember == 'name'">
+                and m.user_name like #{searchPatternMember}
 			</when>
-			<when test="searchTypeMember = 'id'">
-                and user_id like #{searchPatternMember}
+			<when test="searchTypeMember == 'id'">
+                and m.user_id like #{searchPatternMember}
 			</when>
 			<otherwise>
-                and (TO_CHAR(user_no) like #{searchPatternMember}
-                	or user_name like #{searchPatternMember}
-                	or user_id like #{searchPatternMember})
+                and (TO_CHAR(m.user_no) like #{searchPatternMember}
+                	or m.user_name like #{searchPatternMember}
+                	or m.user_id like #{searchPatternMember})
 			</otherwise>
 		</choose>
 	</select>
@@ -444,13 +444,13 @@
 				</choose>
 				<!-- 회원으로 검색 -->
 				<choose>
-					<when test="searchTypeMember = 'no'">
-		            	and m.user_no like #{searchPatternMember}
+					<when test="searchTypeMember == 'no'">
+		            	and TO_CHAR(m.user_no) like #{searchPatternMember}
 					</when>
-					<when test="searchTypeMember = 'name'">
+					<when test="searchTypeMember == 'name'">
 		                and m.user_name like #{searchPatternMember}
 					</when>
-					<when test="searchTypeMember = 'id'">
+					<when test="searchTypeMember == 'id'">
 		                and m.user_id like #{searchPatternMember}
 					</when>
 					<otherwise>
@@ -483,13 +483,13 @@
 		</if>
 		<!-- 회원으로 검색 -->
 		<choose>
-			<when test="searchTypeMember = 'no'">
-            	and m.user_no like #{searchPatternMember}
+			<when test="searchTypeMember == 'no'">
+            	and TO_CHAR(m.user_no) like #{searchPatternMember}
 			</when>
-			<when test="searchTypeMember = 'name'">
+			<when test="searchTypeMember == 'name'">
                 and m.user_name like #{searchPatternMember}
 			</when>
-			<when test="searchTypeMember = 'id'">
+			<when test="searchTypeMember == 'id'">
                 and m.user_id like #{searchPatternMember}
 			</when>
 			<otherwise>
@@ -523,20 +523,20 @@
 					,p.REPLY_DATE
 				from REPLY p
 				left join PRODUCT_BOARD pb on (p.PRODUCT_NO=pb.PRODUCT_NO)
-				left join MEMBER m on (m.user_no = pb.user_no)
+				left join MEMBER m on (m.user_id = p.user_id)
 				where REPLY_TEXT like '%' || #{searchKeyword} || '%'
 				<if test="searchType1 != 'all'">
 					and pb.CATEGORY_NO = #{searchType1}
 				</if>
 				<!-- 회원으로 검색 -->
 				<choose>
-					<when test="searchTypeMember = 'no'">
-		            	and m.user_no like #{searchPatternMember}
+					<when test="searchTypeMember == 'no'">
+		            	and TO_CHAR(m.user_no) like #{searchPatternMember}
 					</when>
-					<when test="searchTypeMember = 'name'">
+					<when test="searchTypeMember == 'name'">
 		                and m.user_name like #{searchPatternMember}
 					</when>
-					<when test="searchTypeMember = 'id'">
+					<when test="searchTypeMember == 'id'">
 		                and m.user_id like #{searchPatternMember}
 					</when>
 					<otherwise>
@@ -562,13 +562,13 @@
 		where comment_content like '%' || #{searchKeyword} || '%'
 		<!-- 회원으로 검색 -->
 		<choose>
-			<when test="searchTypeMember = 'no'">
-            	and m.user_no like #{searchPatternMember}
+			<when test="searchTypeMember == 'no'">
+            	and TO_CHAR(m.user_no) like #{searchPatternMember}
 			</when>
-			<when test="searchTypeMember = 'name'">
+			<when test="searchTypeMember == 'name'">
                 and m.user_name like #{searchPatternMember}
 			</when>
-			<when test="searchTypeMember = 'id'">
+			<when test="searchTypeMember == 'id'">
                 and m.user_id like #{searchPatternMember}
 			</when>
 			<otherwise>
@@ -607,13 +607,13 @@
 				where comment_content like '%' || #{searchKeyword} || '%'
 				<!-- 회원으로 검색 -->
 				<choose>
-					<when test="searchTypeMember = 'no'">
-		            	and m.user_no like #{searchPatternMember}
+					<when test="searchTypeMember == 'no'">
+		            	and TO_CHAR(m.user_no) like #{searchPatternMember}
 					</when>
-					<when test="searchTypeMember = 'name'">
+					<when test="searchTypeMember == 'name'">
 		                and m.user_name like #{searchPatternMember}
 					</when>
-					<when test="searchTypeMember = 'id'">
+					<when test="searchTypeMember == 'id'">
 		                and m.user_id like #{searchPatternMember}
 					</when>
 					<otherwise>

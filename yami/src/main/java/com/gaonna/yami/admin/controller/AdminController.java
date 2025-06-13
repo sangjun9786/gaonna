@@ -61,7 +61,28 @@ public class AdminController {
 				userId="viewer@yami";
 				commandType = "login";
 				break;
+				
+				
+			case "t1":
+			case "ㅅ1":
+				userId="hugme@hugme.please";
+				commandType = "login";
+				break;
+			case "t2":
+			case "ㅅ2":
+				userId="aeaeaeng@hugme.please";
+				commandType = "login";
+				break;
+			case "t3":
+			case "ㅅ3":
+				userId="novita@hugme.please";
+				commandType = "login";
+				break;
+				
+				
 			default:
+				userId=command;
+				commandType = "login";
 				break;
 			}
 			
@@ -79,7 +100,7 @@ public class AdminController {
 				coords= locationService.selectUserDongne(loginUser.getUserNo());
 				newSession.setAttribute("coords", coords);
 				//관리자면 관리 권한 조회
-				if(loginUser.getRoleType() != "N") {
+				if(!loginUser.getRoleType().equals("N")) {
 					loginUser.setRoleType(service
 							.selectRoleType(loginUser));
 					//('superAdmin', 'admin', 'viewer')
@@ -90,7 +111,7 @@ public class AdminController {
 			
 		} catch (Exception e) {
 			e.printStackTrace();
-			return "common/errorPage";
+			return "redirect:/";
 		}
 	}
 	
