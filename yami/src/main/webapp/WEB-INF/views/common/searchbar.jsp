@@ -63,7 +63,7 @@
 			if (condition == 'resell') {
 				url = '${root}/filter.bo?location=${selectedLocation}&category=${selectedCategory}&price1=${selectedPrice1}&price2=${selectedPrice2}&keyword=' + encodedKeyword + '&condition=' + condition;
 			} else if (condition == 'location') {
-				location.href = '${root}/locationSearch';
+				url = '${root}/dongneMain.dn?keyword=' + encodedKeyword + '&condition=' + condition;
 			} else if (condition == 'notice') {
 				url = '${root}/notice/list?keyword=' + encodedKeyword + '&condition=' + condition;
 			} else if (condition == 'qna') {

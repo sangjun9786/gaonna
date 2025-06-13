@@ -335,7 +335,7 @@ $(function () {
             + '&condition=' + condition
             + '&location=all&category=0';
         } else if (condition == 'location') {
-			location.href = '${root}/locationSearch';
+        	url = '${root}/dongneMain.dn?keyword=' + encodedKeyword + '&condition=' + condition;
 		} else if (condition == 'notice') {
 			url = '${root}/notice/list?keyword=' + encodedKeyword + '&condition=' + condition;
         } else if (condition == 'qna') {

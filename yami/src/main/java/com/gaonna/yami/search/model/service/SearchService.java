@@ -20,4 +20,8 @@ public interface SearchService {
 
 	ArrayList<Product> productFilter(String location, int category, Integer price1, Integer price2, PageInfo pi, String keyword);
 
+	int searchBread(String keyword);
+
+	String getBread(String keyword);
+
 }
