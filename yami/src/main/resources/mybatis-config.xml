@@ -27,5 +27,6 @@
 		<typeAlias type="com.gaonna.yami.location.vo.BakeryComment" alias="BakeryComment"/>
 		<typeAlias type="com.gaonna.yami.product.vo.Attachment" alias="Attachment"/>
 		<typeAlias type="com.gaonna.yami.notice.model.vo.Notice" alias="Notice"/>
+		<typeAlias type="com.gaonna.yami.product.vo.Order" alias="Order"/>
 	</typeAliases>
 </configuration>

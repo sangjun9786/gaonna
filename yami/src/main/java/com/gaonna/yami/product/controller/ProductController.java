@@ -26,6 +26,7 @@ import com.gaonna.yami.product.service.ProductService;
 import com.gaonna.yami.product.service.ReplyService;
 import com.gaonna.yami.product.vo.Attachment;
 import com.gaonna.yami.product.vo.Category;
+import com.gaonna.yami.product.vo.Order;
 import com.gaonna.yami.product.vo.Product;
 import com.gaonna.yami.product.vo.Reply;
 import com.gaonna.yami.wishlist.model.service.WishlistService;
@@ -64,7 +65,7 @@ public class ProductController {
 	    int listCount = service.getListCount();
 
 	    // 2. 페이징 관련 설정
-	    int boardLimit = 2; // 한 페이지당 보여줄 상품 수
+	    int boardLimit = 12; // 한 페이지당 보여줄 상품 수
 	    int pageLimit = 5;   // 페이징바에 표시될 페이지 수
 
 	    // 3. 페이징 정보 생성
@@ -200,6 +201,32 @@ public class ProductController {
 		//첨부파일이 여러개일땐 배열또는 리스트 형식으로 전달받으면 된다.
 		
 		ArrayList<Attachment> atList = new ArrayList<>(); //천부파일 정보들 등록할 리스트
+		
+//		int count =1;
+//		for(MultipartFile m : uploadFiles) {
+//			if (m == null || m.isEmpty()) continue;
+//			String changeName = saveFile(m,session);
+//			//저장실패시 처리중단 및 에러페이지 반환
+//			if (changeName == null) {
+//	            session.setAttribute("alertMsg", "파일 저장 중 오류가 발생했습니다.");
+//	            return "common/errorPage";
+//		    }
+//			
+//			String originName = m.getOriginalFilename(); //원본 파일명 추출
+//			
+//			//파일정보 객체 생성하여 리스트에 추가하기
+//			Attachment at = new Attachment();
+//			at.setChangeName(changeName);
+//			at.setOriginName(originName);
+//			at.setFilePath("/resources/uploadFiles/");
+//			if(count==1) {
+//				at.setFileLevel(count++); //1번 대표사진 설정
+//			}else {
+//				at.setFileLevel(2); //나머지
+//			}
+//			
+//			atList.add(at); //리스트에 추가
+//		}
 		
 		//대표 이미지
 	    if (!thumbnail.isEmpty()) {
@@ -339,6 +366,7 @@ public class ProductController {
 		
 	}
 	
+	
     // 댓글 목록
     @GetMapping("/replyList")
     @ResponseBody
@@ -347,10 +375,11 @@ public class ProductController {
         return replyService.selectReplyList(productNo);
     }
     
-    // 구매하기
+    // 구매하기 (구매자 정보 및 메시지 전달)
     @GetMapping("/buyProduct")
     public String buyProduct(@RequestParam("productNo") 
     						  int productNo
+    						  ,Order o
     						  ,Model model
     						  ,HttpSession session) {
         // 1. 상품 정보 조회
@@ -359,42 +388,97 @@ public class ProductController {
         product.setAtList(atList);
 
         // 2. (옵션) 로그인 유저 정보 (세션에서 꺼낼 수 있음)
-        Member loginUser = (Member) session.getAttribute("loginUser");
+        Member m = (Member) session.getAttribute("loginUser");
 
-        // 3. 모델에 상품/유저 정보 담기
+        // 3. 모델에 상품/유저/거래 정보 담기
+        model.addAttribute("order", o);
         model.addAttribute("product", product);
-        model.addAttribute("loginUser", loginUser);
-
+        model.addAttribute("loginUser", m);
+        System.out.println("조회 :loginUser = " + m);
+        System.out.println("주문객체 :order = " + o);// null이면 세션에 없는 거
         // 4. 구매 폼 페이지로 이동
         return "product/productBuy";
+        
     }
     
-    //결제 페이지
+    //예상 금액 페이지 (포인트, 거래 넘기기)
     @PostMapping("/productPay")
     public String productPay(
-        @RequestParam("productNo") int productNo,
-        @RequestParam("buyerName") String buyerName,
-        @RequestParam("buyerPhone") String buyerPhone,
-        @RequestParam(value = "meetLocation", required = false) String meetLocation,
-        @RequestParam(value = "message", required = false) String message,
-        Model model
-    ) {
+					         @RequestParam("productNo") int productNo
+					        ,Order o
+					        ,Model model
+					        ,HttpSession session){
+    	
+        // 1. 상품 정보 불러오기
+        Product product = service.selectProductDetail(productNo);
+        ArrayList<Attachment> atList = service.selectProductAttachments(productNo);
+        product.setAtList(atList);
+        
+        // 2. 로그인 유저 정보도 model에 담기
+        Member m = (Member) session.getAttribute("loginUser");
+        model.addAttribute("loginUser", m);
+        System.out.println("조회 :loginUser = " + m); // null이면 세션에 없는 거
+        System.out.println("이게담기나? = " + o);
+        // 3. 서비스에 요청
+//        int result = service.productPay(o,m);
+
+        // 그냥 넘기기
+//        if(result > 0) {
+        	model.addAttribute("product", product);
+            model.addAttribute("order", o);
+            model.addAttribute("product", product);
+            return "product/productPay";
+            // 예상 금액, 만남 안내 등 안내 페이지로!
+//        } else {
+//            // 실패 시 에러 페이지 or 메시지 처리
+//            model.addAttribute("msg", "결제 처리에 실패했습니다. 다시 시도해주세요.");
+//            return "common/errorPage";
+//        }
+    }
+    
+    //거래 진행 페이지(주문 요약, 구매 확정 , 취소)
+    
+    @PostMapping("/productOrder")
+    public String productOrder(@RequestParam("productNo") int productNo
+            				   ,Order o             
+            				   ,Model model
+            				   ,HttpSession session
+    						   ){
         // 1. 상품 정보 불러오기
         Product product = service.selectProductDetail(productNo);
         ArrayList<Attachment> atList = service.selectProductAttachments(productNo);
         product.setAtList(atList);
 
-        // 2. 결제 페이지에 필요한 데이터 model에 담기
-        model.addAttribute("product", product);
-        model.addAttribute("buyerName", buyerName);
-        model.addAttribute("buyerPhone", buyerPhone);
-        model.addAttribute("meetLocation", meetLocation);
-        model.addAttribute("message", message);
+        // 2. 로그인 유저 정보
+        Member m = (Member) session.getAttribute("loginUser");
+        // 3. 값 담기 
+        o.setStatus("REQ"); // 거래중
+        
+        // 3. (옵션) 판매자 정보도 불러오고 싶으면
+//        Member seller = service.selectMemberByUserNo(order.getSellerId());
+        // seller.getUserName(), seller.getPhone() 등
+        int result = service.productOrder(o,m);
+        
+        if(result>0) {
+        	model.addAttribute("product", product);
+            model.addAttribute("order", o);        
+            model.addAttribute("loginUser", m);
+            System.out.println("product : " + product + "order : " + o + "loginUser : " + m);
 
-        // 3. 결제 페이지로 이동
-        return "product/productPay";
+            return "product/productOrder";
+        } else {
+        	model.addAttribute("msg", "결제 처리에 실패했습니다. 다시 시도해주세요.");
+        	return "common/errorPage";
+        }
+        // 4. Model에 담기
+//        model.addAttribute("product", product);
+//        model.addAttribute("order", o);        
+//        model.addAttribute("loginUser", m);
+//      model.addAttribute("seller", seller);      // 필요시
+
+        // 5. 페이지 이동 (productOrder.jsp로!)
+//        return "product/productOrder";
     }
-
 }
 
 

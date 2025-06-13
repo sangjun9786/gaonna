@@ -34,6 +34,8 @@
 	        pb.PRODUCT_CONTENT,
 	        pb.STATUS AS PB_STATUS,
 	        m.USER_ID,
+	        m.USER_NAME,
+    		m.PHONE AS USER_PHONE,
 	        c.COORD_ADDRESS,
 	        ct.CATEGORY_NAME,
 	        at.FILE_NO,
@@ -78,21 +80,21 @@
 
     <!-- 상품 사진 정보 등록 -->
     <insert id="insertAttachment">
-        INSERT INTO ATTATCHMENT (
-            FILE_NO,
-            PRODUCT_NO,
-            ORIGIN_NAME,
-            CHANGE_NAME,
-            FILE_PATH,
-            FILE_LEVEL
-        ) VALUES (
-            SEQ_FNO.NEXTVAL,
-            #{productBno},
-            #{originName},
-            #{changeName},
-            #{filePath},
-            #{fileLevel}
-        )
+        INSERT INTO ATTATCHMENT(
+					            FILE_NO,
+					            PRODUCT_NO,
+					            ORIGIN_NAME,
+					            CHANGE_NAME,
+					            FILE_PATH,
+					            FILE_LEVEL
+				        )VALUES(
+					            SEQ_FNO.NEXTVAL,
+					            #{productBno},
+					            #{originName},
+					            #{changeName},
+					            #{filePath},
+					            #{fileLevel}
+				        		)
     </insert>
 
     <!-- 상품 리스트 조회 -->
@@ -147,6 +149,57 @@
     FROM CATEGORY
     ORDER BY CATEGORY_NO
 	</select>
+	
+	<!-- 거래 리스트 -->
+	<insert id="insertOrder" parameterType="Order">
+    INSERT INTO ORDERS (
+				        ORDER_NO,
+				        BUYER_ID,
+				        SELLER_ID,
+				        PRODUCT_NO,
+				        PRICE,
+				        USED_POINT,
+				        PAY_METHOD,
+				        STATUS,
+				        REG_DATE,
+				        BUYER_NAME,
+				        BUYER_PHONE,
+				        MEET_LOCATION,
+				        MESSAGE,
+				        SELLER_NAME,
+				        SELLER_PHONE
+   			 	)VALUES(
+				        SEQ_ORDER_NO.NEXTVAL,
+				        #{buyerId},
+				        #{sellerId},
+				        #{productNo},
+				        #{price},
+				        #{usedPoint},
+				        #{payMethod},
+				        'REQ',
+				        SYSDATE,
+				        #{buyerName},
+				        #{buyerPhone},
+				        #{meetLocation},
+				        #{message},
+				        #{sellerName},
+				        #{sellerPhone}
+				       )
+	</insert>
+	
+	<!-- 포인트 차감 -->
+	<update id="updatePoint" parameterType="Member">
+	    UPDATE MEMBER
+	    SET POINT = #{point}
+	    WHERE USER_NO = #{userNo}
+	</update>
+	
+	<!-- 게시글 상태 변경 -->
+	<update id="updateProductStatus" parameterType="Order">
+	    UPDATE PRODUCT_BOARD
+	    SET STATUS = 'T'
+	    WHERE PRODUCT_NO = #{productNo}
+	</update>
 	
     <!-- 상품 ResultMap -->
     <resultMap id="productResultMap" type="Product">

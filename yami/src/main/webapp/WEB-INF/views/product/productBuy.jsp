@@ -72,6 +72,7 @@
         border-radius: 5px;
         margin-bottom: 15px;
         font-size: 16px;
+        background: #f4f4f4;
     }
     .action-btn {
         background-color: #ff6600;
@@ -127,7 +128,7 @@
         <div class="buy-info-area">
             <div class="buy-title">${product.productTitle}</div>
             <div class="meta">
-                판매자: <b>${product.userId}</b> |
+                판매자: <b>${product.userName}</b> |
                 <fmt:formatDate value="${product.uploadDate}" pattern="yyyy-MM-dd" /> |
                 조회수: ${product.productCount}
             </div>
@@ -136,30 +137,26 @@
             </div>
             <div class="desc">${product.productContent}</div>
 
-            <!-- 거래 희망 정보 (필요시) -->
+            <!-- 거래 희망 정보 (자동 셋팅, 수정불가) -->
             <form id="buyForm" method="post" action="${contextPath}/productPay">
                 <input type="hidden" name="productNo" value="${product.productNo}" />
+				<input type="hidden" name="sellerId" value="${product.userNo}" />
+				<input type="hidden" name="buyerId" value="${loginUser.userNo}" />
+                <div class="form-label">판매자 이름</div>
+                <input type="text" name="sellerName" class="form-control" value="${product.userName}" readonly />
 
-                <div class="form-label">구매자 이름</div>
-                <input type="text" name="buyerName" class="form-control" value="${loginUser.userName}" readonly />
+                <div class="form-label">판매자 연락처</div>
+                <input type="text" name="sellerPhone" class="form-control" value="${product.userPhone}" readonly />
 
-                <div class="form-label">연락처</div>
-                <input type="text" name="buyerPhone" class="form-control" value="${loginUser.phone}" required />
-
-                <!-- 오프라인 거래시 거래 희망장소 -->
-                <div class="form-label">거래 희망 장소</div>
-                <input type="text" name="meetLocation" class="form-control" placeholder="직거래 장소 입력 (예: OO역 앞)" />
-
-                <!-- 메시지(선택) -->
-                <div class="form-label">판매자에게 메시지</div>
-                <textarea name="message" class="form-control" rows="3" placeholder="거래 요청 메시지를 입력하세요."></textarea>
+                <div class="form-label">판매자의 거래 동네</div>
+                <input type="text" name="meetLocation" class="form-control" value="${product.coordAddress}" readonly />
 
                 <div class="buy-summary">
                     <b>※ 구매 요청시 판매자에게 알림이 전송됩니다.<br>
                     거래 완료 후에는 마이페이지에서 내역 확인 및 리뷰 작성이 가능합니다.</b>
                 </div>
 
-                <button type="submit" class="action-btn">구매 확정하기</button>
+                <button type="submit" class="action-btn">구매 요청하기</button>
                 <button type="button" class="cancel-btn" onclick="history.back();">취소</button>
             </form>
         </div>

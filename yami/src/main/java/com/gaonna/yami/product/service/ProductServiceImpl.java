@@ -9,10 +9,12 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.gaonna.yami.common.PageInfo;
+import com.gaonna.yami.member.model.vo.Member;
 import com.gaonna.yami.product.dao.ProductDao;
 import com.gaonna.yami.product.model.ProductDTO;
 import com.gaonna.yami.product.vo.Attachment;
 import com.gaonna.yami.product.vo.Category;
+import com.gaonna.yami.product.vo.Order;
 import com.gaonna.yami.product.vo.Product;
 
 @Service
@@ -115,6 +117,31 @@ public class ProductServiceImpl implements ProductService {
 	public int productUpdate(Product p) {
 		// TODO Auto-generated method stub
 		return dao.productUpdate(sqlSession,p);
+	}
+	
+	//주문 등록 및 포인트 차감
+	@Transactional
+	@Override
+	public int productOrder(Order o, Member m) {
+		// TODO Auto-generated method stub
+		// 1. 주문 등록 (Order insert)
+	    int result = dao.insertOrder(sqlSession, o);
+	    
+	    // 2. 포인트 차감 (Member update)
+	    int result2 = 1;
+	    if (result > 0 && o.getUsedPoint() > 0) {
+	        // 차감할 포인트가 있으면
+	        m.setPoint(m.getPoint() - o.getUsedPoint());
+	        result2 = dao.updatePoint(sqlSession, m);
+	    }
+	    
+	    // 3. 상품 상태 'T'로 변경
+	    int result3 = dao.updateProductStatus(sqlSession, o);
+
+//	    // 4. 판매자 알림 전송 (알림 테이블 insert)
+//	    int result4 = dao.insertSellerNotification(sqlSession, o);
+	    
+	    return result * result2 * result3 ;  // 셋 다 성공해야 1 반환
 	}
 
 }

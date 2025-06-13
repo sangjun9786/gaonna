@@ -59,7 +59,7 @@
         <div class="section-title">구매자 정보</div>
         <div class="form-group">
             <label>이름</label>
-            <input type="text" value="${loginUser.userName}" readonly>
+            <input type="text" value="${loginUser.userName}" name="buyerName" readonly>
         </div>
         <div class="form-group">
             <label>이메일</label>
@@ -67,7 +67,7 @@
         </div>
         <div class="form-group">
             <label>휴대폰</label>
-            <input type="text" value="${loginUser.phone}" readonly>
+            <input type="text" value="${loginUser.phone}" name="buyerPhone" readonly>
         </div>
         <div class="form-group">
             <label>사용 가능한 포인트</label>
@@ -76,35 +76,46 @@
     </div>
 
     <!-- 포인트 입력/차감 및 결제 -->
-    <form action="${contextPath}/payProduct" method="post" class="pay-form" id="payForm">
+    <form action="${contextPath}/productOrder" method="post" class="pay-form" id="payForm">
         <input type="hidden" name="productNo" value="${product.productNo}">
         <input type="hidden" name="price" id="originPrice" value="${product.price}">
+        <!-- 구매자/판매자 정보 히든으로 추가! -->
+	    <input type="hidden" name="buyerId" value="${loginUser.userNo}">
+	    <input type="hidden" name="buyerName" value="${loginUser.userName}">
+	    <input type="hidden" name="buyerPhone" value="${loginUser.phone}">
+	    <input type="hidden" name="sellerId" value="${product.userNo}">
+	    <input type="hidden" name="sellerName" value="${product.userName}">
+	    <input type="hidden" name="sellerPhone" value="${product.userPhone}">
+	    <input type="hidden" name="meetLocation" value="${product.coordAddress}">
         <div class="section">
             <div class="section-title">포인트 사용</div>
             <div class="form-group">
                 <span class="point-guide">
                     사용 가능한 포인트: <fmt:formatNumber value="${loginUser.point}" pattern="#,###"/>P
                 </span>
-                <input type="number" name="usePoint" id="usePoint" class="form-control"
+                <input type="number" name="usedPoint" id="usedPoint" class="form-control"
                        min="0"
                        max="${loginUser.point}"
                        value="0"
                        placeholder="포인트를 입력하세요">
+                <div class="section-title">판매자에게 메시지</div>
+	        <textarea name="message" class="form-control" rows="3" placeholder="거래 요청 메시지를 입력하세요."></textarea>
             </div>
+        	<!-- 메시지(선택) -->
             <div class="final-amount">
-                결제 금액: <span id="finalPrice"><fmt:formatNumber value="${product.price}" pattern="#,###"/></span> 원
+                현장 결제 금액: <span id="finalPrice"><fmt:formatNumber value="${product.price}" pattern="#,###"/></span> 원
             </div>
         </div>
-        <button type="submit" class="pay-btn">결제하기</button>
+        <button type="submit" class="pay-btn">만나서 거래하기</button>
     </form>
 </div>
 
 <script>
 $(function() {
     // 포인트 입력할 때마다 결제 금액 자동 계산
-    $("#usePoint").on("input", function() {
+    $("#usedPoint").on("input", function() {
         let originPrice = parseInt($("#originPrice").val()) || 0;
-        let usePoint = parseInt($("#usePoint").val()) || 0;
+        let usePoint = parseInt($("#usedPoint").val()) || 0;
         // 입력값 제한: 0 이상, 보유포인트 이하, 상품금액 이하
         const maxPoint = Math.min(
             parseInt("${loginUser.point}"),
@@ -112,7 +123,7 @@ $(function() {
         );
         if(usePoint < 0) usePoint = 0;
         if(usePoint > maxPoint) usePoint = maxPoint;
-        $("#usePoint").val(usePoint);
+        $("#usedPoint").val(usePoint);
 
         let finalPrice = originPrice - usePoint;
         $("#finalPrice").text(finalPrice.toLocaleString());

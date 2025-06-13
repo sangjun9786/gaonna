@@ -6,9 +6,11 @@ import java.util.List;
 import org.springframework.stereotype.Repository;
 
 import com.gaonna.yami.common.PageInfo;
+import com.gaonna.yami.member.model.vo.Member;
 import com.gaonna.yami.product.model.ProductDTO;
 import com.gaonna.yami.product.vo.Attachment;
 import com.gaonna.yami.product.vo.Category;
+import com.gaonna.yami.product.vo.Order;
 import com.gaonna.yami.product.vo.Product;
 
 
@@ -42,6 +44,11 @@ public interface ProductService {
 	
 	//상품 수정
 	int productUpdate(Product p);
+
+	//오더 등록
+	int productOrder(Order o, Member m);
+	
+	
 
 	
 }
