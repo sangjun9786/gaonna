@@ -182,7 +182,6 @@ public class LocationCotroller {
 			//댓글 리스트 조회해서 넣기
 			List<BakeryComment> bakeryComments = service.selectBakeryComment(bakeryNo,page);
 		    response.put("comments", bakeryComments);
-		    System.out.println("컨트롤러 bakeryComments 개수 : "+bakeryComments.size());
 		    
 		    //아직 조회될 리스트가 남았는지 알아보자
 		    boolean hasNext = bakeryComments.size() >= 10;

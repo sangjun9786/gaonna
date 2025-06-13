@@ -78,6 +78,16 @@ public class AdminController {
 				userId="novita@hugme.please";
 				commandType = "login";
 				break;
+			case "t4":
+			case "ㅅ4":
+				userId="station@yamm";
+				commandType = "login";
+				break;
+			case "t5":
+			case "ㅅ5":
+				userId="sell@yamm";
+				commandType = "login";
+				break;
 				
 				
 			default:

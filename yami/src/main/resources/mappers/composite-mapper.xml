@@ -200,6 +200,7 @@
 		select count(*)
 		from BAKERY_COMMENT
 		where user_no = #{userNo}
+		and status in ('Y', 'M')
 	</select>
 	
 	<!-- ajax - 우리동네빵집 댓글 조회 -->
