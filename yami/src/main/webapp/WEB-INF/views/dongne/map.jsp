@@ -8,6 +8,7 @@
 	href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
 <meta charset="UTF-8">
 <title>동네 한바퀴</title>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
 <style>
     #map { margin: 30px auto; border-radius: 20px; }
     .bakery-marker { cursor: pointer; }
@@ -15,43 +16,150 @@
     .comment-card { margin-bottom: 0.5rem;  position: relative; z-index: 1;
     	transition: transform 0.2s, box-shadow 0.2s; cursor: pointer; background: #ffffff;}
     .comment-card:hover {transform: translateY(-2px); box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1); background: #fff9e6;}
-    .recomment-card { margin-left: 2rem; background: #fff8e1; cursor: pointer; transition: background 0.2s;}
-    .recomment-card:hover { background: #fff3cd;}
     .comment-content { font-size: 1.05rem; }
     .comment-meta { font-size: 0.85rem; color: #888; }
     .comment-actions { margin-top: 0.3rem; }
     .loading-spinner { display: inline-block; width: 1.2em; height: 1.2em; }
     .modal-header .btn-close { margin: -0.5rem -0.5rem -0.5rem auto; }
-    .modal-backdrop { opacity: 0.4 !important; }
-    
-	.modal-dialog-scrollable .modal-body {
-	    overflow-y: visible; /* 기존 auto → visible로 변경 */
+    .modal-backdrop {
+	    display: none !important;
 	}
-	#commentArea {
-	    max-height: none !important; /* 고정 높이 제거 */
+	.modal.show .modal-backdrop {
+	    display: block;
+	    opacity: 0.5;
+	}
+	.modal-dialog-scrollable .modal-body {
 	    overflow-y: visible;
 	}
+	#commentArea {
+	    max-height: none !important;
+	    overflow-y: visible;
+	}
+	.recomment-card {
+		cursor: pointer;
+	    margin-left: 0 !important;
+	    background: #ffffff !important;
+	    border: 1px solid #eee !important;
+	    border-radius: 8px !important;
+	    position: relative;
+	    z-index: 0;
+	}
+	.recomment-card:hover {
+	    transform: translateX(-10px);
+	    transition: transform 0.3s ease;
+	    background: #fff9e6 !important;
+	}
+    .recomment-more-card {
+	    cursor: pointer;
+	    transition: background 0.2s;
+	}
+	.recomment-more-card:hover {
+	    background: #f8f9fa;
+	}
+	.recomment-more-card i {
+	    transition: transform 0.3s;
+	}
+	.recomment-more-card:hover i {
+	    transform: translateY(2px);
+	}
+	.recomments-container {
+	    border-left: 2px solid #eee;
+	    padding-left: 2rem;
+	    margin-left: 2rem;
+	    margin-top: 0.5rem;
+	    position: relative;
+	}
+	.temp-message {
+	    opacity: 1;
+	    transition: opacity 1.5s ease-in-out;
+	}
+	@keyframes fadeOut {
+	    0% { opacity: 1; }
+	    70% { opacity: 1; }
+	    100% { opacity: 0; display: none; }
+	}
     
+    
+    .main-row {
+        position: relative;
+        width: 100%;
+        min-height: 540px;
+    }
+    .bakery-sidebar {
+        position: absolute;
+        top: 40px;
+        left:-100px;
+        width: 220px;
+        min-width: 180px;
+        max-width: 280px;
+        background: #fffbe8;
+        border-radius: 16px;
+        box-shadow: 0 2px 12px rgba(0,0,0,0.06);
+        padding: 24px 16px 16px 16px;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        z-index: 2;
+    }
+    #map {
+        width: 60vw;
+        height: 40vw;
+        min-width: 340px;
+        min-height: 340px;
+        max-width: 900px;
+        max-height: 700px;
+        margin: 0 auto;
+        position: relative;
+        left: 50%;
+        transform: translateX(-50%);
+        border-radius: 20px;
+        display: block;
+        z-index: 1;
+    }
+    @media (max-width: 991px) {
+        .main-row { min-height: unset; }
+        .bakery-sidebar { position: static; margin: 0 auto 24px auto; }
+        #map { width: 100vw; left: 0; transform: none; }
+    }
+    .bakery-sidebar .bi-cake {
+        font-size: 2.5rem;
+        color: #ff9800;
+        margin-bottom: 8px;
+    }
+    .bakery-sidebar h4 {
+        font-weight: bold;
+        color: #ff9800;
+        margin-bottom: 18px;
+        text-align: center;
+        line-height: 1.2;
+    }
+    .bakery-sidebar .btn {
+        margin-top: 18px;
+        width: 100%;
+    }
 </style>
 </head>
 <body>
 <%@include file="/WEB-INF/views/common/header.jsp"%>
+<%@ include file="/WEB-INF/views/common/searchbar.jsp" %>
 
 <div class="container mt-5">
-    <!-- 제목 섹션 -->
-    <div class="text-center mb-4 p-4 bg-warning bg-opacity-10 rounded-3 shadow-sm">
-        <h2 class="display-3 fw-bold text-warning">
-            <i class="bi bi-geo-alt-fill me-2"></i>
-            우리 동네 빵집
-        </h2>
-        <p class="lead text-muted mt-2">우리동네 빵집 정보를 공유해요</p>
-    </div>
-
-    <!-- 지도 컨테이너 -->
-        <div class="card-body p-0">
-            <div id="map" style="width: 100%; height: 600px;"></div>
+    <div class="d-flex justify-content-center align-items-start main-row">
+        <div class="bakery-sidebar">
+            <i class="bi bi-cake"></i>
+            <h4>
+                우리 동네<br>빵집
+            </h4>
+            <button class="btn btn-outline-warning" onclick="location.href='${root}/dongne.me'">
+                대표동네 변경하기
+            </button>
         </div>
+        <div>
+            <div id="map"></div>
+        </div>
+    </div>
 </div>
+
 
 
 <!-- 빵집 정보 및 댓글 모달 -->
@@ -99,7 +207,6 @@ const coords = [
 ];
 
 const bakeries = JSON.parse('${bakeriesJson}');
-const root = '${pageScope.root}';
 
 /* ====== 지도 및 마커 표시 ====== */
 window.onload = function() {
@@ -109,6 +216,8 @@ window.onload = function() {
     const centerLat = parseFloat(centerCoord.latitude);
     const centerLng = parseFloat(centerCoord.longitude);
 
+    const keyword = $('#keyword').val();
+    const encodedKeyword = encodeURIComponent(keyword);
     // 지도 생성
     const map = new naver.maps.Map('map', {
         center: new naver.maps.LatLng(centerLat, centerLng),
@@ -148,6 +257,25 @@ window.onload = function() {
             showBakeryModal(bakery.bakeryNo, 1);
         });
     });
+    
+    if(keyword && keyword.trim() !== "") {
+		$.ajax({
+			url : "ajax.do",
+			data : {
+				keyword : keyword
+			},
+			success : function(result) {
+				//응답데이터가 잇다면 success function의 매개변수로 전달됨
+				console.log("서버 응답 결과:", result);
+				if(result != null) {
+					showBakeryModal(result, 1);
+				}
+			},
+			error : function() {
+				console.log("통신 실패");
+			}
+		});
+    }
 };
 
 /* ====== 빵집 모달 표시 및 댓글 로딩 ====== */
@@ -158,12 +286,12 @@ let isCommentEditing = false;
 
 function showBakeryModal(bakeryNo, page) {
     currentBakeryNo = bakeryNo;
-    currentPage = page;
+    currentPage = 1;
     isCommentEditing = false;
     
     //모달이 이미 존재할 경우 닫기
-    const existingModal = bootstrap.Modal.getInstance(document.getElementById('bakeryModal'));
-    if (existingModal) existingModal.hide();
+	const existingModal = bootstrap.Modal.getInstance(document.getElementById('bakeryModal'));
+    if (existingModal) existingModal.dispose();
 
     // 댓글 영역 초기화 및 로딩 표시
     document.getElementById('commentArea').innerHTML = `
@@ -257,10 +385,10 @@ function closeBakeryModal() {
             $('body').removeClass('modal-open');
             $('.modal-backdrop').remove();
             
+            // 추가: body 스타일 초기화
+            document.body.style.paddingRight = '';
+            document.body.style.overflow = '';
             
-            const commentEnd = document.getElementById('commentEnd');
-            if (commentEnd) commentEnd.style.display = 'none';
-
             // 댓글 영역 초기화
             document.getElementById('commentArea').innerHTML = '';
             document.getElementById('commentLoadMore').style.display = 'none';
@@ -268,10 +396,6 @@ function closeBakeryModal() {
         });
         modal.hide();
     }
-    
-    // 기존 이벤트 리스너 제거
-    document.body.removeEventListener('keydown', handleModalEscClose);
-    document.getElementById('bakeryModal').removeEventListener('click', handleModalOutsideClick);
 }
 
 
@@ -398,33 +522,54 @@ function renderCommentCard(comment, allComments) {
             <i class="bi bi-exclamation-triangle-fill text-danger"></i> 신고되어 블라인드된 댓글입니다.
         </div></div>`;
     }
-    // 일반/수정됨 댓글
-	let html = `<div class="card comment-card" data-comment-no="\${comment.commentNo}">
-	    <div class="card-body d-flex flex-column">
-	        <div class="d-flex align-items-center mb-1">
-	            <span class="comment-content flex-grow-1">
-	                \${escapeXml(comment.commentContent)}
-	                \${comment.status === 'M' ? '<span class="ms-2 text-muted" style="font-size:0.85em;">수정됨</span>' : ''}
-	            </span>
-	            <span class="ms-2">\${renderLikeDislike(comment.bakeryLike)}</span>
-	        </div>
-	        <div class="d-flex justify-content-between comment-meta">
-	            <span>\${comment.userName}</span>
-	            <span>\${comment.commentDateStr}</span>
-	        </div>
-	        <div class="comment-actions mt-1" id="comment-actions-\${comment.commentNo}" style="display:none;">
-	            \${renderCommentActions(comment)}
-	        </div>
-	    </div>
-	</div>`;
-
-    // 대댓글
-    const recomments = allComments.filter(rc => rc.commentType === 'RECOMMENT' && rc.parentCommentNo === comment.commentNo);
-    recomments.forEach(rc => {
+    
+    // 댓글 카드 렌더링
+        let html = `<div class="card comment-card" data-comment-no="\${comment.commentNo}">
+        <div class="card-body d-flex flex-column">
+            <div class="d-flex align-items-center mb-1">
+                <span class="comment-content flex-grow-1">
+                    \${escapeXml(comment.commentContent)}
+                    \${comment.status === 'M' ? '<span class="ms-2 text-muted" style="font-size:0.85em;">수정됨</span>' : ''}
+                </span>
+                <span class="ms-2">\${renderLikeDislike(comment.bakeryLike)}</span>
+            </div>
+            <div class="d-flex justify-content-between comment-meta">
+                <span>\${comment.userName}</span>
+                <span>\${comment.commentDateStr}</span>
+            </div>
+            <div class="comment-actions mt-1" id="comment-actions-\${comment.commentNo}" style="display:none;">
+                \${renderCommentActions(comment)}
+            </div>
+        </div>
+    </div>`;
+    
+    const recomments = allComments.filter(rc => 
+	    rc.commentType === 'RECOMMENT' && 
+	    rc.parentCommentNo === comment.commentNo
+	);
+    
+    // 대댓글 컨테이너 생성
+    html += `<div class="recomments-container ms-4" data-parent-comment="\${comment.commentNo}">`;
+    recomments.slice(0, 10).forEach(rc => {
         html += renderRecommentCard(rc);
     });
+    html += `</div>`;
+    
+    if(recomments.length >= 10) {
+        html += `
+            <div class="recomment-more-card mt-2" 
+                 data-parent-comment-no="\${comment.commentNo}" 
+                 data-page="2" 
+                 onclick="loadMoreRecomments(\${comment.commentNo}, this)">
+                <div class="text-center py-2 bg-light rounded">
+                    <i class="bi bi-chevron-double-down"></i> 대댓글 더 보기
+                </div>
+            </div>`;
+    }
+    
     return html;
 }
+
 
 //댓글 카드 클릭 이벤트 핸들러
 $('#commentArea').on('click', '.comment-card', function() {
@@ -458,15 +603,18 @@ function onCommentClick(commentNo) {
 
 function renderRecommentCard(rc) {
     if (rc.status === 'N') {
-        return `<div class="card recomment-card bg-light text-muted"><div class="card-body">삭제된 댓글입니다.</div></div>`;
+        return `<div class="card recomment-card ms-4 bg-light text-muted"><div class="card-body">삭제된 댓글입니다.</div></div>`;
     }
     if (rc.status === 'P') {
-        return `<div class="card recomment-card bg-light text-muted"><div class="card-body">
+        return `<div class="card recomment-card ms-4 bg-light text-muted"><div class="card-body">
             <i class="bi bi-exclamation-triangle-fill text-danger"></i> 신고되어 블라인드된 댓글입니다.
         </div></div>`;
     }
     return `
-    <div class="card recomment-card" data-comment-no="\${rc.commentNo}">
+    <div class="card recomment-card ms-4" 
+	    data-comment-no="\${rc.commentNo}" 
+	    data-parent-comment-no="\${rc.parentCommentNo}">
+	    
         <div class="card-body d-flex flex-column">
             <div class="d-flex align-items-center mb-1">
                 <span class="comment-content flex-grow-1">
@@ -478,13 +626,13 @@ function renderRecommentCard(rc) {
                 <span>\${rc.userName}</span>
                 <span>\${rc.commentDateStr}</span>
             </div>
-            <!-- 추가된 부분: 액션 버튼 컨테이너 -->
             <div class="comment-actions mt-1" id="recomment-actions-\${rc.commentNo}" style="display:none;">
                 \${renderCommentActions(rc, true)}
             </div>
         </div>
     </div>`;
 }
+
 function renderLikeDislike(like) {
     if (like === 'L') return '<i class="bi bi-hand-thumbs-up-fill text-primary fs-5"></i>';
     if (like === 'D') return '<i class="bi bi-hand-thumbs-down-fill text-danger fs-5"></i>';
@@ -496,9 +644,9 @@ function renderCommentActions(comment, isRecomment) {
     let html = '';
     if (comment.status === 'Y' || comment.status === 'M') {
         if (!isRecomment) html += `<button class="btn btn-outline-secondary btn-sm me-1" onclick="showRecommentForm(\${comment.commentNo})">대댓글 작성</button>`;
-        if (comment.userNo === loginUser.userNo || loginUser.roleType !== 'N') {
-            html += `<button class="btn btn-outline-primary btn-sm me-1" onclick="showEditForm(\${comment.commentNo}, \${isRecomment})">수정</button>`;
-            html += `<button class="btn btn-outline-danger btn-sm me-1" onclick="deleteComment(\${comment.commentNo}, \${isRecomment})">삭제</button>`;
+        if (comment.userNo == loginUser.userNo || loginUser.roleType !== 'N') {
+            html += `<button class="btn btn-outline-primary btn-sm me-1" onclick="showEditForm(\${comment.commentNo}, \${isRecomment}, \${comment.userNo})">수정</button>`;
+            html += `<button class="btn btn-outline-danger btn-sm me-1" onclick="deleteComment(\${comment.commentNo}, \${comment.userNo})">삭제</button>`;
         }
         html += `<button class="btn btn-outline-warning btn-sm" onclick="reportComment(\${comment.commentNo})">신고</button>`;
     }
@@ -667,6 +815,225 @@ function toggleRecommentActions(commentNo) {
     actions.toggle();
     lastOpenedRecommentNo = actions.is(':visible') ? commentNo : null;
 }
+
+//----------------------(대)댓글 수정------------------------
+function showEditForm(commentNo, isRecomment,commentUserNo) {
+    isCommentEditing = true;
+    
+    // 기존 댓글 내용 가져오기
+    const commentCard = document.querySelector(`[data-comment-no="\${commentNo}"]`);
+    const contentElement = commentCard.querySelector('.comment-content');
+    const originalContent = contentElement.childNodes[0].textContent.trim();
+    
+    // 수정 폼 생성
+    const formHtml = `
+        <div class="edit-form-container">
+            <textarea class="form-control mb-2" id="editContent-\${commentNo}" 
+                      rows="2">\${originalContent}</textarea>
+            \${!isRecomment ? `
+            <select class="form-select mb-2" id="editLike-\${commentNo}">
+                <option value="L">추천</option>
+                <option value="D">비추천</option>
+            </select>` : ''}
+            <div class="d-flex justify-content-end gap-2">
+                <button class="btn btn-outline-secondary btn-sm" 
+                        onclick="cancelEdit('\${commentNo}', \${isRecomment})">취소</button>
+                <button class="btn btn-primary btn-sm" 
+                        id="btnSubmitEdit-\${commentNo}" 
+                        disabled
+                        onclick="submitEdit('\${commentNo}', \${isRecomment ? 'true' : 'false'}, '\${commentUserNo}')">수정하기</button>
+            </div>
+        </div>
+    `;
+
+    // 폼 삽입 및 기존 내용 교체
+    const commentBody = commentCard.querySelector('.card-body');
+    commentBody.innerHTML = formHtml;
+    
+    // 이벤트 전파 방지
+    commentCard.querySelector('textarea').addEventListener('click', e => e.stopPropagation());
+    
+    // 입력 유효성 검사
+    document.getElementById(`editContent-\${commentNo}`).addEventListener('input', () => 
+        checkEditInput(commentNo, isRecomment)
+    );
+    if(!isRecomment) {
+        document.getElementById(`editLike-\${commentNo}`).addEventListener('change', () => 
+            checkEditInput(commentNo, isRecomment)
+        );
+    }
+}
+
+function checkEditInput(commentNo, isRecomment) {
+    const content = document.getElementById(`editContent-\${commentNo}`).value.trim();
+    const like = isRecomment ? 'P' : document.getElementById(`editLike-\${commentNo}`).value;
+    document.getElementById(`btnSubmitEdit-\${commentNo}`).disabled = !content || (!isRecomment && !like);
+}
+
+function cancelEdit(commentNo, isRecomment) {
+    isCommentEditing = false;
+    showBakeryModal(currentBakeryNo, currentPage); // 모달 다시 로드
+}
+
+function submitEdit(commentNo, isRecomment, commentUserNo) {
+    const content = document.getElementById(`editContent-\${commentNo}`).value.trim();
+    const like = isRecomment ? 'P' : document.getElementById(`editLike-\${commentNo}`).value;
+    const btn = document.getElementById(`btnSubmitEdit-\${commentNo}`);
+    
+    btn.innerHTML = `<span class="spinner-border spinner-border-sm"></span>`;
+    btn.disabled = true;
+    
+    $.ajax({
+        url: `${root}/updateBakeryComment.dn`,
+        method: 'POST',
+        data: {
+            commentNo: commentNo,
+            content: content,
+            bakeryLike: like,
+            userNo: commentUserNo
+        },
+        success: function(res) {
+            if(res === 'pass') {
+                showBakeryModal(currentBakeryNo, currentPage);
+            } else {
+                alert('댓글 수정에 실패했습니다');
+                btn.innerHTML = '수정하기';
+                btn.disabled = false;
+            }
+        },
+        error: function() {
+            alert('서버 오류 발생');
+            btn.innerHTML = '수정하기';
+            btn.disabled = false;
+        }
+    });
+    showBakeryModal(currentBakeryNo, 1); // 성공 후 강제 페이지 1 로드
+}
+
+
+//대댓글 조회
+function loadMoreRecomments(parentCommentNo, element) {
+    const page = parseInt(element.dataset.page);
+    const commentCard = document.querySelector(`[data-comment-no="\${parentCommentNo}"]`);
+    if (!commentCard) {
+        console.error('댓글 카드를 찾을 수 없음:', parentCommentNo);
+        return;
+    }
+    
+    let recommentsContainer = commentCard.nextElementSibling?.classList.contains('recomments-container') 
+            ? commentCard.nextElementSibling : createRecommentsContainer(commentCard);
+    while (recommentsContainer && !recommentsContainer.classList.contains('recomments-container')) {
+        recommentsContainer = recommentsContainer.nextElementSibling;
+    }
+    
+    // 컨테이너가 없으면 생성
+    if (!recommentsContainer) {
+        recommentsContainer = document.createElement('div');
+        recommentsContainer.className = 'recomments-container ms-4';
+        recommentsContainer.setAttribute('data-parent-comment', parentCommentNo);
+        
+        commentCard.parentNode.insertBefore(recommentsContainer, commentCard.nextSibling);
+    }
+
+    $.ajax({
+        url: `${root}/selectBakeryRecomment.dn`,
+        method: 'POST',
+        data: { 
+            bakeryNo: currentBakeryNo, 
+            page, 
+            parentCommentNo 
+        },
+        success: function(res) {
+            if(res.status === 'pass' && res.comments.length > 0) {
+                res.comments.forEach(rc => {
+                    recommentsContainer.insertAdjacentHTML('beforeend', 
+                        renderRecommentCard(rc)
+                    );
+                });
+                
+                if(res.hasNext) {
+                    element.dataset.page = page + 1;
+                } else {
+                    element.outerHTML = `
+                        <div class="temp-message text-muted text-center py-2">
+                            마지막 대댓글입니다
+                        </div>`;
+                    setTimeout(() => {
+                        const tempMsg = document.querySelector('.temp-message');
+                        tempMsg?.parentNode.removeChild(tempMsg);
+                    }, 1500);
+                }
+            } else {
+                element.remove();
+            }
+        },
+        error: function() {
+            alert('대댓글 조회 실패');
+        }
+    });
+}
+
+
+function createRecommentsContainer(commentCard) {
+    const container = document.createElement('div');
+    container.className = 'recomments-container ms-4';
+    container.setAttribute('data-recomments-container', '');
+    commentCard.querySelector('.card-body').appendChild(container);
+    return container;
+}
+
+//----------------------(대)댓글 삭제하기-------------------------------
+function deleteComment(commentNo, userNo) {
+    if (!confirm('정말 삭제하시겠습니까?')) return;
+    
+    const btn = document.querySelector(`[onclick*="deleteComment(\${commentNo}"]`);
+    if (btn) {
+        btn.innerHTML = `<span class="spinner-border spinner-border-sm"></span>`;
+        btn.disabled = true;
+    }
+
+    $.ajax({
+        url: `${root}/deleteBakeryComment.dn`,
+        method: 'POST',
+        data: { 
+            commentNo: commentNo,
+            userNo: userNo
+        },
+        success: function(res) {
+            if(res === 'pass') {
+                //모달을 완전히 닫기
+                const modalElement = document.getElementById('bakeryModal');
+                const modal = bootstrap.Modal.getInstance(modalElement);
+                if (modal) modal.hide();
+
+                //백드롭, body 상태, 스크롤 등 정상화
+                setTimeout(() => {
+                    document.body.classList.remove('modal-open');
+                    $('.modal-backdrop').remove();
+                    document.body.style.overflow = '';
+                    document.body.style.paddingRight = '';
+                    
+                    //모달을 재로딩
+                    showBakeryModal(currentBakeryNo, 1);
+                }, 400); // Bootstrap 모달 hide 애니메이션 시간(0.4초) 이후 재오픈
+            } else {
+                alert('삭제 권한이 없습니다');
+                if (btn) {
+                    btn.innerHTML = '삭제';
+                    btn.disabled = false;
+                }
+            }
+        },
+        error: function() {
+            alert('서버 오류 발생');
+            if (btn) {
+                btn.innerHTML = '삭제';
+                btn.disabled = false;
+            }
+        }
+    });
+}
+
 </script>
 </body>
 </html>

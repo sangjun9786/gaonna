@@ -15,13 +15,13 @@
 			<div class="col-md-10 col-lg-8">
 				<!-- 사용자 정보 헤더 -->
 				<div class="text-center mb-4">
-					<h2 class="text-primary fw-bold">${pageScope.loginUser.userName}님의 YAMI</h2>
+					<h2 class="text-secondary fw-bold">${pageScope.loginUser.userName}님의 YAMI</h2>
 					<p class="text-muted">YAMI!</p>
 				</div>
 				
 				<!-- 사용자 설정 카드 -->
 				<div class="card shadow-sm mb-4">
-					<div class="card-header bg-primary text-white">
+					<div class="card-header bg-secondary text-white">
 						<h4 class="mb-0">
 							<i class="bi bi-gear me-2"></i>사용자 설정
 						</h4>
@@ -33,19 +33,19 @@
 							<table class="table table-borderless align-middle">
 								<tbody>
 									<tr>
-										<td class="fw-bold text-primary" style="width: 25%;">
+										<td class="fw-bold text-secondary" style="width: 25%;">
 											<i class="bi bi-person-badge me-2"></i>아이디
 										</td>
 										<td class="border-start ps-3">${pageScope.loginUser.userId}</td>
 									</tr>
 									<tr>
-										<td class="fw-bold text-primary">
+										<td class="fw-bold text-secondary">
 											<i class="bi bi-person me-2"></i>이름
 										</td>
 										<td class="border-start ps-3">${pageScope.loginUser.userName}</td>
 									</tr>
 									<tr>
-										<td class="fw-bold text-primary">
+										<td class="fw-bold text-secondary">
 											<i class="bi bi-telephone me-2"></i>전화번호
 										</td>
 										<td class="border-start ps-3">
@@ -60,7 +60,7 @@
 										</td>
 									</tr>
 									<tr>
-										<td class="fw-bold text-primary">
+										<td class="fw-bold text-secondary">
 											<i class="bi bi-calendar-check me-2"></i>가입일
 										</td>
 										<td class="border-start ps-3">
@@ -68,7 +68,7 @@
 										</td>
 									</tr>
 									<tr>
-										<td class="fw-bold text-primary">
+										<td class="fw-bold text-secondary">
 											<i class="bi bi-point me-2"></i>포인트
 										</td>
 										<td class="border-start ps-3">${pageScope.loginUser.point}</td>
@@ -77,14 +77,14 @@
 							</table>
 						</div>
 						<div class="text-end mt-3">
-						    <button type="button" class="btn btn-outline-primary" 
+						    <button type="button" class="btn btn-outline-secondary" 
 						      id="editTriggerBtn">
 						        <i class="bi bi-pencil-square me-1"></i>수정하기
 						    </button>
 					    
 						    <!-- 숨겨진 비밀번호 확인 영역 -->
 						    <div id="passwordSection" class="mt-3 d-none">
-						        <div class="card border-primary">
+						        <div class="card border-secondary">
 						            <div class="card-body">
 						                <div class="row g-3 align-items-center">
 						                    <div class="col-md-12">
@@ -103,7 +103,7 @@
 				
 				<!-- 나의 활동 카드 -->
 				<div class="card shadow-sm mb-4">
-					<div class="card-header bg-success text-white">
+					<div class="card-header bg-primary text-white">
 						<h4 class="mb-0">
 							<i class="bi bi-activity me-2"></i>나의 활동
 						</h4>
@@ -111,22 +111,22 @@
 					<div class="card-body">
 					  <div class="row row-cols-2 g-3">
 					    <div class="col">
-					      <a href='${root}/wishlist.co' class="btn btn-outline-success w-100 d-flex align-items-center justify-content-center">
+					      <a href='${root}/wishlist.co' class="btn btn-outline-primary w-100 d-flex align-items-center justify-content-center">
 					        <i class="bi bi-file-text me-2"></i>찜
 					      </a>
 					    </div>
 					    <div class="col">
-					      <a href='${root}/chat.co' class="btn btn-outline-success w-100 d-flex align-items-center justify-content-center">
+					      <a href='${root}/chat.co' class="btn btn-outline-primary w-100 d-flex align-items-center justify-content-center">
 					        <i class="bi bi-shield-x me-2"></i>채팅
 					      </a>
 					    </div>
 					    <div class="col">
-					      <a href='${root}/board.co' class="btn btn-outline-success w-100 d-flex align-items-center justify-content-center">
+					      <a href='${root}/board.co' class="btn btn-outline-primary w-100 d-flex align-items-center justify-content-center">
 					        <i class="bi bi-file-text me-2"></i>게시글
 					      </a>
 					    </div>
 					    <div class="col">
-					      <a href='${root}/reply.co' class="btn btn-outline-success w-100 d-flex align-items-center justify-content-center">
+					      <a href='${root}/reply.co' class="btn btn-outline-primary w-100 d-flex align-items-center justify-content-center">
 					        <i class="bi bi-chat-dots me-2"></i>댓글
 					      </a>
 					    </div>
@@ -150,7 +150,7 @@
 				
 				<!-- 위치 및 주소 카드 -->
 				<div class="card shadow-sm">
-					<div class="card-header bg-info text-white">
+					<div class="card-header bg-warning text-white">
 						<h4 class="mb-0">
 							<i class="bi bi-geo-alt me-2"></i>위치 및 주소
 						</h4>
@@ -158,12 +158,12 @@
 					<div class="card-body">
 						<div class="row g-3">
 							<div class="col-md-6">
-								<a href='${root}/dongne.me' class="btn btn-outline-info w-100 d-flex align-items-center justify-content-center">
+								<a href='${root}/dongne.me' class="btn btn-outline-warning w-100 d-flex align-items-center justify-content-center">
 									<i class="bi bi-house-door me-2"></i>우리동네 설정
 								</a>
 							</div>
 							<div class="col-md-6">
-								<a href='${root}/deliveryAddress.me' class="btn btn-outline-info w-100 d-flex align-items-center justify-content-center">
+								<a href='${root}/deliveryAddress.me' class="btn btn-outline-warning w-100 d-flex align-items-center justify-content-center">
 									<i class="bi bi-truck me-2"></i>배송지 설정
 								</a>
 							</div>

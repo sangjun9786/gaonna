@@ -38,6 +38,12 @@ public class MemberController {
 	@Autowired
 	private BCryptPasswordEncoder bcrypt;
 	
+	//메인 페이지로 이동
+	@RequestMapping("/")
+	public String home() {
+	    return "redirect:/";
+	}
+	
 	//실험실 이동
 	@GetMapping("lab")
 	public String lab() {
@@ -141,7 +147,9 @@ public class MemberController {
 		try {
 			Member m = (Member)session.getAttribute("loginUser");
 			
-			if(bcrypt.matches(inputPwd,m.getUserPwd())) {
+			String pwd = service.selectUserPwd(m.getUserNo());
+			
+			if(bcrypt.matches(inputPwd,pwd)) {
 				return "pass";
 			}else {
 				return "noPass";

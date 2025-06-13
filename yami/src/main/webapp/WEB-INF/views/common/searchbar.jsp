@@ -21,8 +21,8 @@
 	  display: flex;
 	  align-items: center;
 	  gap: 10px;
-	  margin-left: 300px;
-	  margin-right: 300px;
+	  margin-left: 400px;
+	  margin-right: 400px;
 	}
 	.select {
 		margin-top: 15px;
@@ -35,16 +35,16 @@
 	<div id="warp">
 		<div class="select">
 	    	<select class="form-select form-select-lg mb-3" id="condition">
-				<option value="resell">Resell</option>
-			    <option value="location">Location</option>
-			    <option value="notice">Notice</option>
-			    <option value="qna">QnA</option>
-			    <option value="report">Report</option>
+			    <option value="resell" ${condition == 'resell' ? 'selected' : ''}>Resell</option>
+			    <option value="location" ${condition == 'location' ? 'selected' : ''}>Location</option>
+			    <option value="notice" ${condition == 'notice' ? 'selected' : ''}>Notice</option>
+			    <option value="qna" ${condition == 'qna' ? 'selected' : ''}>QnA</option>
+			    <option value="report" ${condition == 'report' ? 'selected' : ''}>Report</option>
 			</select>
 		</div>
 		<input type="text" class="form-control form-control-lg"
 			id="keyword" placeholder="제목 또는 내용으로 검색" aria-label="Search"
-			value = ${keyword }>
+			value="${keyword}">
 		<button class="btn btn-primary btn-lg" type="submit" id="searchBtn">
 			<i class="bi bi-search"></i>
 		</button>
@@ -59,45 +59,20 @@
 			let condition = $('#condition').val();
 			let keyword = $('#keyword').val();
 			let encodedKeyword = encodeURIComponent(keyword);
-				            
+			let url = '';	            
 			if (condition == 'resell') {
-				$.ajax({
-					type: 'POST',
-					url: '${root}/saveKeyword',
-					data: {
-						keyword: keyword
-					},
-					success: function(response) {
-						console.log('세션에 키워드 저장 성공:', response);
-						location.href = '${root}/filter.bo?location=${selectedLocation}&category=${selectedCategory}&price1=${selectedPrice1}&price2=${selectedPrice2}';
-					},
-					error: function(xhr, status, error) {
-						console.error('세션 저장 실패:', error);
-						alert('검색어 저장 중 오류가 발생했습니다.');
-					}
-				});
+				url = '${root}/filter.bo?location=${selectedLocation}&category=${selectedCategory}&price1=${selectedPrice1}&price2=${selectedPrice2}&keyword=' + encodedKeyword + '&condition=' + condition;
 			} else if (condition == 'location') {
-				location.href = '${root}/locationSearch';
+				url = '${root}/dongneMain.dn?keyword=' + encodedKeyword + '&condition=' + condition;
 			} else if (condition == 'notice') {
-				$.ajax({
-					type: 'POST',
-					url: '${root}/saveKeyword',
-					data: {
-						keyword: keyword
-					},
-					success: function(response) {
-						console.log('세션에 키워드 저장 성공:', response);
-						location.href = '${root}/notice/list';
-					},
-					error: function(xhr, status, error) {
-						console.error('세션 저장 실패:', error);
-						alert('검색어 저장 중 오류가 발생했습니다.');
-					}
-				});
+				url = '${root}/notice/list?keyword=' + encodedKeyword + '&condition=' + condition;
 			} else if (condition == 'qna') {
 				location.href = '${root}/qnaSearch';
 			} else if (condition == 'report') {
 				location.href = '${root}/reportSearch';
+			}
+			if (url) {
+				location.href = url;
 			}
 		});
 	});

@@ -13,7 +13,7 @@
   <div class="row justify-content-center">
     <div class="col-md-8 col-lg-6">
       <div class="card shadow-sm shadow-lg mx-auto">
-        <div class="card-header bg-success text-white">
+        <div class="card-header bg-secondary text-white">
           <h3 class="mb-0">관리자 추가하기</h3>
         </div>
         <div class="card-body">

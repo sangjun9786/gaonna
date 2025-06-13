@@ -19,6 +19,7 @@ public class BoardCo {
 	private String uploadDateStr;
 	private String productTitle;
 	private String productContent;
+	private int productCount;
 	private String status;
 	private int replyCount; //댓글 수, reply에서 추출
 	

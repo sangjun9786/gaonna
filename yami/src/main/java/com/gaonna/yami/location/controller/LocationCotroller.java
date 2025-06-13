@@ -140,7 +140,9 @@ public class LocationCotroller {
 	
 	//동네(location) 메인으로
 	@GetMapping("dongneMain.dn")
-	public String dongneMain(HttpSession session,Model model){
+	public String dongneMain(HttpSession session,Model model,
+							 @RequestParam(value = "keyword", defaultValue = "") String keyword,
+				             @RequestParam(value = "condition", defaultValue = "location") String condition){
 		try {
 			List<Coord> coords = (List<Coord>)session.getAttribute("coords");
 			Member m = (Member)session.getAttribute("loginUser");
@@ -156,9 +158,12 @@ public class LocationCotroller {
 			
 			//model에 json형식으로 bakery조회
 			List<Bakery> bakeries = service.selectBakeries(mainCoord);
+			
 			String bakeriesJson = new Gson().toJson(bakeries);
 			model.addAttribute("bakeriesJson", bakeriesJson);
 			
+			model.addAttribute("keyword", keyword);
+	        model.addAttribute("condition", condition);
 			return "dongne/map";
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -177,6 +182,7 @@ public class LocationCotroller {
 			//댓글 리스트 조회해서 넣기
 			List<BakeryComment> bakeryComments = service.selectBakeryComment(bakeryNo,page);
 		    response.put("comments", bakeryComments);
+		    System.out.println("컨트롤러 bakeryComments 개수 : "+bakeryComments.size());
 		    
 		    //아직 조회될 리스트가 남았는지 알아보자
 		    boolean hasNext = bakeryComments.size() >= 10;
@@ -194,12 +200,11 @@ public class LocationCotroller {
 	//대댓글 조회
 	@ResponseBody
 	@PostMapping("selectBakeryRecomment.dn")
-	public Map<String, Object> selectBakeryRecomment(String bakeryNo, int page) {
+	public Map<String, Object> selectBakeryRecomment(String bakeryNo, int page, int parentCommentNo) {
 		try {
 			Map<String, Object> response = new HashMap<>();
-			
 			//대댓글 리스트 조회해서 넣기
-			List<BakeryComment> bakeryComments = service.selectBakeryRecomment(bakeryNo,page);
+			List<BakeryComment> bakeryComments = service.selectBakeryRecomment(bakeryNo,page,parentCommentNo);
 		    response.put("comments", bakeryComments);
 		    
 		    //아직 조회될 리스트가 남았는지 알아보자
@@ -270,6 +275,7 @@ public class LocationCotroller {
 	}
 	
 	//댓글 수정
+	@ResponseBody
 	@PostMapping("updateBakeryComment.dn")
 	public String updateBakeryComment(HttpSession session,
 			String content, int userNo, int commentNo, String bakeryLike) {
@@ -299,6 +305,7 @@ public class LocationCotroller {
 	}
 	
 	//댓글 삭제
+	@ResponseBody
 	@PostMapping("deleteBakeryComment.dn")
 	public String deleteBakeryComment(HttpSession session,
 			int userNo, int commentNo) {
@@ -309,7 +316,6 @@ public class LocationCotroller {
 					m.getRoleType().equals("N")) {
 				return "noPass";
 			}
-			
 			if(service.deleteBakeryComment(commentNo)>0) {
 				return "pass";
 			}else {
@@ -318,6 +324,26 @@ public class LocationCotroller {
 		} catch (Exception e) {
 			e.printStackTrace();
 			return "noPass";
+		}
+	}
+	
+	//ajax - 빵집 정보 조회(마이페이지 댓글)
+	@ResponseBody
+	@PostMapping("selectBakeryInfo.dn")
+	public Map<String, Object> selectBakeryInfo(String bakeryNo){
+		try {
+			Map<String, Object> response = new HashMap<>();
+			//뽱집 정보 조회해서 넣기
+			Bakery bakery = service.selectBakeryInfo(bakeryNo);
+			
+		    response.put("bakery", bakery);
+		    response.put("status", "pass");
+		    return response;
+		} catch (Exception e) {
+			e.printStackTrace();
+			Map<String, Object> response = new HashMap<>();
+			response.put("status", "noPass");
+			return response;
 		}
 	}
 	

@@ -15,7 +15,16 @@ public interface CompositeService {
 	//ajax - 게시글 조회
 	Map<String, Object> searchMyBoard(SearchForm searchForm);
 
-	//ajax - 댓글 조회
+	//ajax - 판매게시판 댓글 조회
 	Map<String, Object> searchMyReply(SearchForm searchForm);
+
+	//ajax - 우리동네빵집 댓글 조회
+	Map<String, Object> searchMyReplyDongne(SearchForm searchForm);
+
+	//ajax - 찜 조회
+	Map<String, Object> searchMyWishlist(SearchForm searchForm);
+
+	//ajax - 찜 삭제
+	int deleteMyWishlist(int productNo, int userNo);
 	
 }

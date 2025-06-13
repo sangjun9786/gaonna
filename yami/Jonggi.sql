@@ -8,6 +8,8 @@
 /*
     버그
     
+    마이페이지-개인정보 변경
+    
     헤더 변경에 따른 alertMsg확인
     회원가입 작성 폼에서 뒤로가기 막기
     유저 우리동네, 배송지 페이지 비동기식으로 변경
@@ -340,6 +342,10 @@ insert into member_coords values(0,-1);
 update member
 set main_coord = -1
 where user_no = 0;
+
+insert into coords (COORD_NO,LATITUDE,LONGITUDE,COORD_ADDRESS)
+values(-5,37.5392375,126.9003409,'이 세상 어딘가');
+insert into member_coords values(15,-5);
 
 insert into coords (COORD_NO,LATITUDE,LONGITUDE,COORD_ADDRESS)
 values(-2,0,0,'이 세상 어딘가');

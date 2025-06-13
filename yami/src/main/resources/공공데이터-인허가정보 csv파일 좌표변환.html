@@ -1,16 +1,16 @@
 <!DOCTYPE html>
 <html>
   <head>
-    <title>중부원점TM → WGS84 변환기 (최종)</title>
+    <title>중부원점TM → WGS84 변환기 ver.2</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/proj4js/2.15.0/proj4.js"></script>
     <script>
-      document.addEventListener("DOMContentLoaded", function () {
-        proj4.defs(
-          "TM_중부원점",
-          "+proj=tmerc +lat_0=38 +lon_0=127 +k=1 +x_0=200000 +y_0=500000 +ellps=bessel +units=m +no_defs"
-        );
-        proj4.defs("WGS84", "+proj=longlat +datum=WGS84 +no_defs");
-      });
+      proj4.defs(
+        "EPSG:5174", 
+        "+proj=tmerc +lat_0=38 +lon_0=127.0028902777778 +k=1" 
+        + "+x_0=200000 +y_0=500000 +ellps=bessel +units=m +no_defs"
+        + "+towgs84=-115.80,474.99,674.11,1.16,-2.31,-1.63,6.43"
+      );
+      proj4.defs("EPSG:4326", "+proj=longlat +datum=WGS84 +no_defs");
     </script>
   </head>
   <body>
@@ -18,7 +18,18 @@
     <input type="file" id="csvFile" accept=".csv" />
     <button onclick="processFile()">변환 실행</button>
 
-    <script>
+    <script>  
+     // 좌표 변환 함수
+      function convertToWGS84(x, y) {
+        return proj4("EPSG:5174", "EPSG:4326", [x, y]);
+      }
+
+      // CSV 처리 로직 내부
+      const [lng, lat] = convertToWGS84(tmX, tmY);
+      newCols.splice(xIndex + 1, 0, 
+        lng.toFixed(8), 
+        lat.toFixed(8)
+      );
       function processFile() {
         const file = document.getElementById("csvFile").files[0];
         if (!file) return alert("CSV 파일을 선택하세요.");
@@ -76,7 +87,7 @@
             return [...cols]; // 변환 없이 반환
           }
 
-          const [lng, lat] = proj4("TM_중부원점", "WGS84", [tmX, tmY]);
+          const [lng, lat] = proj4("EPSG:5174", "EPSG:4326", [tmX, tmY]);
           console.log(`변환 후: ${lng}, ${lat}`); // ✅
 
           const newCols = [...cols];

@@ -37,13 +37,22 @@ public class SearchServiceImpl implements SearchService {
 	}
 	
 	@Override
-	public int getFilterCount(String location, int category, Integer price1, Integer price2, String keyword) {
+	public int getFilterCount(String location, int category, Long price1, Long price2, String keyword) {
 		return dao.getFilterCount(sqlSession, location, category, price1, price2, keyword);
 	}
 	
 	@Override
-	public ArrayList<Product> productFilter(String location, int category, Integer price1, Integer price2, PageInfo pi, String keyword) {
+	public ArrayList<Product> productFilter(String location, int category, Long price1, Long price2, PageInfo pi, String keyword) {
 		return dao.productFilter(sqlSession, location, category, price1, price2, pi, keyword);
 	}
 	
+	@Override
+	public int searchBread(String keyword) {
+		return dao.searchBread(sqlSession, keyword);
+	}
+	
+	@Override
+	public String getBread(String keyword) {
+		return dao.getBread(sqlSession, keyword);
+	}
 }

@@ -128,9 +128,11 @@
 		//아이디 확인
 		function idConfirm(){
 			const userId = document.getElementById("userId").value;
-		    const regex = /^[A-Za-z0-9.]{1,30}$/;
+			const domain = document.getElementById("domainList").value;
+			const email = userId && domain ? userId + "@" + domain : "";
+		    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 		    
-		    if (regex.test(userId+domain)) {
+		    if (emailRegex.test(email)) {
 		    	if(document.getElementById("domainList").value !=""){
 			    	debounce();
 		    	}else{

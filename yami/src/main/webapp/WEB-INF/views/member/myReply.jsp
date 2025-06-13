@@ -3,8 +3,10 @@
 <!DOCTYPE html>
 <html>
 <head>
+<link rel="stylesheet"
+	href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
 <meta charset="UTF-8">
-<title>나의 리플</title>
+<title>나의 댓글</title>
 </head>
 <body>
 <%@include file="/WEB-INF/views/common/header.jsp"%>
@@ -22,6 +24,8 @@
               <select class="form-select" id="searchType1" name="searchType1" required>
                 <option value="all">전체 판매 게시판</option>
                 <!-- AJAX로 카테고리 옵션 추가됨 -->
+                <option value="dongne">우리동네 빵집 게시판</option>
+                
               </select>
             </div>
             <div class="col-md-2">
@@ -98,65 +102,99 @@ $(function(){
 
   // 댓글 검색 및 렌더링
   async function searchreply(){
-    const params = $('#searchForm').serialize();
-
+	let params = $('#searchForm').serialize();
+	let searchType1 = $('#searchType1').val();
+	let response;
     try {
       // 댓글 조회
-      const response = await $.ajax({
-        url: '${root}/searchMyReply.co',
-        method: 'GET',
-        data: params,
-      });
-      
-      const replyList = response.result;
-      const totalCount = response.totalCount;
-      
-      $('#replyResultCount .fw-bold').text(totalCount || 0);
-      renderReplyList(replyList, totalCount);
+      if(searchType1 == 'dongne'){
+    	  //우리동네 빵집 댓글조회
+	      response = await $.ajax({
+	        url: '${root}/searchMyReplyDongne.co',
+	        method: 'POST',
+	        data: params,
+	      });
 
-      const page = parseInt($('#page').val());
-      const pageSize = parseInt($('#searchCount').val());
+	      const replyList = response.result;
+	      const totalCount = response.totalCount;
+	      
+	      $('#replyResultCount .fw-bold').text(totalCount || 0);
+	      renderBakeryReplyList(replyList, totalCount);
 
-      renderreplyList(replyList, totalCount);
-      renderPagination(totalCount, page, pageSize);
+	      const page = parseInt($('#page').val());
+	      const pageSize = parseInt($('#searchCount').val());
+
+	      renderPagination(totalCount, page, pageSize);
+    	  
+      }else{
+    	  //판매게시판 댓글조회
+	      response = await $.ajax({
+	        url: '${root}/searchMyReply.co',
+	        method: 'POST',
+	        data: params,
+	      });
+	      const replyList = response.result;
+	      const totalCount = response.totalCount;
+	      
+	      $('#replyResultCount .fw-bold').text(totalCount || 0);
+	      renderReplyList(replyList, totalCount);
+	
+	      const page = parseInt($('#page').val());
+	      const pageSize = parseInt($('#searchCount').val());
+	
+	      renderReplyList(replyList, totalCount);
+	      renderPagination(totalCount, page, pageSize);
+      }
+      
 
     } catch(error) {
       $('#replyList').html('<div class="col"><div class="alert alert-danger">데이터 조회 실패</div></div>');
     }
   }
 
-  // 게시글 카드 렌더링
-  function renderreplyList(replyList, totalCount){
-    let $replyList = $('#replyList');
-    $replyList.empty();
+  // 댓글 카드 렌더링
+  function renderReplyList(replyList, totalCount){
+	    let $replyList = $('#replyList');
+	    $replyList.empty();
 
-    if(!replyList || replyList.length === 0){
-      $replyList.html('<div class="col"><div class="alert alert-warning mb-0">검색 결과가 없습니다.</div></div>');
-      return;
-    }
+	    if(!replyList || replyList.length === 0){
+	        $replyList.html('<div class="col"><div class="alert alert-warning mb-0">검색 결과가 없습니다.</div></div>');
+	        return;
+	    }
 
-    $.each(replyList, function(idx, reply){
-      <%--동적으로 댓글 카드 생성하기
-      카드 위에 productTitle, 아래에 
-      
-		private String productTitle;
-		private String replyText;
-		private String replyDateStr;
-      
-		productNo
-      --%>
-    });
-  }
+	    $.each(replyList, function(idx, reply){
+	    	let productTitle = reply.productTitle || '';
+	        let titleDisplay = productTitle.length > 10 ? productTitle.substring(0, 10) + '...' : productTitle;
+	        let cardHtml = `
+	            <div class="col">
+	                <div class="card h-100 shadow-sm position-relative" style="cursor:pointer;" onclick="location.href='${root}/productDetail.pro?productNo=\${reply.productNo}'">
+	                    <div class="card-body">
+	                        <div class="d-flex justify-content-between align-items-center mb-2">
+	                        	<span class="text-truncate" style="max-width: 50%;">\${titleDisplay}</span>
+	                        </div>
+	                        <p class="card-text">\${reply.replyText || ''}</p>
+	                    </div>
+	                    <div class="card-footer small text-muted d-flex justify-content-between align-items-center">
+                            <span class="fw-bold">NO.\${reply.replyNo}</span>
+	                        <span>\${reply.replyDateStr}</span>
+	                    </div>
+	                </div>
+	            </div>
+	        `;
+	        $replyList.append(cardHtml);
+	    });
+	}
+
 
   // 페이지네이션 렌더링
   function renderPagination(totalCount, currentPage, pageSize){
-    const totalPage = Math.ceil(totalCount / pageSize);
+	const totalPage = Math.ceil(totalCount / pageSize) || 1;
     if(totalPage <= 1) {
       $('#paginationNav').empty();
       return;
     }
     let nav = `<ul class="pagination">`;
-    for(let i=1; i<=totalPage; i++){
+    for(let i=1; i<=totalPage; i++){ 
       nav += `
         <li class="page-item \${i === currentPage ? 'active' : ''}">
           <a class="page-link" href="#" data-page="\${i}">\${i}</a>
@@ -169,6 +207,86 @@ $(function(){
 
   // 최초 진입시 전체 조회
   searchreply();
+  
+  //----------------우리동네빵집 댓글 로직----------------
+  function renderBakeryReplyList(replyList, totalCount){
+	  let $replyList = $('#replyList');
+	  $replyList.empty();
+
+	  if(!replyList || replyList.length === 0){
+	    $replyList.html('<div class="col"><div class="alert alert-warning mb-0">검색 결과가 없습니다.</div></div>');
+	    return;
+	  }
+
+	  $.each(replyList, function(idx, reply){
+	    // 댓글/대댓글 구분
+	    let typeLabel = reply.commentType === 'RECOMMENT' ? '대댓글' : '댓글';
+	    let typeBadge = reply.commentType === 'RECOMMENT'
+	      ? '<span class="badge bg-info ms-1">대댓글</span>'
+	      : '<span class="badge bg-primary ms-1">댓글</span>';
+
+	    // 추천/비추천 아이콘
+	    let likeIcon = '';
+	    if(reply.bakeryLike === 'L'){
+	      likeIcon = '<i class="bi bi-hand-thumbs-up-fill text-success ms-2" title="추천"></i>';
+	    } else if(reply.bakeryLike === 'D'){
+	      likeIcon = '<i class="bi bi-hand-thumbs-down-fill text-danger ms-2" title="비추천"></i>';
+	    }
+
+	    // 상태 표시
+	    let statusLabel = '';
+	    if(reply.status === 'N'){
+	      statusLabel = '<span class="fst-italic text-secondary ms-2">삭제됨</span>';
+	    } else if(reply.status === 'M'){
+	      statusLabel = '<span class="text-muted ms-2">수정됨</span>';
+	    } else if(reply.status === 'P'){
+	      statusLabel = '<span class="text-danger ms-2">신고되어 삭제됨</span>';
+	    }
+
+	    // 댓글 내용 (상태에 따라 스타일 다르게)
+	    let commentContent = reply.commentContent.length > 10 
+			  ? reply.commentContent.substring(0, 10) + '...' 
+			  : reply.commentContent;
+
+	    if(reply.status === 'N' || reply.status === 'P'){
+	      commentContent = `<span class="text-decoration-line-through">\${commentContent}</span>`;
+	    }
+
+	    // 카드 HTML
+	    let cardHtml = `
+	      <div class="col">
+	        <div class="card h-100 shadow-sm position-relative bakery-comment-card" 
+	             style="cursor:pointer;" 
+	             data-comment-no="\${reply.commentNo}" 
+	             data-bakery-no="\${reply.bakeryNo}" 
+	             data-user-no="\${reply.userNo}">
+	          <div class="card-body">
+	            <div class="d-flex justify-content-between align-items-center mb-2">
+	              <span>
+	                <strong>${reply.userName}</strong>
+	                \${typeBadge}
+	                \${likeIcon}
+	              </span>
+	              <span class="small text-muted">\${reply.commentDateStr}</span>
+	            </div>
+	            <p class="card-text mb-1">\${commentContent}\${statusLabel}</p>
+	          </div>
+	        </div>
+	      </div>
+	    `;
+	    $replyList.append(cardHtml);
+	  });
+
+	  // 카드 클릭 이벤트 (동적 바인딩)
+	  $('.bakery-comment-card').off('click').on('click', function(){
+	    const commentNo = $(this).data('comment-no');
+	    const bakeryNo = $(this).data('bakery-no');
+	    const userNo = $(this).data('user-no');
+	    // 상세페이지 이동
+	    location.href = `${root}/myReplyDongneDetail.co?commentNo=\${commentNo}&bakeryNo=\${bakeryNo}`;
+	  });
+	}
+
 });
 </script>
 </body>

@@ -13,7 +13,8 @@
 		<result column="REPLY_NO" property="replyNo"/>
 		<result column="PRODUCT_NO" property="productNo"/>
 		<result column="PRODUCT_TITLE" property="productTitle"/>
-		<result column="USER_NO" property="userNo"/>
+		<result column="USER_ID" property="userId"/>
+		<result column="USER_NAME" property="userName"/>
 		<result column="REPLY_TEXT" property="replyText"/>
 		<result column="REPLY_DATE" property="replyDate"/>
 	</resultMap>
@@ -24,6 +25,18 @@
 	    <result property="productTitle" column="PRODUCT_TITLE"/>
 	    <result property="productContent" column="PRODUCT_CONTENT"/>
 	    <result property="replyCount" column="REPLY_COUNT"/>
+	    <result property="productCount" column="PRODUCT_COUNT"/>
+	</resultMap>
+	<resultMap type="BakeryComment" id="bakeryCommentResultMap">
+		<result column="COMMENT_NO" property="commentNo"/>
+		<result column="PARENT_COMMENT_NO" property="parentCommentNo"/>
+		<result column="COMMENT_CONTENT" property="commentContent"/>
+		<result column="COMMENT_TYPE" property="commentType"/>
+		<result column="BAKERY_NO" property="bakeryNo"/>
+		<result column="USER_NO" property="userNo"/>
+		<result column="USER_NAME" property="userName"/>
+		<result column="COMMENT_DATE" property="commentDate"/>
+		<result column="BAKERY_LIKE" property="bakeryLike"/>
 	</resultMap>
 	
 	<!-- ajax - 카테고리 조회 -->
@@ -135,37 +148,42 @@
 		where rn &gt;= #{startRow}
 	</select>
 	
-	<!-- ajax - 댓글 수 조회 -->
+	<!-- ajax - 판매 게시판 댓글 수 조회 -->
 	<select id="countMyReply" resultType="int" parameterType="SearchForm">
 		select count(*)
-		from REPLY
-		where user_no = #{userNo}
+		from REPLY p
+		left join PRODUCT_BOARD pb on (p.PRODUCT_NO=pb.PRODUCT_NO)
+		left join CATEGORY c on (c.CATEGORY_NO=pb.CATEGORY_NO)
+		where p.user_id = #{userId}
 		<if test="searchType1 != 'all'">
-			and CATEGORY_NO = #{searchType1}
+			and c.CATEGORY_NO = #{searchType1}
 		</if>
 	</select>
 	
-	<!-- ajax - 댓글 조회 -->
+	<!-- ajax - 판매 게시판 댓글 조회 -->
 	<select id="searchMyReply" resultMap="replyCoResultMap" parameterType="SearchForm">
 		select *
 		from(
 			select REPLY_NO
 					,PRODUCT_NO
 					,PRODUCT_TITLE
-					,USER_NO
+					,USER_ID
+					,USER_NAME
 					,REPLY_TEXT
 					,REPLY_DATE
 					,rownum as rn
 			from (select
 					p.REPLY_NO
 					,p.PRODUCT_NO
-					,p.PRODUCT_TITLE
-					,p.USER_NO
+					,pb.PRODUCT_TITLE
+					,p.USER_ID
+					,m.USER_NAME
 					,p.REPLY_TEXT
 					,p.REPLY_DATE
 				from REPLY p
 				left join PRODUCT_BOARD pb on (p.PRODUCT_NO=pb.PRODUCT_NO)
-				where user_no = #{userNo}
+				left join MEMBER m on (m.user_no = pb.user_no)
+				where p.user_id = #{userId}
 				<if test="searchType1 != 'all'">
 					and pb.CATEGORY_NO = #{searchType1}
 				</if>
@@ -175,4 +193,85 @@
 			)
 		where rn &gt;= #{startRow}
 	</select>
+	
+	
+	<!-- ajax - 우리동네빵집 댓글 수 조회 -->
+	<select id="countMyReplyDongne" resultType="int" parameterType="SearchForm">
+		select count(*)
+		from BAKERY_COMMENT
+		where user_no = #{userNo}
+	</select>
+	
+	<!-- ajax - 우리동네빵집 댓글 조회 -->
+	<select id="searchMyReplyDongne" resultMap="bakeryCommentResultMap" parameterType="SearchForm">
+		select *
+		from(
+			select comment_no
+				    ,parent_comment_no
+				    ,comment_content
+				    ,comment_type
+				    ,bakery_no
+				    ,comment_date
+				    ,bakery_like
+				    ,status
+					,rownum as rn
+			from (select
+						BC.comment_no,
+					    BC.parent_comment_no,
+					    BC.comment_content,
+					    BC.comment_type,
+					    BC.bakery_no,
+					    BC.comment_date,
+					    BC.bakery_like,
+					    BC.status
+				from BAKERY_COMMENT BC
+				left join bakery b on(bc.bakery_no = b.bakery_no)
+				where BC.user_no = #{userNo}
+				and bc.status in ('Y', 'M')
+				order by BC.COMMENT_DATE desc
+				)
+			where rownum &lt;= #{endRow}
+			)
+		where rn &gt;= #{startRow}
+	</select>
+	
+	<select id="countMyWishlist" parameterType="int" resultType="int">
+		select count(*)
+		from wishlist
+		where user_no = #{userNo}
+	</select>
+	
+	<select id="searchMyWishlist" parameterType="map" resultMap="boardCoResultMap">
+		select *
+		from(
+			select t.*, rownum as rn
+			from (select
+					pb.PRODUCT_NO
+					,c.CATEGORY_NAME
+					,pb.PRICE
+					,pb.UPLOAD_DATE
+					,pb.PRODUCT_TITLE
+					,pb.PRODUCT_CONTENT
+					,pb.STATUS
+					,count(r.REPLY_NO) as COUNT_REPLY
+				from PRODUCT_BOARD pb
+				right join wishlist w on(w.PRODUCT_NO = pb.PRODUCT_NO)
+				left join CATEGORY c on (c.CATEGORY_NO=pb.CATEGORY_NO)
+				left join REPLY r on(r.PRODUCT_NO = pb.PRODUCT_NO)
+				where w.user_no = #{userNo}
+				group by pb.PRODUCT_NO, c.CATEGORY_NAME, pb.PRICE,
+	                pb.UPLOAD_DATE, pb.PRODUCT_TITLE,
+	                pb.PRODUCT_CONTENT, pb.STATUS
+				) t
+			where rownum &lt;= #{endRow}
+			)
+		where rn &gt;= #{startRow}
+	</select>
+	
+	
+	<delete id="deleteMyWishlist" parameterType="map">
+		delete from wishlist	
+		where PRODUCT_NO = #{productNo}
+		and user_no = #{userNo}
+	</delete>
 </mapper>
