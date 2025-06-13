@@ -145,6 +145,15 @@
                 </form>
             </div>
             <button class="action-btn" style="width:100%;">채팅으로 거래하기</button>
+            
+            <!-- 구매하기 버튼 -->
+<form action="${contextPath}/purchaseInsert.do" method="post">
+    <input type="hidden" name="productNo" value="${product.productNo}" />
+    <input type="hidden" name="buyerId" value="${loginUser.userId}" />
+    <button type="submit" class="action-btn" style="width:100%;">💳 이 상품 구매하기</button>
+</form>
+            
+            
             <!-- 삭제 버튼 (작성자 본인일 경우에만 노출) -->
 		<c:if test="${loginUser.userId eq product.userId}">
 		   <form id="deleteForm" method="post" action="${contextPath}/delete.pro" style="display:none;">

@@ -134,6 +134,20 @@
 					</div>
 				</div>
 				
+				   <!-- 구매한 상품 평점 등록 카드 -->
+                <div class="card shadow-sm mb-4">
+                    <div class="card-header bg-warning text-white">
+                        <h4 class="mb-0"><i class="bi bi-star me-2"></i>구매한 상품 평점 등록</h4>
+                    </div>
+                    <div class="card-body">
+                        <div id="purchasedListContainer">
+                            <p class="text-muted">구매한 상품을 불러오는 중...</p>
+                        </div>
+                    </div>
+                </div>
+				
+				
+				
 				<!-- 위치 및 주소 카드 -->
 				<div class="card shadow-sm">
 					<div class="card-header bg-info text-white">
@@ -197,6 +211,71 @@
 	        }
 	    });
 	}, 300);
+	
+	
+	
+	
+	
+	// 구매 목록 불러와 평점 UI 생성
+	$(function(){
+	  $.getJSON('${root}/myPurchasedList.po')
+	    .done(function(data) {
+	      var list = data.result;
+	      var container = $('#purchasedListContainer').empty();
+	      
+	      if (!list || list.length === 0) {
+	        container.append('<div class="text-muted">구매한 상품이 없습니다.</div>');
+	        return;
+	      }
+	      
+	      // forEach 대신 jQuery $.each 써도 OK
+	      list.forEach(function(p) {
+	        var html =
+	          '<div class="mb-4 border-bottom pb-3">' +
+	            '<strong>' + p.productTitle + '</strong><br>' +
+	            '<input type="number" min="1" max="5" class="form-control w-25 d-inline" ' +
+	                   'id="score_' + p.productNo + '" placeholder="평점(1~5)">' +
+	            '<input type="text" class="form-control mt-2" ' +
+	                   'id="comment_' + p.productNo + '" placeholder="한줄평">' +
+	            '<button class="btn btn-sm btn-warning mt-2" ' +
+	                    'onclick="submitRating(' + p.productNo + ')">등록</button>' +
+	          '</div>';
+	        container.append(html);
+	      });
+	    })
+	    .fail(function(){
+	      $('#purchasedListContainer')
+	        .html('<div class="text-danger">불러오기 실패</div>');
+	    });
+	});
+
+	// 평점 등록 Ajax
+	function submitRating(prodNo) {
+	  var score   = +$('#score_' + prodNo).val();
+	  var comment = $('#comment_' + prodNo).val();
+
+	  if (!score || score < 1 || score > 5) {
+	    return alert("평점은 1~5 사이 숫자여야 합니다.");
+	  }
+
+	  $.post('${root}/insertRating.rt', {
+	    productNo:  prodNo,
+	    score:      score,
+	    userComment: comment
+	  })
+	  .done(function(){
+	    alert("평점이 등록되었습니다.");
+	  })
+	  .fail(function(){
+	    alert("평점 등록 실패");
+	  });
+	}
+    
+    
+    
+	
+	
+	
 	
 	// 이벤트 리스너 등록
 	document.getElementById('inputPwd').addEventListener('input', function() {
