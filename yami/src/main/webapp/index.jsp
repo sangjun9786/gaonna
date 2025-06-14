@@ -3,12 +3,12 @@
 <!DOCTYPE html>
 <html>
 <head>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<meta http-equiv="refresh" content="0; url=<c:url value='/main'/>">
 <meta charset="UTF-8">
-<title>안아줘요</title>
+<title>YAMI...?</title>
 </head>
 <body>
-<%-- 	<jsp:forward page="/WEB-INF/views/product/productDetail.jsp"/> --%>
-<%-- 	<jsp:forward page="/WEB-INF/views/product/productEnrollForm.jsp"/> --%>
-	<jsp:forward page="/WEB-INF/views/main.jsp"/> 메인
+<%--	<jsp:forward page="/WEB-INF/views/main.jsp"/> 메인--%>
 </body>
 </html>

@@ -3,12 +3,15 @@ package com.gaonna.yami.search.controller;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
 
 import javax.servlet.http.HttpSession;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -16,10 +19,12 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.gaonna.yami.common.PageInfo;
 import com.gaonna.yami.common.Pagination;
+import com.gaonna.yami.composite.vo.SearchForm;
 import com.gaonna.yami.member.model.vo.Member;
 import com.gaonna.yami.product.vo.Category;
 import com.gaonna.yami.product.vo.Product;
 import com.gaonna.yami.search.model.service.SearchService;
+import com.google.gson.Gson;
 
 @Controller
 public class SearchController {
@@ -122,6 +127,37 @@ public class SearchController {
 			System.out.println(str);
 			return str;
 		}else {
+			return null;
+		}
+	}
+	
+	//ajax - 카테고리 목록 검색
+	@ResponseBody
+	@GetMapping("selectCate.co")
+	public String selectCategory() {
+		try {
+			List<Category> category = service.selectCategory();
+			String json = new Gson().toJson(category);
+			return json;
+		} catch (Exception e) {
+			e.printStackTrace();
+			return "[]";
+		}
+	}
+	
+	//ajax - 게시글 조회
+	@ResponseBody
+	@GetMapping("searchPerchasedBoard.co")
+	public Map<String, Object> searchMyBoard(HttpSession session,Model model
+			,SearchForm searchForm) {
+		try {
+			//loginUser의 userNo따서 searchForm에 넣기
+			searchForm.setUserNo(((Member)session
+					.getAttribute("loginUser")).getUserNo());
+			Map<String, Object> result = service.searchMyBoard(searchForm);
+			return result;
+		} catch (Exception e) {
+			e.printStackTrace();
 			return null;
 		}
 	}

@@ -25,13 +25,13 @@ public class RatingDaoImpl implements RatingDao {
 //    }
     
     @Override
-    public int rating(SqlSessionTemplate sqlSession, String userNo, int score) {
+    public int rating(SqlSessionTemplate sqlSession, String userNo, int rating) {
     	int count = sqlSession.selectOne("ratingMapper.count", userNo);
     	Map<String, Object> map = new HashMap<>();
     	map.put("userNo", userNo);
-    	map.put("score", score);
+    	map.put("score", rating);
     	System.out.println(userNo);
-    	System.out.println(score);
+    	System.out.println(rating);
     	if(count == 1) {
     		return sqlSession.update("ratingMapper.rating", map);
     	}else {

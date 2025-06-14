@@ -64,4 +64,10 @@
 	<welcome-file-list>
    		<welcome-file>index.jsp</welcome-file>
 	</welcome-file-list>
+	
+	<!-- 쿠키 사용가능 -->
+	<session-config>
+	    <tracking-mode>COOKIE</tracking-mode>
+	</session-config>
+	
 </web-app>
