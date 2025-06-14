@@ -344,6 +344,10 @@ set main_coord = -1
 where user_no = 0;
 
 insert into coords (COORD_NO,LATITUDE,LONGITUDE,COORD_ADDRESS)
+values(-5,37.5392375,126.9003409,'이 세상 어딘가');
+insert into member_coords values(15,-5);
+
+insert into coords (COORD_NO,LATITUDE,LONGITUDE,COORD_ADDRESS)
 values(-2,0,0,'이 세상 어딘가');
 insert into member_coords values(0,-2);
 

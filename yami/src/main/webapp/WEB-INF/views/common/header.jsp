@@ -91,7 +91,7 @@
           <a class="nav-link" href="#">Location</a>
         </li>
         <li class="nav-item">
-          <a class="nav-link" href="#">Recommend</a>
+          <a class="nav-link" href="${root }/recommend.bo">Recommend</a>
         </li>
         <li class="nav-item">
           <a class="nav-link" href="#">QnA</a>

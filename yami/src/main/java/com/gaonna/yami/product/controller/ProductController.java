@@ -83,7 +83,7 @@ public class ProductController {
     
     // 상세 페이지
     @GetMapping("/productDetail.pro")
-    public String productDetail(@RequestParam("productNo") int productNo, Model model) {
+    public String productDetail(@RequestParam("productNo") int productNo, Model model, HttpSession session) {
         int result = service.increaseCount(productNo);
         if (result <= 0) {
             model.addAttribute("errorMsg", "게시글 조회 실패!!");
@@ -97,6 +97,13 @@ public class ProductController {
      // ✅ 좋아요 개수 조회 추가
         int count = wishlistService.getWishCount(productNo);
         model.addAttribute("wishCount", count); // << 이거 추가
+        
+     // 로그인유저 체크
+        Member loginUser = (Member) session.getAttribute("loginUser");
+        if(loginUser != null) {
+            System.out.println("[로그] loginUser.roleType = " + loginUser.getRoleType());
+            System.out.println("[로그] loginUser.roleType 타입 = " + (loginUser.getRoleType() == null ? "null" : loginUser.getRoleType().getClass().getName()));
+        }
 
         model.addAttribute("product", product);
         return "product/productDetail";

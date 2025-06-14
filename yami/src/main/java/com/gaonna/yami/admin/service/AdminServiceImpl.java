@@ -12,6 +12,10 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.gaonna.yami.admin.dao.AdminDao;
+import com.gaonna.yami.composite.vo.BoardCo;
+import com.gaonna.yami.composite.vo.ReplyCo;
+import com.gaonna.yami.composite.vo.SearchForm;
+import com.gaonna.yami.location.vo.BakeryComment;
 import com.gaonna.yami.location.vo.Coord;
 import com.gaonna.yami.location.vo.Location;
 import com.gaonna.yami.member.model.vo.Member;
@@ -133,4 +137,59 @@ public class AdminServiceImpl implements AdminService{
 	public List<Location> userLocation(int userNo) {
 		return dao.userLocation(sqlSession, userNo);
 	}
+
+	//ajax - 게시글 조회
+	@Override
+	public Map<String, Object> searchBoard(SearchForm searchForm) {
+		//resultCount(게시글 수) 구하기
+		searchForm.setResultCount(dao.countBoard(sqlSession,searchForm));
+		
+		//searchForm 정상화
+		searchForm.normalize();
+		
+		//게시글 구하기
+		List<BoardCo> result = dao.searchBoard(sqlSession,searchForm);
+		
+		//sdf
+		new BoardCo().boardSDF(result);
+		
+		return Map.of("result", result, "totalCount", searchForm.getResultCount());
+	}
+	
+	//ajax - 판매게시판 댓글 조회
+	@Override
+	public Map<String, Object> searchReply(SearchForm searchForm) {
+		//resultCount(댓글 수) 구하기
+		searchForm.setResultCount(dao.countReply(sqlSession, searchForm));
+		
+		//searchForm 정상화
+		searchForm.normalize();
+		
+		//댓글 구하기
+		List<ReplyCo> result = dao.searchReply(sqlSession,searchForm);
+		
+		//바로 날짜형식 정상화
+		new ReplyCo().replySDF(result);
+		
+		return Map.of("result", result, "totalCount", searchForm.getResultCount());
+	}
+	
+	//ajax - 우리동네빵집 댓글 조회
+	@Override
+	public Map<String, Object> searchReplyDongne(SearchForm searchForm) {
+		//resultCount(댓글 수) 구하기
+		searchForm.setResultCount(dao.countReplyDongne(sqlSession, searchForm));
+		
+		//searchForm 정상화
+		searchForm.normalize();
+		
+		//댓글 구하기
+		List<BakeryComment> result = dao.searchReplyDongne(sqlSession,searchForm);
+		
+		//바로 날짜형식 정상화
+		new BakeryComment().bakeryCommentSDF(result);
+		
+		return Map.of("result", result, "totalCount", searchForm.getResultCount());
+	}
+	
 }

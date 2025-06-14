@@ -1,6 +1,7 @@
 package com.gaonna.yami.composite.dao;
 
 import java.util.List;
+import java.util.Map;
 
 import org.mybatis.spring.SqlSessionTemplate;
 import org.springframework.stereotype.Repository;
@@ -48,5 +49,9 @@ public class CompositeDao {
 
 	public List<BoardCo> searchMyWishlist(SqlSessionTemplate sqlSession, SearchForm searchForm) {
 		return sqlSession.selectList("compositeMapper.searchMyWishlist",searchForm);
+	}
+
+	public int deleteMyWishlist(SqlSessionTemplate sqlSession, Map<String, Integer> map) {
+		return sqlSession.delete("compositeMapper.deleteMyWishlist",map);
 	}
 }

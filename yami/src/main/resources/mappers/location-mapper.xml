@@ -302,5 +302,43 @@
 		update BAKERY_COMMENT
 		set status = 'N'
 		where comment_no = #{commentNo}
-	</delete>	
+	</delete>
+	
+	<select id="selectBakeryInfo" parameterType="string" resultMap="bakeryResultMap">
+	SELECT
+	    b.bakery_no,
+	    b.open_date,
+	    b.phone,
+	    b.road_address,
+	    b.jibun_address,
+	    b.bakery_name,
+	    b.latitude,
+	    b.longitude,
+	    NVL(like_count, 0) AS like_count,
+	    NVL(dislike_count, 0) AS dislike_count
+	FROM (
+	    SELECT
+	        bakery_no,
+	        open_date,
+	        phone,
+	        road_address,
+	        jibun_address,
+	        bakery_name,
+	        latitude,
+	        longitude
+	    FROM bakery
+		where BAKERY_NO = #{bakeryNo}
+	) b
+	LEFT JOIN (
+	    SELECT
+	        bakery_no,
+	        COUNT(CASE WHEN bakery_like = 'L' AND status IN ('Y', 'M') THEN 1 END) AS like_count,
+	        COUNT(CASE WHEN bakery_like = 'D' AND status IN ('Y', 'M') THEN 1 END) AS dislike_count
+	    FROM BAKERY_COMMENT
+	    GROUP BY bakery_no
+	) c
+	ON b.bakery_no = c.bakery_no
+	
+	</select>
+	
 </mapper>

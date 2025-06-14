@@ -140,7 +140,9 @@ public class LocationCotroller {
 	
 	//동네(location) 메인으로
 	@GetMapping("dongneMain.dn")
-	public String dongneMain(HttpSession session,Model model){
+	public String dongneMain(HttpSession session,Model model,
+							 @RequestParam(value = "keyword", defaultValue = "") String keyword,
+				             @RequestParam(value = "condition", defaultValue = "location") String condition){
 		try {
 			List<Coord> coords = (List<Coord>)session.getAttribute("coords");
 			Member m = (Member)session.getAttribute("loginUser");
@@ -159,6 +161,9 @@ public class LocationCotroller {
 			
 			String bakeriesJson = new Gson().toJson(bakeries);
 			model.addAttribute("bakeriesJson", bakeriesJson);
+			
+			model.addAttribute("keyword", keyword);
+	        model.addAttribute("condition", condition);
 			return "dongne/map";
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -318,6 +323,26 @@ public class LocationCotroller {
 		} catch (Exception e) {
 			e.printStackTrace();
 			return "noPass";
+		}
+	}
+	
+	//ajax - 빵집 정보 조회(마이페이지 댓글)
+	@ResponseBody
+	@PostMapping("selectBakeryInfo.dn")
+	public Map<String, Object> selectBakeryInfo(String bakeryNo){
+		try {
+			Map<String, Object> response = new HashMap<>();
+			//뽱집 정보 조회해서 넣기
+			Bakery bakery = service.selectBakeryInfo(bakeryNo);
+			
+		    response.put("bakery", bakery);
+		    response.put("status", "pass");
+		    return response;
+		} catch (Exception e) {
+			e.printStackTrace();
+			Map<String, Object> response = new HashMap<>();
+			response.put("status", "noPass");
+			return response;
 		}
 	}
 	
