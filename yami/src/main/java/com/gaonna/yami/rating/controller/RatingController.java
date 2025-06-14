@@ -28,13 +28,13 @@ public class RatingController {
      * produces application/json
      */
     @PostMapping(
-        value = "/insertRating.rt",
+        value = "insertRating",
         produces = MediaType.APPLICATION_JSON_VALUE
     )
     @ResponseBody
     public int insertRating(
             @RequestParam("userNo")   String userNo,
-            @RequestParam("score")       int score,
+            @RequestParam("rating")       int rating,
             HttpSession session
     ) {
 //        Map<String,Object> result = new HashMap<>();
@@ -48,7 +48,7 @@ public class RatingController {
 //        }
         
         int result = 0;
-        result = ratingService.rating(userNo, score);
+        result = ratingService.rating(userNo, rating);
 
 //        // 2) VO 채우기
 //        Rating rating = new Rating();
