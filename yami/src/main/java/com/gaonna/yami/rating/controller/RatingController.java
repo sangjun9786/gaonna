@@ -47,7 +47,8 @@ public class RatingController {
 //            return result;
 //        }
         
-        int result = ratingService.rating(userNo, score);
+        int result = 0;
+        result = ratingService.rating(userNo, score);
 
 //        // 2) VO 채우기
 //        Rating rating = new Rating();

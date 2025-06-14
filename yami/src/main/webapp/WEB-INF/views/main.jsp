@@ -279,7 +279,7 @@
 			</a>
 		</div>
 		<div class="col">
-			<a href="#" class="text-decoration-none">
+			<a href="${root }/doTest.me" class="text-decoration-none">
 				<div class="card text-center h-100 shadow-sm">
 					<div class="card-body">
 						<i class="bi bi-question-circle fs-1 text-info"></i>
