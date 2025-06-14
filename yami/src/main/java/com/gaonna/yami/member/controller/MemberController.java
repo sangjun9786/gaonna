@@ -41,34 +41,10 @@ public class MemberController {
 	@Autowired
 	private BCryptPasswordEncoder bcrypt;
 	
-	//메인 페이지 - 자동 로그인
+	//메인 페이지 이동
 	@RequestMapping("/main")
-	public String home(@CookieValue(name = "autoLogin", required = false) String autoLogin,
-		    HttpSession session, HttpServletResponse response,Model model) {
-		try {
-			//자동 로그인 쿠키 인식
-			if(autoLogin != null &&
-					(Member)session.getAttribute("loginUser") ==null) {
-				
-				//쿠키에서 토큰, 회원번호 추출
-				String[] userNoStr = autoLogin.split("_"); 
-				int userNo = Integer.parseInt(userNoStr[0]);
-				String token = userNoStr[1];
-				CookieToken cookieToken = new CookieToken(token,userNo);
-				
-				//토큰 조회해서 로그인하기
-				int result = cookieService.autoLogin(session,response,cookieToken);
-				
-				if(result!=1) {
-					return errorPage(model,"자동 로그인 실패");
-				}
-			}
-			
-			return "main";
-		} catch (Exception e) {
-			e.printStackTrace();
-			return errorPage(model,"쿠키 인식 실패");
-		}
+	public String home() {
+		return "main";
 	}
 	
 	//실험실 이동

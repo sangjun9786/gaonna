@@ -340,10 +340,13 @@ function insertReply() {
     });
 }
 
+
+let isManager = ${loginUser.roleType != "N"};
+let currUserId = "\${loginUser.userId}";
 function selectReplyList() {
     $.ajax({
         url: "${contextPath}/replyList",
-        data: { productNo: "${product.productNo}" },
+        data: { productNo: "\${product.productNo}" },
         success: function(list) {
             if (!Array.isArray(list) || list.length === 0) {
                 $("#replyArea").html("<p>댓글이 없습니다.</p>");
@@ -354,10 +357,18 @@ function selectReplyList() {
                 const uid = r.userId || "";
                 const txt = r.replyText || "";
                 const dt = r.replyDate ? new Date(r.replyDate).toLocaleString('ko-KR') : "";
-                str += '<div class="comment-box">' +
-                       '<b>' + uid + '</b>: ' + txt +
-                       ' <span style="color:gray;">[' + dt + ']</span>' +
-                       '</div>';
+                str += '<div class="comment-box">';
+                str += '<b>' + uid + '</b>: ' + txt;
+                str += ' <span style="color:gray;">[' + dt + ']</span>';
+                
+                // 조건부 버튼 추가
+                if (isManager || currUserId == r.userId) {
+                    str += '<div style="display:inline-block; margin-left:10px;">';
+                    str += '<button class="edit-btn" data-id="' + r.replyNo + '">수정</button>';
+                    str += '<button class="delete-btn" data-id="' + r.replyNo + '" style="margin-left:5px;">삭제</button>';
+                    str += '</div>';
+                }
+                str += '</div>';
             }
             $("#replyArea").html(str);
         },
@@ -366,6 +377,45 @@ function selectReplyList() {
         }
     });
 }
+
+// 이벤트 위임 처리
+$('#replyArea').on('click', '.edit-btn', function() {
+    const replyNo = $(this).data('id');
+    $.ajax({
+        url: '${root}/updateReply',
+        method: 'POST',
+        data: { 
+            userId: '${loginUser.userId}',
+            replyNo: replyNo
+        },
+        success: function(result) {
+            if(result === 'success') {
+                selectReplyList(); // 목록 재갱신
+                alert('수정 완료');
+            }
+        }
+    });
+});
+
+$('#replyArea').on('click', '.delete-btn', function() {
+    const replyNo = $(this).data('id');
+    if(confirm('정말 삭제하시겠습니까?')) {
+        $.ajax({
+            url: '${root}/deleteReply',
+            method: 'POST',
+            data: { 
+                userId: '${loginUser.userId}',
+                replyNo: replyNo
+            },
+            success: function(result) {
+                if(result === 'success') {
+                    selectReplyList(); // 목록 재갱신
+                    alert('삭제 완료');
+                }
+            }
+        });
+    }
+});
 
 $(document).ready(function() {
     selectReplyList();

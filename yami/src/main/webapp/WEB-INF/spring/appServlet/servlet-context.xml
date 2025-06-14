@@ -27,6 +27,14 @@
 	<!-- 인터셉터 -->
 	<mvc:interceptors>
 	    <mvc:interceptor>
+	        <mvc:mapping path="/*"/>
+    	    <mvc:exclude-mapping path="/login.me"/>
+    	    <mvc:exclude-mapping path="/logout.me"/>
+    	    <mvc:exclude-mapping path="/insert.me"/>
+	        <bean class="com.gaonna.yami.common.GlobalInterceptor"/>
+	    </mvc:interceptor>
+	    
+	    <mvc:interceptor>
 	    
 	        <!-- 적용할 패턴 -->
 	        <mvc:mapping path="/*.me"/>
@@ -56,7 +64,6 @@
 	        <mvc:mapping path="/*.dn"/>
 	        <bean class="com.gaonna.yami.common.DongneInterceptor"/>
 	    </mvc:interceptor>
-	    
 	</mvc:interceptors>
 	
 	<!-- 파일 업로드 처리 MultipartResolver -->
