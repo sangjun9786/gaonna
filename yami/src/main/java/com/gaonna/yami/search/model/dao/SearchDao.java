@@ -9,9 +9,12 @@ import org.mybatis.spring.SqlSessionTemplate;
 import org.springframework.stereotype.Repository;
 
 import com.gaonna.yami.common.PageInfo;
+import com.gaonna.yami.composite.vo.BoardCo;
+import com.gaonna.yami.composite.vo.SearchForm;
 import com.gaonna.yami.member.model.vo.Member;
 import com.gaonna.yami.product.vo.Category;
 import com.gaonna.yami.product.vo.Product;
+import com.gaonna.yami.search.model.vo.PerchasedBo;
 
 @Repository
 public class SearchDao {
@@ -66,6 +69,18 @@ public class SearchDao {
 
 	public String getBread(SqlSessionTemplate sqlSession, String keyword) {
 		return sqlSession.selectOne("searchMapper.getBread", keyword);
+	}
+
+	public List<Category> selectCategory(SqlSessionTemplate sqlSession) {
+		return sqlSession.selectList("searchMapper.getCategory");
+	}
+
+	public int countMyBoard(SqlSessionTemplate sqlSession, SearchForm searchForm) {
+		return sqlSession.selectOne("searchMapper.countMyBoard", searchForm);
+	}
+
+	public List<PerchasedBo> searchMyBoard(SqlSessionTemplate sqlSession, SearchForm searchForm) {
+		return sqlSession.selectList("searchMapper.searchMyBoard", searchForm);
 	}
 
 }

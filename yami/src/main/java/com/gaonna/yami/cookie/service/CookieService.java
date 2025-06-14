@@ -14,4 +14,7 @@ public interface CookieService {
 	//자동로그인 발동
 	int autoLogin(HttpSession session,HttpServletResponse response,CookieToken cookieToken);
 
+	//자동로그인 삭제
+	void deleteAutoLogin(HttpServletResponse response,HttpSession session);
+
 }

@@ -102,7 +102,7 @@ public class EventController {
 	
 	@RequestMapping("doTest.me")
 	public String doTest() {
-		return "event/score";
+		return "event/perchasedBoard";
 	}
 	
 }

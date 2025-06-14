@@ -5,7 +5,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
-import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
@@ -51,7 +50,7 @@ public class CookieServiceImpl implements CookieService{
 		int result = dao.insertAutoLoginToken(sqlSession,cookieToken);
 		
 		//토큰에 토큰번호 더해서 온전한 토큰 만들기
-		token = cookieToken.getUserNo() +"%"+ token;
+		token = cookieToken.getUserNo() +"_"+ token;
 
 		//달디달고 달디단 쿠키 생성
 		ResponseCookie cookie = ResponseCookie.from("autoLogin", token)
@@ -61,10 +60,6 @@ public class CookieServiceImpl implements CookieService{
 		        .maxAge(Duration.ofDays(30))
 		        .build();
 		response.addHeader("Set-Cookie", cookie.toString());
-		
-		System.out.println("생성한 cookieS 쿠키토큰 : "+cookieToken);
-		System.out.println("생성한 cookieS 토큰 : "+token);
-		
 		
 		return result;
 	}
@@ -76,8 +71,6 @@ public class CookieServiceImpl implements CookieService{
 		Member loginUser = new Member();
 		List<Coord> coords = new ArrayList<Coord>();
 		int result = 1;
-		
-		System.out.println("받은 cookieS 토큰 : "+cookieToken);
 		
 		//토큰 확인
 		result *= dao.selectAutoLoginToken(sqlSession,cookieToken);
@@ -105,5 +98,24 @@ public class CookieServiceImpl implements CookieService{
 		}else {
 			return 0;
 		}
+	}
+	
+	//로그아웃 - 자동로그인 토큰 삭제
+	@Override
+	public void deleteAutoLogin(HttpServletResponse response,HttpSession session) {
+		CookieToken cookieToken = new CookieToken();
+		int userNo = ((Member)session.getAttribute("loginUser")).getUserNo();
+		cookieToken.setUserNo(userNo);
+		
+		dao.deleteAutoLoginToken(sqlSession,cookieToken);
+		
+		//달디달고 달디단 쿠키 지우기
+		ResponseCookie cookie = ResponseCookie.from("autoLogin", "")
+		        .httpOnly(true)
+		        .secure(true)
+		        .path("/")
+		        .maxAge(0)
+		        .build();
+		response.addHeader("Set-Cookie", cookie.toString());
 	}
 }

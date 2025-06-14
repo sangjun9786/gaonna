@@ -10,6 +10,138 @@
 		<result column="CATEGORY_NAME" property="categoryName"/>
 	</resultMap>
 	
+	<resultMap id="PerchasedBoResultMap" type="PerchasedBo">
+	    <id property="productNo" column="PRODUCT_NO"/>
+	    <result property="categoryName" column="CATEGORY_NAME"/>
+	    <result property="productTitle" column="PRODUCT_TITLE"/>
+	    <result property="productContent" column="PRODUCT_CONTENT"/>
+	    <result property="productCount" column="PRODUCT_COUNT"/>
+	    <result property="orderNo" column="ORDER_NO"/>
+	    <result property="userNo" column="USER_NO"/>
+	    <result property="userId" column="USER_ID"/>
+	</resultMap>
+	
+	<!-- ajax - 게시글 수 조회 -->
+	<select id="countMyBoard" resultType="int" parameterType="SearchForm">
+	<bind name="searchPattern" value="'%' + searchKeyword + '%'" />
+		select count(*)
+		from PRODUCT_BOARD
+		JOIN ORDERS O ON (USER_NO = O.SELLER_ID)
+		where O.BUYER_ID = #{userNo}
+		<choose>
+        <!-- 검색 타입1이 'all'이 아닌 경우 -->
+			<when test="searchType1 != 'all'">
+				and CATEGORY_NO = #{searchType1}
+				<choose>
+					<when test="searchType2 == 'title'">
+						and PRODUCT_TITLE LIKE #{searchPattern}
+					</when>
+					<when test="searchType2 == 'content'">
+						and PRODUCT_CONTENT LIKE #{searchPattern}
+					</when>
+					<otherwise>
+						and (PRODUCT_TITLE LIKE #{searchPattern} 
+							OR PRODUCT_CONTENT LIKE #{searchPattern})
+					</otherwise>
+				</choose>
+			</when>
+			<!-- 검색 타입1이 'all'인 경우 -->
+			<otherwise>
+				<choose>
+					<when test="searchType2 == 'title'">
+                         and PRODUCT_TITLE LIKE #{searchPattern}
+					</when>
+					<when test="searchType2 == 'content'">
+                         and PRODUCT_CONTENT LIKE #{searchPattern}
+					</when>
+					<otherwise>
+                         and (PRODUCT_TITLE LIKE #{searchPattern} 
+                              OR PRODUCT_CONTENT LIKE #{searchPattern})
+					</otherwise>
+				</choose>
+			</otherwise>
+		</choose>
+	</select>
+	
+	<!-- ajax - 판매 게시글 조회 -->
+	<select id="searchMyBoard" resultMap="PerchasedBoResultMap" parameterType="SearchForm">
+	<bind name="searchPattern" value="'%' + searchKeyword + '%'" />
+		select *
+		from(
+			select t.*, rownum as rn
+			from (select
+					pb.PRODUCT_NO
+					,c.CATEGORY_NAME
+					,pb.PRICE
+					,m.USER_ID
+					,pb.USER_NO
+					,pb.PRODUCT_TITLE
+					,pb.PRODUCT_CONTENT
+					,pb.SCORE2
+					,O.ORDER_NO
+					,O.STATUS
+				from PRODUCT_BOARD pb
+				JOIN CATEGORY c on (c.CATEGORY_NO=pb.CATEGORY_NO)
+				JOIN ORDERS O ON (pb.PRODUCT_NO = O.PRODUCT_NO)
+				JOIN MEMBER m ON (m.USER_NO = pb.USER_NO)
+				WHERE
+	            pb.PRODUCT_NO IN (
+	                SELECT O.PRODUCT_NO
+	                FROM ORDERS O
+	                WHERE O.BUYER_ID = #{userNo}
+	                  AND O.STATUS = 'REQ'
+	            )
+				<choose>
+	                <!-- 검색 타입1이 'all'이 아닌 경우 -->
+	            	<when test="searchType1 != 'all'">
+	                    and pb.CATEGORY_NO = #{searchType1}
+	                    <choose>
+	                        <when test="searchType2 == 'title'">
+	                            and pb.PRODUCT_TITLE LIKE #{searchPattern}
+	                        </when>
+	                        <when test="searchType2 == 'content'">
+	                            and pb.PRODUCT_CONTENT LIKE #{searchPattern}
+	                        </when>
+	                        <otherwise>
+	                            and (pb.PRODUCT_TITLE LIKE #{searchPattern} 
+	                                 OR pb.PRODUCT_CONTENT LIKE #{searchPattern})
+	                        </otherwise>
+	                    </choose>
+					</when>
+					<!-- 검색 타입1이 'all'인 경우 -->
+					<otherwise>
+						<choose>
+							<when test="searchType2 == 'title'">
+	                            and pb.PRODUCT_TITLE LIKE #{searchPattern}
+							</when>
+							<when test="searchType2 == 'content'">
+	                            and pb.PRODUCT_CONTENT LIKE #{searchPattern}
+							</when>
+							<otherwise>
+	                            and (pb.PRODUCT_TITLE LIKE #{searchPattern} 
+	                                 OR pb.PRODUCT_CONTENT LIKE #{searchPattern})
+							</otherwise>
+						</choose>
+					</otherwise>
+				</choose>
+				group by pb.PRODUCT_NO
+					,c.CATEGORY_NAME
+					,pb.PRICE
+					,m.USER_ID
+					,pb.USER_NO
+					,pb.PRODUCT_TITLE
+					,pb.PRODUCT_CONTENT
+					,pb.SCORE2
+					,O.ORDER_NO
+					,O.STATUS
+				order by pb.PRODUCT_NO desc
+				) t
+			where rownum &lt;= #{endRow}
+			)
+		where rn &gt;= #{startRow}
+	</select>
+	
+	
 	<select id="getCategory" resultMap="categoryResultMap">
 	    SELECT CATEGORY_NO, CATEGORY_NAME FROM CATEGORY
 	</select>
@@ -214,5 +346,7 @@
 		FROM BAKERY
 		WHERE BAKERY_NAME = #{keyword}
 	</select>
+	
+	
 	
 </mapper>

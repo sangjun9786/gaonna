@@ -1,0 +1,229 @@
+<%@ page language="java" contentType="text/html; charset=UTF-8"
+    pageEncoding="UTF-8"%>
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>나의 게시글</title>
+<!-- Latest compiled and minified CSS -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/css/bootstrap.min.css">   
+<!-- jQuery library -->
+<script src="https://cdn.jsdelivr.net/npm/jquery@3.7.1/dist/jquery.slim.min.js"></script>
+<!-- Popper JS -->
+<script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js"></script>
+<!-- Latest compiled JavaScript -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/js/bootstrap.bundle.min.js"></script>
+</head>
+<body>
+<%@include file="/WEB-INF/views/common/header.jsp"%>
+
+<div class="container py-5">
+  <div class="row justify-content-center">
+    <div class="col-md-11 col-lg-10">
+      <div class="card shadow-lg mb-4">
+        <div class="card-header bg-primary text-white">
+          <h4 class="mb-0"><i class="bi bi-pencil-square me-2"></i>내 구매 목록</h4>
+        </div>
+        <div class="card-body">
+          <form id="searchForm" class="row g-3 align-items-center" autocomplete="off">
+            <div class="col-md-3">
+              <select class="form-select" id="searchType1" name="searchType1" required>
+                <option value="all">전체 구매 목록</option>
+                <!-- AJAX로 카테고리 옵션 추가됨 -->
+              </select>
+            </div>
+            <div class="col-md-2">
+              <select class="form-select" id="searchType2" name="searchType2" required>
+                <option value="all">전체</option>
+                <option value="title">제목</option>
+                <option value="content">내용</option>
+              </select>
+            </div>
+            <div class="col-md-3">
+              <input type="text" class="form-control" id="searchKeyword" name="searchKeyword" placeholder="검색어를 입력해주세요"/>
+            </div>
+            <div class="col-md-2">
+              <select class="form-select" id="searchCount" name="searchCount" required>
+                <option value="10">10개</option>
+                <option value="30">30개</option>
+                <option value="50">50개</option>
+                <option value="100">100개</option>
+              </select>
+            </div>
+            <input type="hidden" id="page" name="page" value="1">
+            <div class="col-md-2">
+              <button type="submit" class="btn btn-success w-100" id="searchBoard">
+                <i class="bi bi-search"></i> 검색
+              </button>
+            </div>
+          </form>
+        </div>
+      </div>
+
+
+      <!-- 게시글 카드 리스트 -->
+      <div id="boardList" class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4 mb-4">
+        <!-- JS로 카드 동적 생성 -->
+        <div class="col">
+          <div class="alert alert-info mb-0">검색 결과가 이곳에 표시됩니다.</div>
+        </div>
+      </div>
+
+      <!-- 페이지네이션 -->
+      <nav id="paginationNav" class="mt-4 d-flex justify-content-center"></nav>
+    </div>
+  </div>
+</div>
+<!-- The Modal -->
+        <div class="modal" id="ratingModal">
+          <div class="modal-dialog">
+            <div class="modal-content">
+            
+              <!-- Modal Header -->
+              <div class="modal-header">
+                <h4 class="modal-title">모달창입니다.</h4>
+                <!-- <button type="button" class="close" data-dismiss="modal">&times;</button> -->
+              </div>
+              
+              <!-- Modal body -->
+              <div class="modal-body">
+                Modal body..
+              </div>
+              
+              <!-- Modal footer -->
+              <div class="modal-footer">
+                <button type="button" class="btn btn-danger" data-dismiss="modal">Close</button>
+              </div>
+              
+            </div>
+          </div>
+        </div>
+<script>
+$(function(){
+  // 카테고리 옵션 동적 추가
+  $.ajax({
+    url: '${root}/selectCate.co',
+    method: 'GET',
+    dataType: "json",
+    success: function(result) {
+		let $allOption = $('#searchType1 option[value="all"]');
+      $.each(result, function(idx, category){
+        $('<option>', {
+          value: category.categoryNo,
+          text: category.categoryName
+        }).insertAfter($allOption);
+      });
+    },
+    error: function() {
+      alert('카테고리 정보를 불러오지 못했습니다.');
+    }
+  });
+
+  // 검색 폼 제출
+  $('#searchForm').on('submit', function(e){
+    e.preventDefault();
+    $('#page').val(1); // 검색시 항상 첫페이지
+    searchBoard();
+  });
+
+  // 페이지네이션 클릭
+  $('#paginationNav').on('click', '.page-link', function(e){
+    e.preventDefault();
+    const page = $(this).data('page');
+    $('#page').val(page);
+    searchBoard();
+  });
+
+  // 게시글 검색 및 렌더링
+  async function searchBoard(){
+    const params = $('#searchForm').serialize();
+
+    try {
+      // 게시글 조회
+      const response = await $.ajax({
+        url: '${root}/searchPerchasedBoard.co',
+        method: 'GET',
+        data: params,
+      });
+      const boardList = response.result;
+      const totalCount = response.totalCount;
+      
+      $('#boardResultCount .fw-bold').text(totalCount || 0);
+      renderBoardList(boardList, totalCount);
+
+      const page = parseInt($('#page').val());
+      const pageSize = parseInt($('#searchCount').val());
+
+      renderBoardList(boardList, totalCount);
+      renderPagination(totalCount, page, pageSize);
+
+    } catch(error) {
+      $('#boardList').html('<div class="col"><div class="alert alert-danger">데이터 조회 실패</div></div>');
+    }
+  }
+
+  // 게시글 카드 렌더링
+  function renderBoardList(boardList, totalCount){
+    let $boardList = $('#boardList');
+    $boardList.empty();
+
+    if(!boardList || boardList.length === 0){
+      $boardList.html('<div class="col"><div class="alert alert-warning mb-0">검색 결과가 없습니다.</div></div>');
+      return;
+    }
+
+    $.each(boardList, function(idx, board){
+      // 제목 10글자, 내용 30글자 제한
+      let title = board.productTitle.length > 10 ? board.productTitle.substring(0,10) + '...' : board.productTitle;
+      let content = board.productContent.length > 30 ? board.productContent.substring(0,30) + '...' : board.productContent;
+      let scoreStatusText = board.score2 === 'Y' ? '평점 등록 완료' : '평점 미등록';
+      // 카드 HTML
+      let cardHtml = `
+        <div class="col">
+          <div class="card h-100 shadow-sm position-relative">
+            <div class="card-body">
+              <div class="d-flex justify-content-between align-items-center mb-2">
+                <h5 class="card-title mb-0 text-truncate" style="max-width: 70%;">\${title}</h5>
+                <span class="badge bg-secondary ms-2">\${board.price.toLocaleString()}원</span>
+              </div>
+              <p class="card-text text-truncate" style="max-width: 100%;">\${content}</p>
+            </div>
+            <div class="card-footer small text-muted d-flex justify-content-between align-items-center">
+              <span>\${board.categoryName ? board.categoryName : '-'}</span>
+              <span>\${board.userId}</span>
+              <span class="ms-2">\${scoreStatusText}</span>
+              <span class="ms-2">\${board.status}</span>
+            </div>
+            <a href="#" class="stretched-link" data-bs-toggle="modal" data-bs-target="#ratingModal"></a>
+          </div>
+        </div>
+      `;
+      $boardList.append(cardHtml);
+    });
+  }
+
+  // 페이지네이션 렌더링
+  function renderPagination(totalCount, currentPage, pageSize){
+    const totalPage = Math.ceil(totalCount / pageSize);
+    if(totalPage <= 1) {
+      $('#paginationNav').empty();
+      return;
+    }
+    let nav = `<ul class="pagination">`;
+    for(let i=1; i<=totalPage; i++){
+      nav += `
+        <li class="page-item \${i === currentPage ? 'active' : ''}">
+          <a class="page-link" href="#" data-page="\${i}">\${i}</a>
+        </li>
+      `;
+    }
+    nav += `</ul>`;
+    $('#paginationNav').html(nav);
+  }
+
+  // 최초 진입시 전체 조회
+  searchBoard();
+});
+</script>
+</body>
+</html>

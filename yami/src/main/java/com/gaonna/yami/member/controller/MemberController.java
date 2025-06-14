@@ -41,21 +41,17 @@ public class MemberController {
 	@Autowired
 	private BCryptPasswordEncoder bcrypt;
 	
-	//ajax - 자동 로그인
-	@RequestMapping("/")
+	//메인 페이지 - 자동 로그인
+	@RequestMapping("/main")
 	public String home(@CookieValue(name = "autoLogin", required = false) String autoLogin,
 		    HttpSession session, HttpServletResponse response,Model model) {
 		try {
 			//자동 로그인 쿠키 인식
-			System.out.println("memberC 로그인유저 : "+(Member)session.getAttribute("loginUser"));
-			System.out.println("memberC 로그인유저 : "+autoLogin);
 			if(autoLogin != null &&
 					(Member)session.getAttribute("loginUser") ==null) {
 				
-				System.out.println("memberC 쿠키 : "+autoLogin);
-				
 				//쿠키에서 토큰, 회원번호 추출
-				String[] userNoStr = autoLogin.split("%"); 
+				String[] userNoStr = autoLogin.split("_"); 
 				int userNo = Integer.parseInt(userNoStr[0]);
 				String token = userNoStr[1];
 				CookieToken cookieToken = new CookieToken(token,userNo);
@@ -265,9 +261,15 @@ public class MemberController {
 	
 	//로그아웃
 	@GetMapping("logout.me")
-	public String logout(HttpSession session ,Model model) {
+	public String logout(HttpServletResponse response,
+			HttpSession session ,Model model) {
 		try {
+			//자동로그인 쿠키 지우기
+			cookieService.deleteAutoLogin(response,session);
+			
 			session.invalidate();//세션 전체 초기화
+			
+			
 			return "redirect:/";
 		} catch (Exception e) {
 			e.printStackTrace();

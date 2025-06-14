@@ -42,7 +42,7 @@
 		select count(*)
 		from cookie_token
 		where token = #{token}
-		and user_no = #{user_no}
+		and user_no = #{userNo}
 		and token_type = 'autoLogin'
 	</select>
 	
