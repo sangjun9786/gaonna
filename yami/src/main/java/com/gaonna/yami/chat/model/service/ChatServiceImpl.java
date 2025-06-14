@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.gaonna.yami.chat.model.dao.ChatDao;
+import com.gaonna.yami.chat.model.vo.ChatListView;
 import com.gaonna.yami.chat.model.vo.ChatMessage;
 import com.gaonna.yami.chat.model.vo.ChatRoom;
 
@@ -18,26 +19,23 @@ public class ChatServiceImpl implements ChatService {
     @Override
     public ChatRoom getOrCreateRoom(int sellerNo, int buyerNo, int productNo) {
 
-        int user1 = Math.min(sellerNo, buyerNo);
-        int user2 = Math.max(sellerNo, buyerNo);
 
-        ChatRoom room = chatDao.findRoomByUsersAndProduct(user1, user2, productNo);
-        if (room != null) return room;
+    	ChatRoom room = chatDao.findRoomByUsersAndProduct(sellerNo, buyerNo, productNo);
+    	if (room != null) return room;
+
 
         ChatRoom newRoom = new ChatRoom();
-        newRoom.setUser1No(user1);
-        newRoom.setUser2No(user2);
+        newRoom.setUser1No(sellerNo);
+        newRoom.setUser2No(buyerNo);
         newRoom.setProductNo(productNo);
 
         chatDao.createRoom(newRoom);
-        return chatDao.findRoomByUsersAndProduct(user1, user2, productNo);
+        return chatDao.findRoomByUsersAndProduct(sellerNo, buyerNo, productNo);
     }
 
     @Override
-    public ChatRoom findRoomByUsersAndProduct(int sellerNo, int userNo, int productNo) {
-        int user1 = Math.min(sellerNo, userNo);
-        int user2 = Math.max(sellerNo, userNo);
-        return chatDao.findRoomByUsersAndProduct(user1, user2, productNo);
+    public ChatRoom findRoomByUsersAndProduct(int sellerNo, int buyerNo, int productNo) {
+        return chatDao.findRoomByUsersAndProduct(sellerNo, buyerNo, productNo);
     }
     
     @Override
@@ -71,9 +69,15 @@ public class ChatServiceImpl implements ChatService {
     }
     
     @Override
-    public String getUserIdByNo(int userNo) {
-        return chatDao.selectUserIdByNo(userNo);
+    public String getUserNameByNo(int userNo) {
+        return chatDao.selectUserNameByNo(userNo);
     }
+    
+    @Override
+    public List<ChatListView> getChatListByUser(int userNo) {
+        return chatDao.findChatListByUser(userNo);
+    }
+
     
     
     

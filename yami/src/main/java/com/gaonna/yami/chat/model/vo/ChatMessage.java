@@ -12,7 +12,7 @@ import lombok.NoArgsConstructor;
 public class ChatMessage {
     private int messageNo;  
     private int roomNo;       
-    private int senderNo;     
+    private int senderNo;    
     private String content;  
     private Date sentAt;     
     private String isRead;    // 읽음 여부 ('N', 'Y')

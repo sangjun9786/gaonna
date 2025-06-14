@@ -7,9 +7,14 @@ import javax.servlet.http.HttpSession;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.gaonna.yami.chat.model.service.ChatService;
+import com.gaonna.yami.chat.model.vo.ChatListView;
 import com.gaonna.yami.chat.model.vo.ChatMessage;
 import com.gaonna.yami.chat.model.vo.ChatRoom;
 import com.gaonna.yami.member.model.vo.Member;
@@ -28,72 +33,46 @@ public class ChatController {
             model.addAttribute("errorMsg", "로그인 후 이용 가능합니다.");
             return "common/errorPage";
         }
+
         int userNo = loginUser.getUserNo();
-        List<ChatRoom> myRooms = chatService.getMyRooms(userNo);
-        model.addAttribute("chatRooms", myRooms);
-        return "chat/chatList"; 
+        List<ChatListView> list = chatService.getChatListByUser(userNo);
+        model.addAttribute("chatList", list);
+        return "chat/chatList";
     }
 
     @GetMapping("/room")
-    public String enterRoom(@RequestParam("productNo") int productNo,
-                            @RequestParam("sellerNo") int sellerNo,
-                            HttpSession session, Model model) {
+    public String enterOrCreateRoom(@RequestParam("productNo") int productNo,
+                                    @RequestParam("sellerNo") int sellerNo,
+                                    HttpSession session, Model model) {
         Member loginUser = (Member) session.getAttribute("loginUser");
         if (loginUser == null) {
             model.addAttribute("errorMsg", "로그인 후 이용하세요.");
             return "common/errorPage";
         }
 
-        int loginUserNo = loginUser.getUserNo();
-        
-
-        int user1 = Math.min(sellerNo, loginUserNo);
-        int user2 = Math.max(sellerNo, loginUserNo);
-        ChatRoom room = chatService.findRoomByUsersAndProduct(user1, user2, productNo);
-        
-        if (room == null) {
-            room = chatService.getOrCreateRoom(sellerNo, loginUserNo, productNo);
-        }
-        
-        if (room == null && loginUserNo != sellerNo) {
-            room = chatService.getOrCreateRoom(sellerNo, loginUserNo, productNo);
-        }
-        
-        if (room == null) {
-            model.addAttribute("errorMsg", "채팅방이 존재하지 않습니다.");
+        int buyerNo = loginUser.getUserNo();
+        // 본인 상품엔 접근 불가
+        if (sellerNo == buyerNo) {
+            model.addAttribute("errorMsg", "본인 상품에는 채팅을 시작할 수 없습니다.");
             return "common/errorPage";
         }
+
+        // 방이 있으면 반환, 없으면 생성 후 반환
+        ChatRoom room = chatService.getOrCreateRoom(sellerNo, buyerNo, productNo);
+        if (room == null) {
+            model.addAttribute("errorMsg", "채팅방 생성 실패");
+            return "common/errorPage";
+        }
+
         model.addAttribute("chatRoom", room);
         List<ChatMessage> messages = chatService.getMessages(room.getRoomNo());
         model.addAttribute("chatMessages", messages);
 
-        // 상대방 USER_NO 계산 (내가 구매자면 sellerNo, 내가 판매자면 buyerNo)
-        int otherUserNo = (loginUser.getUserNo() == room.getUser1No()) ? room.getUser2No() : room.getUser1No();
-
-        // 상대방 USER_ID(이메일) 가져오기
-        String otherUserId = chatService.getUserIdByNo(otherUserNo);
-        // 이메일 앞부분만 추출
-        String otherId = otherUserId != null ? otherUserId.split("@")[0] : "알수없음";
-        model.addAttribute("otherId", otherId);
+        int otherUserNo = (buyerNo == room.getUser2No()) ? room.getUser1No() : room.getUser2No();
+        String otherUserName = chatService.getUserNameByNo(otherUserNo);
+        model.addAttribute("otherName", otherUserName != null ? otherUserName : "알수없음");
 
         return "chat/chatRoom";
-    }
-    
-    
-    
-    @PostMapping("/create")
-    @ResponseBody
-    public String createRoom(@RequestParam("productNo") int productNo,
-                             @RequestParam("sellerNo") int sellerNo,
-                             HttpSession session) {
-        Member loginUser = (Member) session.getAttribute("loginUser");
-        if (loginUser == null) return "fail";
-        int buyerNo = loginUser.getUserNo();
-
-        if (buyerNo == sellerNo) return "fail";
-
-        ChatRoom room = chatService.getOrCreateRoom(sellerNo, buyerNo, productNo); 
-        return (room != null) ? "success" : "fail";
     }
 
     @PostMapping("/send")

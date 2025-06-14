@@ -7,6 +7,7 @@ import org.apache.ibatis.session.SqlSession;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
+import com.gaonna.yami.chat.model.vo.ChatListView;
 import com.gaonna.yami.chat.model.vo.ChatMessage;
 import com.gaonna.yami.chat.model.vo.ChatRoom;
 
@@ -18,11 +19,11 @@ public class ChatDao {
 
     
 
-    // 방 조회(입장, 생성시 중복확인)
-    public ChatRoom findRoomByUsersAndProduct(int user1No, int user2No, int productNo) {
+    //방 조회
+    public ChatRoom findRoomByUsersAndProduct(int sellerNo, int buyerNo, int productNo) {
         return sqlSession.selectOne("chatMapper.findRoomByUsersAndProduct", Map.of(
-            "user1No", user1No,
-            "user2No", user2No,
+            "user1No", sellerNo,
+            "user2No", buyerNo,
             "productNo", productNo
         ));
     }
@@ -69,10 +70,13 @@ public class ChatDao {
     }
     
     
-    public String selectUserIdByNo(int userNo) {
-        return sqlSession.selectOne("chatMapper.selectUserIdByNo", userNo);
+    public String selectUserNameByNo(int userNo) {
+        return sqlSession.selectOne("chatMapper.selectUserNameByNo", userNo);
     }
     
+    public List<ChatListView> findChatListByUser(int userNo) {
+        return sqlSession.selectList("chatMapper.findChatListByUser", userNo);
+    }
     
     
     

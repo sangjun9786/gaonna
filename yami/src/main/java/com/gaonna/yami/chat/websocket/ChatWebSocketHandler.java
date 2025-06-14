@@ -12,10 +12,17 @@ public class ChatWebSocketHandler extends TextWebSocketHandler {
     private static Map<Integer, Set<WebSocketSession>> roomSessions = new HashMap<>();
 
     private int getRoomNoFromSession(WebSocketSession session) {
-        // ws://.../ws/chat?roomNo=123
-        String query = session.getUri().getQuery(); // "roomNo=123"
-        if(query != null && query.startsWith("roomNo=")) {
-            return Integer.parseInt(query.replace("roomNo=", ""));
+        String query = session.getUri().getQuery(); // "roomNo=123&..."
+        if (query != null) {
+            for (String param : query.split("&")) {
+                if (param.startsWith("roomNo=")) {
+                    try {
+                        return Integer.parseInt(param.split("=")[1]);
+                    } catch (Exception e) {
+                        return -1;
+                    }
+                }
+            }
         }
         return -1;
     }

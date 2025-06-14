@@ -188,9 +188,15 @@
 
             <!-- 일반 유저만 -->
             <c:if test="${not empty loginUser and loginUser.roleType != 'superAdmin' and loginUser.roleType != 'admin' and loginUser.roleType != 'viewer'}">
-                <button class="action-btn" style="width:100%;">채팅으로 거래하기</button>
-
-                <!-- 구매하기 -->
+	            <c:if test="${loginUser.userNo ne product.userNo and not alreadyChatted}">
+	                <form action="${pageContext.request.contextPath}/chat/room" method="get" style="margin-bottom: 10px;">
+					    <input type="hidden" name="productNo" value="${product.productNo}" />
+					    <input type="hidden" name="sellerNo" value="${product.userNo}" />
+					    <button type="submit" class="action-btn" style="width:100%;">💬 채팅으로 거래하기</button>
+					</form>
+			  	</c:if>
+	
+	                <!-- 구매하기 -->
                 <form action="${contextPath}/purchaseInsert.do" method="post">
                     <input type="hidden" name="productNo" value="${product.productNo}" />
                     <input type="hidden" name="buyerId" value="${loginUser.userId}" />
