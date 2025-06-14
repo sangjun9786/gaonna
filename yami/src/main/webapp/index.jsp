@@ -3,12 +3,13 @@
 <!DOCTYPE html>
 <html>
 <head>
+<meta http-equiv="refresh" content="0; url=/">
 <meta charset="UTF-8">
 <title>안아줘요</title>
 </head>
 <body>
 <%-- 	<jsp:forward page="/WEB-INF/views/product/productDetail.jsp"/> --%>
 <%-- 	<jsp:forward page="/WEB-INF/views/product/productEnrollForm.jsp"/> --%>
-	<jsp:forward page="/WEB-INF/views/main.jsp"/> 메인
+<%--	<jsp:forward page="/WEB-INF/views/main.jsp"/> 메인--%>
 </body>
 </html>

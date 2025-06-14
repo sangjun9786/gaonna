@@ -311,15 +311,17 @@ CREATE TABLE COOKIE_TOKEN (
     token_no     NUMBER,
     token        VARCHAR2(50),
     user_no      NUMBER,
+    token_type   VARCHAR2(10), 
 
     CONSTRAINT cookie_token_no_pk PRIMARY KEY (token_no),
-    CONSTRAINT cookie_user_no_fk FOREIGN KEY (user_no) REFERENCES member(user_no) ON DELETE CASCADE,
+    CONSTRAINT cookie_user_no_fk FOREIGN KEY (user_no) REFERENCES member(user_no) ON DELETE CASCADE
 );
 
 COMMENT ON TABLE COOKIE_TOKEN IS '쿠키 토큰';
 COMMENT ON COLUMN COOKIE_TOKEN.token_no IS '토큰 식별번호';
 COMMENT ON COLUMN COOKIE_TOKEN.token IS '토큰';
 COMMENT ON COLUMN COOKIE_TOKEN.user_no IS '회원 식별번호';
+COMMENT ON COLUMN COOKIE_TOKEN.token_type IS '토큰 분류(autoLogin)';
 
 
 

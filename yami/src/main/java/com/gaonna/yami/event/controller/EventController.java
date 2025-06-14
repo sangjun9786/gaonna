@@ -100,4 +100,9 @@ public class EventController {
 		return service.point500(loginUser);
 	}
 	
+	@RequestMapping("doTest.me")
+	public String doTest() {
+		return "event/score";
+	}
+	
 }

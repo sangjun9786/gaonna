@@ -10,6 +10,7 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Controller;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.CookieValue;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -17,6 +18,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.gaonna.yami.admin.service.AdminService;
 import com.gaonna.yami.cookie.service.CookieService;
+import com.gaonna.yami.cookie.vo.CookieToken;
 import com.gaonna.yami.location.service.LocationService;
 import com.gaonna.yami.location.vo.Coord;
 import com.gaonna.yami.location.vo.Location;
@@ -36,15 +38,41 @@ public class MemberController {
 	public CookieService cookieService;
 	@Autowired
 	public AdminService adminService;
-	
-	
 	@Autowired
 	private BCryptPasswordEncoder bcrypt;
 	
-	//메인 페이지로 이동
+	//ajax - 자동 로그인
 	@RequestMapping("/")
-	public String home() {
-	    return "redirect:/";
+	public String home(@CookieValue(name = "autoLogin", required = false) String autoLogin,
+		    HttpSession session, HttpServletResponse response,Model model) {
+		try {
+			//자동 로그인 쿠키 인식
+			System.out.println("memberC 로그인유저 : "+(Member)session.getAttribute("loginUser"));
+			System.out.println("memberC 로그인유저 : "+autoLogin);
+			if(autoLogin != null &&
+					(Member)session.getAttribute("loginUser") ==null) {
+				
+				System.out.println("memberC 쿠키 : "+autoLogin);
+				
+				//쿠키에서 토큰, 회원번호 추출
+				String[] userNoStr = autoLogin.split("%"); 
+				int userNo = Integer.parseInt(userNoStr[0]);
+				String token = userNoStr[1];
+				CookieToken cookieToken = new CookieToken(token,userNo);
+				
+				//토큰 조회해서 로그인하기
+				int result = cookieService.autoLogin(session,response,cookieToken);
+				
+				if(result!=1) {
+					return errorPage(model,"자동 로그인 실패");
+				}
+			}
+			
+			return "main";
+		} catch (Exception e) {
+			e.printStackTrace();
+			return errorPage(model,"쿠키 인식 실패");
+		}
 	}
 	
 	//실험실 이동
@@ -175,7 +203,7 @@ public class MemberController {
 	public String loginMember(HttpServletRequest request
 			, HttpServletResponse response, Model model
 			, String userId, String domain, String userPwd
-			, boolean saveLoginInfo, boolean autoLogin) {
+			, String autoLogin) {
 		try {
 			//세션 초기화
 			HttpSession oldSession = request.getSession(false);
@@ -216,7 +244,7 @@ public class MemberController {
 				}
 				
 			    //자동로그인 켜져 있으면 쿠키에 저장
-			    if(autoLogin == true) {
+			    if(autoLogin != null && autoLogin.equals("Y")) {
 			    	cookieService.autoLogin(response, loginUser);
 			    }
 				
