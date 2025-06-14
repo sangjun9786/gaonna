@@ -56,7 +56,7 @@ public interface LocationService {
 	List<BakeryComment> selectBakeryComment(String bakeryNo, int page);
 
 	//대댓글 조회
-	List<BakeryComment> selectBakeryRecomment(String bakeryNo, int page);
+	List<BakeryComment> selectBakeryRecomment(String bakeryNo, int page, int parentCommentNo);
 	
 	//댓글 넣기
 	int insertBakeryComment(Map<String, Object> map);

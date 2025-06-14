@@ -234,7 +234,8 @@
 			where BAKERY_NO = #{bakeryNo}
 			and bc.status in('Y', 'M')
 			and COMMENT_TYPE = 'RECOMMENT'
-			order by bc.COMMENT_DATE desc
+			and PARENT_COMMENT_NO = #{parentCommentNo}
+			order by bc.COMMENT_DATE ASC
 			)
 		where rownum &lt;= #{endRow}
 		)
@@ -291,9 +292,8 @@
 
 	<update id="updateBakeryComment" parameterType="map">
 		update BAKERY_COMMENT
-		set comment_content = #{commentContent}
-		    comment_date = SYSDATE
-		    bakery_like = #{bakeryLike}
+		set comment_content = #{commentContent},
+		    bakery_like = #{bakeryLike},
 		    status = 'M'
 		where comment_no = #{commentNo}
 	</update>

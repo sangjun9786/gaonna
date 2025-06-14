@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="chatMapper">
+
+    <select id="findRoomByUsersAndProduct" resultType="chatRoom">
+	    SELECT * FROM CHAT_ROOM
+	    WHERE PRODUCT_NO = #{productNo}
+	      AND (
+	        (USER1_NO = #{user1No} AND USER2_NO = #{user2No})
+	        OR
+	        (USER1_NO = #{user2No} AND USER2_NO = #{user1No})
+	      )
+	</select>
+
+    <insert id="createRoom" parameterType="chatRoom">
+        INSERT INTO CHAT_ROOM
+        (ROOM_NO, USER1_NO, USER2_NO, PRODUCT_NO, CREATED_AT, STATUS)
+        VALUES (
+            SEQ_CHAT_ROOM.NEXTVAL,
+            #{user1No},
+            #{user2No},
+            #{productNo},
+            DEFAULT,
+            DEFAULT
+        )
+    </insert>
+
+    <select id="selectMyRooms" resultType="chatRoom">
+        SELECT * FROM CHAT_ROOM
+        WHERE USER1_NO = #{userNo} OR USER2_NO = #{userNo}
+        ORDER BY CREATED_AT DESC
+    </select>
+
+    <select id="selectMessagesByRoomNo" resultType="chatMessage">
+        SELECT * FROM CHAT_MESSAGE
+        WHERE ROOM_NO = #{roomNo}
+        ORDER BY SENT_AT ASC
+    </select>
+
+    <insert id="insertMessage" parameterType="chatMessage">
+        INSERT INTO CHAT_MESSAGE
+        (MESSAGE_NO, ROOM_NO, SENDER_NO, CONTENT, SENT_AT, IS_READ)
+        VALUES (
+            SEQ_CHAT_MESSAGE.NEXTVAL,
+            #{roomNo},
+            #{senderNo},
+            #{content},
+            DEFAULT,
+            DEFAULT
+        )
+    </insert>
+    
+    <select id="selectLatestMessage" resultType="chatMessage">
+    SELECT * FROM (
+        SELECT * FROM CHAT_MESSAGE
+        WHERE ROOM_NO = #{roomNo}
+          AND SENDER_NO = #{senderNo}
+          AND CONTENT = #{content}
+        ORDER BY MESSAGE_NO DESC
+    ) WHERE ROWNUM = 1
+	</select>
+	
+	
+	
+	
+
+    <update id="updateReadAll">
+        UPDATE CHAT_MESSAGE
+        SET IS_READ = 'Y'
+        WHERE ROOM_NO = #{roomNo}
+          AND SENDER_NO != #{userNo}
+          AND IS_READ = 'N'
+    </update>
+    
+    <delete id="deleteMessage">
+    DELETE FROM CHAT_MESSAGE
+    WHERE MESSAGE_NO = #{messageNo}
+	</delete>
+	
+	<select id="selectUserIdByNo" resultType="string">
+	  SELECT USER_ID FROM MEMBER WHERE USER_NO = #{userNo}
+	</select>
+	
+    
+</mapper>

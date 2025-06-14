@@ -144,7 +144,12 @@
                     </button>
                 </form>
             </div>
-            <button class="action-btn" style="width:100%;">채팅으로 거래하기</button>
+            <button 
+			  class="action-btn" 
+			  style="width:100%;"
+			  	onclick="location.href='${pageContext.request.contextPath}/chat/room?productNo=${product.productNo}&sellerNo=${product.userNo}'">
+			  채팅으로 거래하기
+			</button>
             <!-- 삭제 버튼 (작성자 본인일 경우에만 노출) -->
 		<c:if test="${loginUser.userId eq product.userId}">
 		   <form id="deleteForm" method="post" action="${contextPath}/delete.pro" style="display:none;">

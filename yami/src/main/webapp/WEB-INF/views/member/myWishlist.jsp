@@ -14,6 +14,13 @@
 		찜
 	</div>
 	
+	<%--
+	${root}/wishlist.co로 page를 가지고 ajax post요청
+	
+	
+	페이지바 만들기
+	--%>
+	
 	
 </body>
 </html>
