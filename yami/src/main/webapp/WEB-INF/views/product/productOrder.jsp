@@ -134,6 +134,7 @@
 </style>
 </head>
 <body>
+<body>
 <%@ include file="/WEB-INF/views/common/header.jsp" %>
 <c:set var="contextPath" value="${pageContext.request.contextPath}" />
 
@@ -155,7 +156,6 @@
     <div class="section">
         <div class="section-title">상품 정보</div>
         <div class="product-row">
-            <!-- 왼쪽: 상품 정보 테이블 -->
             <div class="product-info">
                 <table class="summary-table">
                     <tr>
@@ -180,7 +180,6 @@
                     </tr>
                 </table>
             </div>
-            <!-- 오른쪽: 대표 이미지 -->
             <div class="image-area">
                 <c:if test="${not empty product.atList}">
                     <img src="${contextPath}${product.atList[0].filePath}${product.atList[0].changeName}" alt="대표이미지">
@@ -228,12 +227,12 @@
                 </c:when>
                 <c:when test="${order.status eq 'BUYER_OK'}">
                     구매자가 거래확정을 완료했습니다.<br>
-                    판매자께서는 <b>판매확정</b> 버튼을 눌러주세요.<br>
-                    문의사항은 고객센터로 연락주세요.
+                    판매자께서는 <b>판매확정</b> 버튼을 눌러주세요.<br> 
+                    버튼 누르지 않을시에 24시간 뒤에 자동으로 판매확정 처리됨을 알려드립니다.
                 </c:when>
                 <c:when test="${order.status eq 'DONE'}">
                     거래가 최종 완료되었습니다!<br>
-                    후기 작성 및 거래내역은 마이페이지에서 확인하세요.
+                    평점 작성 및 거래내역은 구매페이지에서 확인하세요.
                 </c:when>
                 <c:when test="${order.status eq 'CANCEL'}">
                     거래가 취소되었습니다.<br>
@@ -243,12 +242,13 @@
         </div>
     </div>
 
-    <!-- 버튼 영역: 상태 & 유저별 분기 -->
+    <!-- 버튼 영역 -->
     <div class="btn-group">
-        <!-- 구매자: 거래중(REQ)일 때 구매확정/취소 가능 -->
+        <!-- ✅ 구매자: 거래중(REQ)일 때 -->
         <c:if test="${loginUser.userNo == order.buyerId && order.status eq 'REQ'}">
-            <form action="${contextPath}/confirmOrder" method="post" style="display:inline;">
-                <input type="hidden" name="orderNo" value="${order.orderNo}">
+            <form action="${contextPath}/order/confirmOrder" method="post" style="display:inline;">
+                    <input type="hidden" name="orderNo" value="${order.orderNo}">
+    				<input type="hidden" name="buyerId" value="${order.buyerId}">
                 <button type="submit" class="btn-main">구매확정</button>
             </form>
             <form action="${contextPath}/cancelOrder" method="post" style="display:inline;">
@@ -257,7 +257,7 @@
             </form>
         </c:if>
 
-        <!-- 판매자: 구매확정(BUYER_OK) 상태에서만 판매확정/취소 가능 -->
+        <!-- ✅ 판매자: BUYER_OK일 때 -->
         <c:if test="${loginUser.userNo == order.sellerId && order.status eq 'BUYER_OK'}">
             <form action="${contextPath}/finalizeOrder" method="post" style="display:inline;">
                 <input type="hidden" name="orderNo" value="${order.orderNo}">
@@ -268,6 +268,21 @@
                 <button type="submit" class="btn-cancel">취소하기</button>
             </form>
         </c:if>
+
+        <!-- ✅ 판매자: REQ 상태일 때 안내 메시지 -->
+        <c:if test="${loginUser.userNo == order.sellerId && order.status eq 'REQ'}">
+            <div class="info-box" style="background:#fff3cd; color:#856404;">
+                구매자의 거래 확정을 기다리는 중입니다.<br>
+                구매자가 확정 후, 판매 확정을 진행할 수 있습니다.
+            </div>
+        </c:if>
+        <!-- ✅ 구매자: 구매확정 후(BUYER_OK 상태)일 때 안내 -->
+		<c:if test="${loginUser.userNo == order.buyerId && order.status eq 'BUYER_OK'}">
+		    <div class="info-box" style="background:#fff3cd; color:#856404;">
+		        판매자의 판매 확정을 기다리는 중입니다.<br>
+		        거래가 완료되면 구매 페이지에서 평점 작성 및 내역을 확인할 수 있습니다.
+		    </div>
+		</c:if>
     </div>
 </div>
 </body>

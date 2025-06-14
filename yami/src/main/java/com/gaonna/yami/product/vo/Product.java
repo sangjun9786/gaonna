@@ -31,6 +31,6 @@ public class Product {
 	private String userPhone; // 판매자 연락처 
 
 	
-	private ArrayList<Attachment> atList;
+	private ArrayList<Attachment> atList = new ArrayList<>();
 	// private ArrayList<Comment> commentList;
 }

@@ -85,13 +85,16 @@ public class ProductController {
     // 상세 페이지
     @GetMapping("/productDetail.pro")
     public String productDetail(@RequestParam("productNo") int productNo, Model model, HttpSession session) {
-        int result = service.increaseCount(productNo);
+    	System.out.println("📌 productNo: " + productNo); // 여기가 먼저
+    	int result = service.increaseCount(productNo);
         if (result <= 0) {
             model.addAttribute("errorMsg", "게시글 조회 실패!!");
             return "common/errorPage";
         }
 
         Product product = service.selectProductDetail(productNo);
+        System.out.println("📌 Product: " + product); // null 체크
+
         ArrayList<Attachment> atList = service.selectProductAttachments(productNo);
         product.setAtList(atList);
         
@@ -394,8 +397,6 @@ public class ProductController {
         model.addAttribute("order", o);
         model.addAttribute("product", product);
         model.addAttribute("loginUser", m);
-        System.out.println("조회 :loginUser = " + m);
-        System.out.println("주문객체 :order = " + o);// null이면 세션에 없는 거
         // 4. 구매 폼 페이지로 이동
         return "product/productBuy";
         
@@ -417,23 +418,11 @@ public class ProductController {
         // 2. 로그인 유저 정보도 model에 담기
         Member m = (Member) session.getAttribute("loginUser");
         model.addAttribute("loginUser", m);
-        System.out.println("조회 :loginUser = " + m); // null이면 세션에 없는 거
-        System.out.println("이게담기나? = " + o);
-        // 3. 서비스에 요청
-//        int result = service.productPay(o,m);
+        model.addAttribute("product", product);
+        model.addAttribute("order", o);
+        model.addAttribute("product", product);
+        return "product/productPay";
 
-        // 그냥 넘기기
-//        if(result > 0) {
-        	model.addAttribute("product", product);
-            model.addAttribute("order", o);
-            model.addAttribute("product", product);
-            return "product/productPay";
-            // 예상 금액, 만남 안내 등 안내 페이지로!
-//        } else {
-//            // 실패 시 에러 페이지 or 메시지 처리
-//            model.addAttribute("msg", "결제 처리에 실패했습니다. 다시 시도해주세요.");
-//            return "common/errorPage";
-//        }
     }
     
     //거래 진행 페이지(주문 요약, 구매 확정 , 취소)
@@ -454,30 +443,17 @@ public class ProductController {
         // 3. 값 담기 
         o.setStatus("REQ"); // 거래중
         
-        // 3. (옵션) 판매자 정보도 불러오고 싶으면
-//        Member seller = service.selectMemberByUserNo(order.getSellerId());
-        // seller.getUserName(), seller.getPhone() 등
         int result = service.productOrder(o,m);
         
         if(result>0) {
         	model.addAttribute("product", product);
             model.addAttribute("order", o);        
             model.addAttribute("loginUser", m);
-            System.out.println("product : " + product + "order : " + o + "loginUser : " + m);
-
             return "product/productOrder";
         } else {
         	model.addAttribute("msg", "결제 처리에 실패했습니다. 다시 시도해주세요.");
         	return "common/errorPage";
         }
-        // 4. Model에 담기
-//        model.addAttribute("product", product);
-//        model.addAttribute("order", o);        
-//        model.addAttribute("loginUser", m);
-//      model.addAttribute("seller", seller);      // 필요시
-
-        // 5. 페이지 이동 (productOrder.jsp로!)
-//        return "product/productOrder";
     }
 }
 

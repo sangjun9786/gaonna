@@ -148,8 +148,24 @@ $(function(){
       // 제목 10글자, 내용 30글자 제한
       let title = board.productTitle.length > 10 ? board.productTitle.substring(0,10) + '...' : board.productTitle;
       let content = board.productContent.length > 30 ? board.productContent.substring(0,30) + '...' : board.productContent;
-
-      // 카드 HTML
+		
+      // 상태 표시 처리 06/14 by 상준 추가
+      
+	let status = board.orderStatus || 'ONSALE'; // ← null, undefined 모두 대응
+	if (status === 'ONSALE') {
+		  statusDisplay = '<span class="text-success fw-bold">판매중</span>';
+		} else if (status === 'REQ') {
+		  statusDisplay = '<span class="text-warning fw-bold">거래중</span>';
+		} else if (status === 'BUYER_OK') {
+		  statusDisplay = `
+		    <span class="text-primary fw-bold">구매확정</span>
+		    <a href="${root}/confirmSale.co?orderNo=\${board.orderNo}" class="btn btn-sm btn-outline-primary ms-2">판매확정 하기</a>
+		  `;
+		} else if (status === 'DONE') {
+		  statusDisplay = '<span class="text-secondary fw-bold">거래완료</span>';
+		}
+      
+      // 카드 HTML 상준 수정
       let cardHtml = `
         <div class="col">
           <div class="card h-100 shadow-sm position-relative">
@@ -163,7 +179,7 @@ $(function(){
             <div class="card-footer small text-muted d-flex justify-content-between align-items-center">
               <span>\${board.categoryName ? board.categoryName : '-'}</span>
               <span>\${board.uploadDateStr}</span>
-              <span class="ms-2">\${board.status}</span>
+              <span class="ms-2">\${statusDisplay}</span>
             </div>
             <a href="${root}/productDetail.pro?productNo=\${board.productNo}" class="stretched-link"></a>
           </div>

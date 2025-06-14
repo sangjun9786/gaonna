@@ -13,6 +13,11 @@
 	       AND BUYER_ID = #{buyerId}
 	       AND STATUS = 'REQ'
 	</update>
-    
+	
+	<!-- 조회 -->
+    <select id="selectOrder" parameterType="int" resultType="Order">
+	    SELECT * FROM ORDERS
+	    WHERE ORDER_NO = #{orderNo}
+	</select>
 		
 </mapper>

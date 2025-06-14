@@ -17,7 +17,6 @@
         UPDATE PRODUCT_BOARD
         SET PRODUCT_COUNT = PRODUCT_COUNT + 1
         WHERE PRODUCT_NO = #{productNo}
-          AND STATUS = 'N'
     </update>
 
     <!-- 상세 페이지 -->
@@ -50,7 +49,7 @@
 	    JOIN MEMBER m ON pb.USER_NO = m.USER_NO
 	    LEFT JOIN COORDS c ON m.MAIN_COORD = c.COORD_NO
 	    JOIN CATEGORY ct ON pb.CATEGORY_NO = ct.CATEGORY_NO
-	    LEFT JOIN ATTATCHMENT at ON pb.PRODUCT_NO = at.PRODUCT_NO AND at.STATUS = 'Y'
+	    LEFT JOIN ATTATCHMENT at ON pb.PRODUCT_NO = at.PRODUCT_NO
 	    WHERE pb.PRODUCT_NO = #{productNo}
     </select>
 
@@ -152,6 +151,11 @@
 	
 	<!-- 거래 리스트 -->
 	<insert id="insertOrder" parameterType="Order">
+	
+	<selectKey keyProperty="orderNo" resultType="int" order="AFTER">
+        SELECT SEQ_ORDER_NO.CURRVAL FROM DUAL
+    </selectKey>
+	
     INSERT INTO ORDERS (
 				        ORDER_NO,
 				        BUYER_ID,
@@ -235,7 +239,7 @@
         <result property="userName" column="USER_NAME"/>
         <result property="categoryName" column="CATEGORY_NAME"/>
         
-        <collection property="atList" ofType="Attachment">
+        <collection property="atList" ofType="Attachment" notNullColumn="FILE_NO">
             <id property="fileNo" column="FILE_NO"/>
             <result property="productBno" column="PRODUCT_NO"/>
             <result property="originName" column="ORIGIN_NAME"/>

@@ -18,8 +18,14 @@ public class OrderServiceimpl implements OrderService {
     private OrderDao dao;
 	
 	@Override
-	public int confirmOrder(Order o) {
+	public int confirmOrder(int orderNo, int buyerId) {
 	    // 구매확정: 상태를 BUYER_OK로 변경
-	    return dao.confirmOrder(sqlSession, o);
+	    return dao.confirmOrder(sqlSession, orderNo, buyerId);
+	}
+	
+	@Override
+	public Order selectOrder(int orderNo) {
+		// TODO Auto-generated method stub
+		return dao.selectOrder(sqlSession, orderNo);
 	}
 }

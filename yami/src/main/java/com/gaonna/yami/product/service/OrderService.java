@@ -8,6 +8,9 @@ import com.gaonna.yami.product.vo.Order;
 public interface OrderService {
 	
 	//구매확정
-	int confirmOrder(Order o); 
+	int confirmOrder(int orderNo, int buyerId);
+	
+	//주문 조회
+	Order selectOrder(int orderNo); 
 
 }
