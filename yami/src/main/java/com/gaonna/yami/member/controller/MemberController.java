@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.gaonna.yami.admin.service.AdminService;
+import com.gaonna.yami.cookie.service.CookieService;
 import com.gaonna.yami.location.service.LocationService;
 import com.gaonna.yami.location.vo.Coord;
 import com.gaonna.yami.location.vo.Location;
@@ -31,6 +32,8 @@ public class MemberController {
 	public TokenGenerator tokenGenerator;
 	@Autowired
 	public LocationService locationService;
+	@Autowired
+	public CookieService cookieService;
 	@Autowired
 	public AdminService adminService;
 	
@@ -171,15 +174,18 @@ public class MemberController {
 	@PostMapping("login.me")
 	public String loginMember(HttpServletRequest request
 			, HttpServletResponse response, Model model
-			, String userId, String domain, String userPwd) {
+			, String userId, String domain, String userPwd
+			, boolean saveLoginInfo, boolean autoLogin) {
 		try {
 			//세션 초기화
 			HttpSession oldSession = request.getSession(false);
 		    if (oldSession != null) {
 		        oldSession.invalidate();
 		    }
-			HttpSession session = request.getSession(true);
-			
+		    
+		    //새로운 세션 생성
+		    HttpSession session = request.getSession(true);
+		    
 			Member loginUser = service.loginMember(userId, domain, userPwd);
 			if(loginUser != null) {
 				
@@ -208,6 +214,11 @@ public class MemberController {
 							.selectRoleType(loginUser));
 					//('superAdmin', 'admin', 'viewer')
 				}
+				
+			    //자동로그인 켜져 있으면 쿠키에 저장
+			    if(autoLogin == true) {
+			    	cookieService.autoLogin(response, loginUser);
+			    }
 				
 				return "redirect:" + response.encodeRedirectURL("/");
 				

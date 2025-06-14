@@ -51,6 +51,10 @@ NOCACHE;
 CREATE SEQUENCE seq_bakery_comment
 START WITH 1 INCREMENT BY 1 NOCACHE;
 
+--쿠키 토큰 시퀀스
+CREATE SEQUENCE seq_cookie_token
+START WITH 1 INCREMENT BY 1 NOCACHE;
+
 --member테이블
 CREATE TABLE member (
     user_no    NUMBER,
@@ -300,6 +304,29 @@ CREATE INDEX idx_bakery_comment_user_no ON BAKERY_COMMENT(user_no);
 --좋/싫 수 조회용 인덱스
 CREATE INDEX idx_bakery_comment_stats 
 ON BAKERY_COMMENT(bakery_no, bakery_like, status);
+
+
+--쿠키 토큰 테이블
+CREATE TABLE COOKIE_TOKEN (
+    token_no     NUMBER,
+    token        VARCHAR2(50),
+    user_no      NUMBER,
+
+    CONSTRAINT cookie_token_no_pk PRIMARY KEY (token_no),
+    CONSTRAINT cookie_user_no_fk FOREIGN KEY (user_no) REFERENCES member(user_no) ON DELETE CASCADE,
+);
+
+COMMENT ON TABLE COOKIE_TOKEN IS '쿠키 토큰';
+COMMENT ON COLUMN COOKIE_TOKEN.token_no IS '토큰 식별번호';
+COMMENT ON COLUMN COOKIE_TOKEN.token IS '토큰';
+COMMENT ON COLUMN COOKIE_TOKEN.user_no IS '회원 식별번호';
+
+
+
+
+
+
+
 
 -----------------------------------------------------
 --                      DML                        --
