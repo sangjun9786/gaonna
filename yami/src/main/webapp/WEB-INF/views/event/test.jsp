@@ -4,7 +4,6 @@
 <%-- 필요한 경우 JQuery CDN 또는 로컬 경로 추가 --%>
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
 
-<button type="button" id="openRatingModalBtn" class="btn btn-primary">판매자 평점 남기기</button>
 
 <div id="ratingModal" class="modal">
     <div class="modal-content">
@@ -15,7 +14,8 @@
         <div class="modal-body">
             <p>판매자에게 평점을 남겨주세요 (1~5)</p>
             <input type="number" id="sellerScoreInput" min="1" max="5" value="3" class="form-control">
-            <input type="hidden" id="modalUserNo" value="">
+            <input type="hidden" id="modalUserNo" value="${board.userNo }">
+            <input type="hidden" id="productNo" value="${board.productNo }">
         </div>
         <div class="modal-footer">
             <button type="button" id="submitRatingBtn" class="btn btn-success">확인</button>
@@ -161,25 +161,12 @@ input[type="number"]::-webkit-inner-spin-button {
 $(document).ready(function() {
     // DOM 요소 가져오기 (jQuery 사용)
     const modal = $('#ratingModal');
-    const openBtn = $('#openRatingModalBtn');
     const closeSpan = $('.close');
     const closeBtn = $('#closeRatingModalBtn');
     const submitBtn = $('#submitRatingBtn');
     const scoreInput = $('#sellerScoreInput');
     const modalUserNoInput = $('#modalUserNo');
-
-    // 모달 열기 버튼 클릭 시
-    openBtn.on('click', function() {
-        // userNo를 동적으로 설정해야 한다면, 여기에 userNo 값을 설정
-        // 예시: const sellerUserNo = '판매자의 userNo 값';
-        // modalUserNoInput.val(sellerUserNo);
-        // 실제 userNo를 받아오는 로직을 여기에 추가해야 합니다.
-        // 예를 들어, 버튼 클릭 시 데이터를 전달하거나, 페이지 로드 시 어딘가에 저장된 값을 가져오는 방식
-        // 지금은 임시로 '123'을 넣어두겠습니다.
-        modalUserNoInput.val('123'); // TODO: 실제 userNo 값으로 변경 필요
-        modal.css('display', 'flex'); // flex로 설정하여 중앙 정렬
-    });
-
+	const productNo = $('#productNo');
     // 닫기 버튼 (X 버튼) 클릭 시 모달 닫기
     closeSpan.on('click', function() {
         modal.css('display', 'none');
@@ -207,7 +194,7 @@ $(document).ready(function() {
     submitBtn.on('click', function() {
         const userNo = modalUserNoInput.val(); // Hidden 필드에서 userNo 가져오기
         const score = +scoreInput.val(); // 점수 가져오기 (+를 사용하여 숫자로 변환)
-
+		const productNo = productNo.val();
         // 유효성 검사 (1~5 정수)
         if (isNaN(score) || score < 1 || score > 5 || !Number.isInteger(score)) {
             alert("평점은 1~5 사이의 정수여야 합니다.");
@@ -215,7 +202,7 @@ $(document).ready(function() {
         }
 
         // Ajax 요청 (제공해주신 submitRating 함수 로직 활용)
-        $.post('${pageContext.request.contextPath}/insertRating.rt', {
+        $.post('${pageContext.request.contextPath}/insertRating', {
             userNo: userNo,
             score: score
         })

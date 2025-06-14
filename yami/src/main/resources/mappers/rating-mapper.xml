@@ -52,13 +52,13 @@
   
   <insert id="insert" parameterType="map">
     INSERT INTO SCORE(SCORE_NO, USER_NO, COUNT, RATING)
-    VALUES(SEQ_SNO.NEXTVAL, #{userNo}, 1, #{score})    
+    VALUES(SEQ_SNO.NEXTVAL, #{userNo}, 1, #{rating})    
   </insert>
   
   <update id="rating" parameterType="map">
   	UPDATE SCORE
   	SET COUNT = COUNT + 1,
-  	RATING = RATING + #{score}
+  	RATING = RATING + #{rating}
   	WHERE USER_NO = #{userNo}
   </update>
   
