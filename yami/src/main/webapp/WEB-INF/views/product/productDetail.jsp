@@ -188,9 +188,15 @@
 
             <!-- 일반 유저만 -->
             <c:if test="${not empty loginUser and loginUser.roleType != 'superAdmin' and loginUser.roleType != 'admin' and loginUser.roleType != 'viewer'}">
-                <button class="action-btn" style="width:100%;">채팅으로 거래하기</button>
-
-                <!-- 구매하기 -->
+	            <c:if test="${loginUser.userNo ne product.userNo and not alreadyChatted}">
+	                <form action="${pageContext.request.contextPath}/chat/room" method="get" style="margin-bottom: 10px;">
+					    <input type="hidden" name="productNo" value="${product.productNo}" />
+					    <input type="hidden" name="sellerNo" value="${product.userNo}" />
+					    <button type="submit" class="action-btn" style="width:100%;">💬 채팅으로 거래하기</button>
+					</form>
+			  	</c:if>
+	
+	                <!-- 구매하기 -->
                 <form action="${contextPath}/purchaseInsert.do" method="post">
                     <input type="hidden" name="productNo" value="${product.productNo}" />
                     <input type="hidden" name="buyerId" value="${loginUser.userId}" />
@@ -342,11 +348,11 @@ function insertReply() {
 
 
 let isManager = ${loginUser.roleType != "N"};
-let currUserId = "\${loginUser.userId}";
+let currUserId = "${loginUser.userId}";
 function selectReplyList() {
     $.ajax({
         url: "${contextPath}/replyList",
-        data: { productNo: "\${product.productNo}" },
+        data: { productNo: "${product.productNo}" },
         success: function(list) {
             if (!Array.isArray(list) || list.length === 0) {
                 $("#replyArea").html("<p>댓글이 없습니다.</p>");
@@ -358,14 +364,12 @@ function selectReplyList() {
                 const txt = r.replyText || "";
                 const dt = r.replyDate ? new Date(r.replyDate).toLocaleString('ko-KR') : "";
                 str += '<div class="comment-box">';
-                str += '<b>' + uid + '</b>: ' + txt;
+                str += '<b>' + uid + '</b>: <span class="reply-text">' + txt + '</span>';
                 str += ' <span style="color:gray;">[' + dt + ']</span>';
-                
-                // 조건부 버튼 추가
                 if (isManager || currUserId == r.userId) {
-                    str += '<div style="display:inline-block; margin-left:10px;">';
-                    str += '<button class="edit-btn" data-id="' + r.replyNo + '">수정</button>';
-                    str += '<button class="delete-btn" data-id="' + r.replyNo + '" style="margin-left:5px;">삭제</button>';
+                    str += '<div class="btn-group ms-2">';
+                    str += '<button class="edit-btn btn btn-outline-primary btn-sm" data-id="' + r.replyNo + '">수정</button>';
+                    str += '<button class="delete-btn btn btn-outline-danger btn-sm" data-id="' + r.replyNo + '">삭제</button>';
                     str += '</div>';
                 }
                 str += '</div>';
@@ -378,25 +382,68 @@ function selectReplyList() {
     });
 }
 
-// 이벤트 위임 처리
+// 수정 버튼 핸들러
 $('#replyArea').on('click', '.edit-btn', function() {
+    const commentBox = $(this).closest('.comment-box');
     const replyNo = $(this).data('id');
+    const replyTextElem = commentBox.find('.reply-text');
+    const originalText = replyTextElem.text().trim();
+
+    let editForm = commentBox.find('.edit-form');
+    if (editForm.length > 0) {
+        // 이미 폼이 있으면 show만!
+        editForm.show();
+        // textarea 값도 원본으로 복구
+        editForm.find('textarea').val(originalText);
+        return;
+    }
+
+    // 폼이 없으면 새로 생성
+    const formHtml = `
+        <div class="edit-form mt-2">
+            <textarea class="form-control mb-2" rows="3">\${originalText}</textarea>
+            <button class="btn btn-sm btn-primary edit-confirm me-1">확인</button>
+            <button class="btn btn-sm btn-secondary edit-cancel">취소</button>
+        </div>
+    `;
+    commentBox.append(formHtml);
+});
+
+
+//수정 확인 버튼 핸들러
+$('#replyArea').on('click', '.edit-confirm', function() {
+    const replyNo = $(this).closest('.comment-box').find('.edit-btn').data('id');
+    const newText = $(this).siblings('textarea').val().trim();
+    const editForm = $(this).closest('.edit-form');
+    
+    if(newText === "") {
+        alert("댓글 내용을 입력하세요.");
+        return;
+    }
+    
     $.ajax({
         url: '${root}/updateReply',
         method: 'POST',
         data: { 
             userId: '${loginUser.userId}',
-            replyNo: replyNo
+            replyNo: replyNo,
+            replyText: newText  // 수정된 내용 추가
         },
         success: function(result) {
             if(result === 'success') {
                 selectReplyList(); // 목록 재갱신
-                alert('수정 완료');
             }
+            editForm.remove();  // 수정 폼 제거
         }
     });
 });
 
+//수정 취소 버튼 핸들러
+$('#replyArea').on('click', '.edit-cancel', function() {
+    $(this).closest('.edit-form').hide();
+});
+
+//삭제 버튼 핸들러
 $('#replyArea').on('click', '.delete-btn', function() {
     const replyNo = $(this).data('id');
     if(confirm('정말 삭제하시겠습니까?')) {

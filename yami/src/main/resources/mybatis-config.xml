@@ -29,5 +29,8 @@
 		<typeAlias type="com.gaonna.yami.notice.model.vo.Notice" alias="Notice"/>
 		<typeAlias type="com.gaonna.yami.cookie.vo.CookieToken" alias="CookieToken"/>
 		<typeAlias type="com.gaonna.yami.search.model.vo.PerchasedBo" alias="PerchasedBo"/>
+		<typeAlias alias="chatRoom" type="com.gaonna.yami.chat.model.vo.ChatRoom"/>
+    	<typeAlias alias="chatMessage" type="com.gaonna.yami.chat.model.vo.ChatMessage"/>
+    	<typeAlias alias="chatListView" type="com.gaonna.yami.chat.model.vo.ChatListView"/>
 	</typeAliases>
 </configuration>

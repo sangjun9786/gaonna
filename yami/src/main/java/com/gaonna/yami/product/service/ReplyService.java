@@ -9,4 +9,10 @@ public interface ReplyService {
 
     // 특정 상품에 달린 댓글 목록 조회
     List<Reply> selectReplyList(int productNo);
+
+    //댓글 수정
+	int updateReply(Reply reply);
+
+	//댓글 삭제
+	int deleteReply(Reply reply);
 }

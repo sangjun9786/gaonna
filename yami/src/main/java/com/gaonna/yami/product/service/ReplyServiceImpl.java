@@ -25,4 +25,14 @@ public class ReplyServiceImpl implements ReplyService {
     public List<Reply> selectReplyList(int productNo) {
         return replyDao.selectReplyList(sqlSession, productNo);
     }
+    
+    @Override
+    public int updateReply(Reply reply) {
+    	return replyDao.updateReply(sqlSession,reply);
+    }
+    
+    @Override
+    public int deleteReply(Reply reply) {
+    	return replyDao.deleteReply(sqlSession,reply);
+    }
 }

@@ -19,6 +19,8 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.multipart.MultipartFile;
 
+import com.gaonna.yami.chat.model.service.ChatService;
+import com.gaonna.yami.chat.model.vo.ChatRoom;
 import com.gaonna.yami.common.PageInfo;
 import com.gaonna.yami.common.Pagination;
 import com.gaonna.yami.member.model.vo.Member;
@@ -41,6 +43,9 @@ public class ProductController {
     
     @Autowired
     private WishlistService wishlistService; // ✅ 이거 추가해줘야 빨간줄 사라짐
+    
+    @Autowired
+    private ChatService chatService;
 
 	//test 리스트 
     @RequestMapping("productList2.pro")
@@ -103,6 +108,11 @@ public class ProductController {
         if(loginUser != null) {
             System.out.println("[로그] loginUser.roleType = " + loginUser.getRoleType());
             System.out.println("[로그] loginUser.roleType 타입 = " + (loginUser.getRoleType() == null ? "null" : loginUser.getRoleType().getClass().getName()));
+        }
+        
+        if (loginUser.getUserNo() != product.getUserNo()) {
+            ChatRoom room = chatService.findRoomByUsersAndProduct(product.getUserNo(), loginUser.getUserNo(), productNo);
+            model.addAttribute("alreadyChatted", room != null);
         }
 
         model.addAttribute("product", product);
@@ -374,6 +384,69 @@ public class ProductController {
         System.out.println("📍 댓글 불러오기: " + productNo);
         return replyService.selectReplyList(productNo);
     }
+    
+    //댓글 업데이트
+    @PostMapping("updateReply")
+    @ResponseBody
+    public String updateReply(HttpSession session
+    		,Reply reply) {
+    	try {
+    		Member m = (Member)session.getAttribute("loginUser");
+    		if(m.getRoleType() == "N" &&
+    				m.getUserId() != reply.getUserId()) {
+    			return "fail";
+    		}
+    		
+    		int result = replyService.updateReply(reply);
+    		
+    		if(result>0) {
+    			return "success";
+    		}else {
+    			return "fail";
+    		}
+		} catch (Exception e) {
+			session.setAttribute("alertMsg", "댓글 수정 실패");
+			e.printStackTrace();
+			return "fail";
+		}
+    }
+    
+    
+    //댓글 삭제
+    @PostMapping("deleteReply")
+    @ResponseBody
+    public String deleteReply(HttpSession session
+    		,Reply reply) {
+    	try {
+    		Member m = (Member)session.getAttribute("loginUser");
+    		if(m.getRoleType() == "N" &&
+    				m.getUserId() != reply.getUserId()) {
+    			return "fail";
+    		}
+    		
+    		int result = replyService.deleteReply(reply);
+    		
+    		if(result>0) {
+    			return "success";
+    		}else {
+    			return "fail";
+    		}
+		} catch (Exception e) {
+			session.setAttribute("alertMsg", "댓글 수정 실패");
+			e.printStackTrace();
+			return "fail";
+		}
+    }
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
 }
 
 

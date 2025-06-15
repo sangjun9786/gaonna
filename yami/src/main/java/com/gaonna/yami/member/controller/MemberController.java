@@ -215,9 +215,12 @@ public class MemberController {
 					//('superAdmin', 'admin', 'viewer')
 				}
 				
-			    //자동로그인 켜져 있으면 쿠키에 저장
 			    if(autoLogin != null && autoLogin.equals("Y")) {
+			    	//자동로그인 켜져 있으면 쿠키에 저장
 			    	cookieService.autoLogin(response, loginUser);
+			    }else {
+			    	//자동 로그인 가세요 있으면 쿠키삭제 및 토큰삭제
+			    	cookieService.deleteAutoLogin(response, session);
 			    }
 				
 				return "redirect:" + response.encodeRedirectURL("/");
