@@ -112,7 +112,7 @@
 					  <div class="row row-cols-2 g-3">
 					    <div class="col">
 					      <a href='${root}/wishlist.co' class="btn btn-outline-primary w-100 d-flex align-items-center justify-content-center">
-					        <i class="bi bi-file-text me-2"></i>찜
+					        <i class="bi bi-file-text me-2"></i>좋아요
 					      </a>
 					    </div>
 					    <div class="col">
@@ -162,54 +162,75 @@
 </body>
 
 <script type="text/javascript">
-	//전역 변수
-	let isPasswordValid = false;
-	const pwdRegex = /^[A-Za-z0-9]{4,30}$/;
-	
-	// 수정하기 버튼 클릭 핸들러
-	document.getElementById('editTriggerBtn').addEventListener('click', function() {
-	    document.getElementById('passwordSection').classList.toggle('d-none');
-	});
-	
-	// 실시간 비밀번호 검증 (0.3초 디바운스)
-	const debouncedCheckPassword = _.debounce(function() {
-	    const inputPwd = document.getElementById('inputPwd').value;
-	    const feedback = document.getElementById('passwordFeedback');
-	
-	    if (!pwdRegex.test(inputPwd)) {
-	        showValidationError("특수문자 제외 4~30글자로 입력해주세요");
-	        return;
-	    }
-	
-	    $.ajax({
-	        url: 'checkUserPwd.me',
-	        method: 'POST',
-	        data: { inputPwd: inputPwd },
-	        success: function(response) {
-	            if (response === 'pass') {
-	                window.location.href = '${root}/update.me';
-	            } else {
-	                showValidationError("비밀번호가 일치하지 않습니다");
-	            }
-	        },
-	        error: function() {
-	            showValidationError("서버 연결 오류");
-	        }
-	    });
-	}, 300);
-	
-	// 이벤트 리스너 등록
-	document.getElementById('inputPwd').addEventListener('input', function() {
-	    debouncedCheckPassword();
-	});
-	
-	// 유효성 오류 표시 함수
-	function showValidationError(message) {
-	    const feedback = document.getElementById('passwordFeedback');
-	    feedback.textContent = message;
-	    feedback.className = "invalid-feedback d-block";
-	    isPasswordValid = false;
-	}
+//평점 조회
+$.ajax({
+    url: `${root}/selectRatingScore.me`,
+    method: 'POST',
+    data: {},
+    success: function(res) {
+    	
+    },
+    error: function() {
+    	
+    }
+});
+
+
+
+
+
+
+
+
+
+//전역 변수
+let isPasswordValid = false;
+const pwdRegex = /^[A-Za-z0-9]{4,30}$/;
+
+// 수정하기 버튼 클릭 핸들러
+document.getElementById('editTriggerBtn').addEventListener('click', function() {
+    document.getElementById('passwordSection').classList.toggle('d-none');
+});
+
+// 실시간 비밀번호 검증 (0.3초 디바운스)
+const debouncedCheckPassword = _.debounce(function() {
+    const inputPwd = document.getElementById('inputPwd').value;
+    const feedback = document.getElementById('passwordFeedback');
+
+    if (!pwdRegex.test(inputPwd)) {
+        showValidationError("특수문자 제외 4~30글자로 입력해주세요");
+        return;
+    }
+
+    $.ajax({
+        url: 'checkUserPwd.me',
+        method: 'POST',
+        data: { inputPwd: inputPwd },
+        success: function(response) {
+            if (response === 'pass') {
+                window.location.href = '${root}/update.me';
+            } else {
+                showValidationError("비밀번호가 일치하지 않습니다");
+            }
+        },
+        error: function() {
+            showValidationError("서버 연결 오류");
+        }
+    });
+}, 300);
+
+// 이벤트 리스너 등록
+document.getElementById('inputPwd').addEventListener('input', function() {
+    debouncedCheckPassword();
+});
+
+// 유효성 오류 표시 함수
+function showValidationError(message) {
+    const feedback = document.getElementById('passwordFeedback');
+    feedback.textContent = message;
+    feedback.className = "invalid-feedback d-block";
+    isPasswordValid = false;
+}
 
 </script>
 </html>

@@ -25,6 +25,7 @@ import com.gaonna.yami.location.vo.Location;
 import com.gaonna.yami.member.common.TokenGenerator;
 import com.gaonna.yami.member.model.service.MemberService;
 import com.gaonna.yami.member.model.vo.Member;
+import com.gaonna.yami.rating.model.service.RatingService;
 
 @Controller
 public class MemberController {
@@ -38,6 +39,8 @@ public class MemberController {
 	public CookieService cookieService;
 	@Autowired
 	public AdminService adminService;
+	@Autowired
+	public RatingService ratingService;
 	@Autowired
 	private BCryptPasswordEncoder bcrypt;
 	
@@ -591,6 +594,22 @@ public class MemberController {
 		} catch (Exception e) {
 			e.printStackTrace();
 			return errorPage(model,"500 err");
+		}
+	}
+	
+	//마이페이지 평점 조회
+	@PostMapping("selectRatingScore.me")
+	@ResponseBody
+	public String selectRatingScore(HttpSession session) {
+		try {
+			Member m = (Member)session.getAttribute("loginUser");
+			double score = ratingService.selectRatingScore(m);
+			
+			
+			return "";
+		} catch (Exception e) {
+			e.printStackTrace();
+			return "";
 		}
 	}
 	

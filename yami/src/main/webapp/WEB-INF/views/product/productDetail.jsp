@@ -263,6 +263,9 @@
 let detailImages = [];
 let currentIndex = 0;
 
+let isNotManager = ${loginUser.roleType != "N"};
+let currUserId = "${loginUser.userId}";
+
 $(function () {
     $("#deleteBtn").click(function () {
         if (confirm("정말로 삭제하시겠습니까?")) {
@@ -312,6 +315,11 @@ function closeModal() {
 }
 
 function wishProduct() {
+	if(currUserId == "${product.userId}"){
+		alert("자신의 물품에 좋아요를 누를 수 없습니다.");
+		return;
+	}
+	
     const productNo = $("#productNo").val();
     $.post("${contextPath}/product/wish", { productNo: productNo }, function(result) {
         if (result === "not-login") {
@@ -347,8 +355,6 @@ function insertReply() {
 }
 
 
-let isManager = ${loginUser.roleType != "N"};
-let currUserId = "${loginUser.userId}";
 function selectReplyList() {
     $.ajax({
         url: "${contextPath}/replyList",
@@ -366,7 +372,7 @@ function selectReplyList() {
                 str += '<div class="comment-box">';
                 str += '<b>' + uid + '</b>: <span class="reply-text">' + txt + '</span>';
                 str += ' <span style="color:gray;">[' + dt + ']</span>';
-                if (isManager || currUserId == r.userId) {
+                if (isNotManager || currUserId == r.userId) {
                     str += '<div class="btn-group ms-2">';
                     str += '<button class="edit-btn btn btn-outline-primary btn-sm" data-id="' + r.replyNo + '">수정</button>';
                     str += '<button class="delete-btn btn btn-outline-danger btn-sm" data-id="' + r.replyNo + '">삭제</button>';
