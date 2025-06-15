@@ -24,7 +24,10 @@
 	    <result property="uploadDate" column="UPLOAD_DATE"/>
 	    <result property="productTitle" column="PRODUCT_TITLE"/>
 	    <result property="productContent" column="PRODUCT_CONTENT"/>
+	    <result property="price" column="PRICE"/>                    
+    	<result property="orderNo" column="ORDER_NO"/>              
 	    <result property="replyCount" column="REPLY_COUNT"/>
+	    <result property="orderStatus" column="ORDERSTATUS"/> 
 	    <result property="productCount" column="PRODUCT_COUNT"/>
 	</resultMap>
 	<resultMap type="BakeryComment" id="bakeryCommentResultMap">
@@ -86,67 +89,139 @@
 		</choose>
 	</select>
 	
+	<!-- ajax - 판매 게시글 조회  6/14 수정 by 상준-->
+<!-- 	<select id="searchMyBoard" resultMap="boardCoResultMap" parameterType="SearchForm"> -->
+<!-- 	<bind name="searchPattern" value="'%' + searchKeyword + '%'" /> -->
+<!-- 		select * -->
+<!-- 		from( -->
+<!-- 			select t.*, rownum as rn -->
+<!-- 			from (select -->
+<!-- 					pb.PRODUCT_NO -->
+<!-- 					,c.CATEGORY_NAME -->
+<!-- 					,pb.PRICE -->
+<!-- 					,pb.UPLOAD_DATE -->
+<!-- 					,pb.PRODUCT_TITLE -->
+<!-- 					,pb.PRODUCT_CONTENT -->
+<!-- 					,pb.STATUS -->
+<!-- 					,count(r.REPLY_NO) as COUNT_REPLY -->
+<!-- 				from PRODUCT_BOARD pb -->
+<!-- 				left join CATEGORY c on (c.CATEGORY_NO=pb.CATEGORY_NO) -->
+<!-- 				left join REPLY r on(r.PRODUCT_NO = pb.PRODUCT_NO) -->
+<!-- 				where user_no = #{userNo} -->
+<!-- 				<choose> -->
+<!-- 	                검색 타입1이 'all'이 아닌 경우 -->
+<!-- 	            	<when test="searchType1 != 'all'"> -->
+<!-- 	                    and pb.CATEGORY_NO = #{searchType1} -->
+<!-- 	                    <choose> -->
+<!-- 	                        <when test="searchType2 == 'title'"> -->
+<!-- 	                            and pb.PRODUCT_TITLE LIKE #{searchPattern} -->
+<!-- 	                        </when> -->
+<!-- 	                        <when test="searchType2 == 'content'"> -->
+<!-- 	                            and pb.PRODUCT_CONTENT LIKE #{searchPattern} -->
+<!-- 	                        </when> -->
+<!-- 	                        <otherwise> -->
+<!-- 	                            and (pb.PRODUCT_TITLE LIKE #{searchPattern}  -->
+<!-- 	                                 OR pb.PRODUCT_CONTENT LIKE #{searchPattern}) -->
+<!-- 	                        </otherwise> -->
+<!-- 	                    </choose> -->
+<!-- 					</when> -->
+<!-- 					검색 타입1이 'all'인 경우 -->
+<!-- 					<otherwise> -->
+<!-- 						<choose> -->
+<!-- 							<when test="searchType2 == 'title'"> -->
+<!-- 	                            and pb.PRODUCT_TITLE LIKE #{searchPattern} -->
+<!-- 							</when> -->
+<!-- 							<when test="searchType2 == 'content'"> -->
+<!-- 	                            and pb.PRODUCT_CONTENT LIKE #{searchPattern} -->
+<!-- 							</when> -->
+<!-- 							<otherwise> -->
+<!-- 	                            and (pb.PRODUCT_TITLE LIKE #{searchPattern}  -->
+<!-- 	                                 OR pb.PRODUCT_CONTENT LIKE #{searchPattern}) -->
+<!-- 							</otherwise> -->
+<!-- 						</choose> -->
+<!-- 					</otherwise> -->
+<!-- 				</choose> -->
+<!-- 				group by pb.PRODUCT_NO, c.CATEGORY_NAME, pb.PRICE, -->
+<!--                      pb.UPLOAD_DATE, pb.PRODUCT_TITLE,  -->
+<!--                      pb.PRODUCT_CONTENT, pb.STATUS -->
+<!-- 				order by UPLOAD_DATE desc -->
+<!-- 				) t -->
+<!-- 			where rownum &lt;= #{endRow} -->
+<!-- 			) -->
+<!-- 		where rn &gt;= #{startRow} -->
+<!-- 	</select> -->
 	<!-- ajax - 판매 게시글 조회 -->
 	<select id="searchMyBoard" resultMap="boardCoResultMap" parameterType="SearchForm">
-	<bind name="searchPattern" value="'%' + searchKeyword + '%'" />
-		select *
-		from(
-			select t.*, rownum as rn
-			from (select
-					pb.PRODUCT_NO
-					,c.CATEGORY_NAME
-					,pb.PRICE
-					,pb.UPLOAD_DATE
-					,pb.PRODUCT_TITLE
-					,pb.PRODUCT_CONTENT
-					,pb.STATUS
-					,count(r.REPLY_NO) as COUNT_REPLY
-				from PRODUCT_BOARD pb
-				left join CATEGORY c on (c.CATEGORY_NO=pb.CATEGORY_NO)
-				left join REPLY r on(r.PRODUCT_NO = pb.PRODUCT_NO)
-				where user_no = #{userNo}
-				<choose>
-	                <!-- 검색 타입1이 'all'이 아닌 경우 -->
-	            	<when test="searchType1 != 'all'">
-	                    and pb.CATEGORY_NO = #{searchType1}
-	                    <choose>
-	                        <when test="searchType2 == 'title'">
-	                            and pb.PRODUCT_TITLE LIKE #{searchPattern}
-	                        </when>
-	                        <when test="searchType2 == 'content'">
-	                            and pb.PRODUCT_CONTENT LIKE #{searchPattern}
-	                        </when>
-	                        <otherwise>
-	                            and (pb.PRODUCT_TITLE LIKE #{searchPattern} 
-	                                 OR pb.PRODUCT_CONTENT LIKE #{searchPattern})
-	                        </otherwise>
-	                    </choose>
-					</when>
-					<!-- 검색 타입1이 'all'인 경우 -->
-					<otherwise>
-						<choose>
-							<when test="searchType2 == 'title'">
-	                            and pb.PRODUCT_TITLE LIKE #{searchPattern}
-							</when>
-							<when test="searchType2 == 'content'">
-	                            and pb.PRODUCT_CONTENT LIKE #{searchPattern}
-							</when>
-							<otherwise>
-	                            and (pb.PRODUCT_TITLE LIKE #{searchPattern} 
-	                                 OR pb.PRODUCT_CONTENT LIKE #{searchPattern})
-							</otherwise>
-						</choose>
-					</otherwise>
-				</choose>
-				group by pb.PRODUCT_NO, c.CATEGORY_NAME, pb.PRICE,
-                     pb.UPLOAD_DATE, pb.PRODUCT_TITLE, 
-                     pb.PRODUCT_CONTENT, pb.STATUS
-				order by UPLOAD_DATE desc
-				) t
-			where rownum &lt;= #{endRow}
-			)
-		where rn &gt;= #{startRow}
-	</select>
+  <bind name="searchPattern" value="'%' + searchKeyword + '%'" />
+  SELECT *
+  FROM (
+    SELECT t.*, ROWNUM AS rn
+    FROM (
+      SELECT 
+        pb.PRODUCT_NO,
+        pb.PRODUCT_TITLE,
+        pb.PRODUCT_CONTENT,
+        pb.PRICE,
+        pb.UPLOAD_DATE,
+        c.CATEGORY_NAME,
+        o.ORDER_NO,
+        o.STATUS AS ORDERSTATUS,     -- ★ 주문 상태 따로 뽑기
+        COUNT(r.REPLY_NO) AS COUNT_REPLY
+      FROM PRODUCT_BOARD pb
+      LEFT JOIN CATEGORY c ON c.CATEGORY_NO = pb.CATEGORY_NO
+      LEFT JOIN (
+        SELECT *
+        FROM ORDERS o1
+        WHERE o1.ORDER_NO IN (
+          SELECT MAX(o2.ORDER_NO)
+          FROM ORDERS o2
+          GROUP BY o2.PRODUCT_NO
+        )
+      ) o ON o.PRODUCT_NO = pb.PRODUCT_NO
+      LEFT JOIN REPLY r ON r.PRODUCT_NO = pb.PRODUCT_NO
+      WHERE pb.USER_NO = #{userNo}
+      
+      <choose>
+        <when test="searchType1 != 'all'">
+          AND pb.CATEGORY_NO = #{searchType1}
+          <choose>
+            <when test="searchType2 == 'title'">
+              AND pb.PRODUCT_TITLE LIKE #{searchPattern}
+            </when>
+            <when test="searchType2 == 'content'">
+              AND pb.PRODUCT_CONTENT LIKE #{searchPattern}
+            </when>
+            <otherwise>
+              AND (pb.PRODUCT_TITLE LIKE #{searchPattern}
+                   OR pb.PRODUCT_CONTENT LIKE #{searchPattern})
+            </otherwise>
+          </choose>
+        </when>
+        <otherwise>
+          <choose>
+            <when test="searchType2 == 'title'">
+              AND pb.PRODUCT_TITLE LIKE #{searchPattern}
+            </when>
+            <when test="searchType2 == 'content'">
+              AND pb.PRODUCT_CONTENT LIKE #{searchPattern}
+            </when>
+            <otherwise>
+              AND (pb.PRODUCT_TITLE LIKE #{searchPattern}
+                   OR pb.PRODUCT_CONTENT LIKE #{searchPattern})
+            </otherwise>
+          </choose>
+        </otherwise>
+      </choose>
+
+      GROUP BY pb.PRODUCT_NO, pb.PRODUCT_TITLE, pb.PRODUCT_CONTENT, pb.PRICE,
+               pb.UPLOAD_DATE, c.CATEGORY_NAME, o.ORDER_NO, o.STATUS
+      ORDER BY pb.UPLOAD_DATE DESC
+    ) t
+    WHERE ROWNUM &lt;= #{endRow}
+  )
+  WHERE rn &gt;= #{startRow}
+</select>
+
 	
 	<!-- ajax - 판매 게시판 댓글 수 조회 -->
 	<select id="countMyReply" resultType="int" parameterType="SearchForm">

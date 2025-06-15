@@ -5,7 +5,7 @@
 <html lang="ko">
 <head>
 <meta charset="UTF-8">
-<title>౰స్మ 상상 상세</title>
+<title>상세페이지</title>
 <style>
     body {
         font-family: '마르아고딕', sans-serif;
@@ -173,7 +173,8 @@
             <div class="price">
                 <fmt:formatNumber value="${product.price}" pattern="#,###" />원
             </div>
-            <div class="desc">${product.productContent}</div>
+            <div class="desc"><pre>${product.productContent}</pre>
+			</div>
 
             <!-- 좋아요 -->
             <div class="like-area">
@@ -197,12 +198,13 @@
 			  	</c:if>
 	
 	                <!-- 구매하기 -->
-                <form action="${contextPath}/purchaseInsert.do" method="post">
+                <form action="${contextPath}/buyProduct" method="get">
                     <input type="hidden" name="productNo" value="${product.productNo}" />
-                    <input type="hidden" name="buyerId" value="${loginUser.userId}" />
+                    <input type="hidden" name="buyerId" value="${loginUser.userNo}" />
                     <button type="submit" class="action-btn" style="width:100%;">💳 이 상품 구매하기</button>
                 </form>
             </c:if>
+
 
             <!-- 삭제 버튼 -->
             <c:if test="${loginUser.userId eq product.userId}">
@@ -212,6 +214,7 @@
                 </form>
                 <button type="button" id="deleteBtn" class="action-btn" style="width:auto; float:right;">삭제하기</button>
             </c:if>
+
         </div>
     </div>
 

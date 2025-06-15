@@ -7,8 +7,10 @@ import org.mybatis.spring.SqlSessionTemplate;
 import org.springframework.stereotype.Repository;
 
 import com.gaonna.yami.common.PageInfo;
+import com.gaonna.yami.member.model.vo.Member;
 import com.gaonna.yami.product.vo.Attachment;
 import com.gaonna.yami.product.vo.Category;
+import com.gaonna.yami.product.vo.Order;
 import com.gaonna.yami.product.vo.Product;
 
 @Repository
@@ -96,6 +98,24 @@ public class ProductDao {
 		// TODO Auto-generated method stub
 		return sqlSession.update("productMapper.productUpdate",p);
 	}
-
+	
+	//주문 등록
+	public int insertOrder(SqlSessionTemplate sqlSession, Order o) {
+		// TODO Auto-generated method stub
+		return sqlSession.insert("productMapper.insertOrder", o);
+	}
+	
+	//포인트 업데이트
+	public int updatePoint(SqlSessionTemplate sqlSession, Member m) {
+		// TODO Auto-generated method stub
+		return sqlSession.update("productMapper.updatePoint", m);
+	}
+	
+	//판매게시판 상태중 T로 바꾸기
+	public int updateProductStatus(SqlSessionTemplate sqlSession, Order o) {
+		// TODO Auto-generated method stub
+		return sqlSession.update("productMapper.updateProductStatus",o);
+	}
+	
 
 }

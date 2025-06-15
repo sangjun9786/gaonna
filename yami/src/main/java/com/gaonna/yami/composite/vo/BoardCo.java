@@ -22,6 +22,9 @@ public class BoardCo {
 	private int productCount;
 	private String status;
 	private int replyCount; //댓글 수, reply에서 추출
+	private int orderNo;                 // by 상준
+	private String orderStatus;          // by 상준
+	
 	
 	//sdf로 변경
 	public void boardSDF(List<BoardCo> result) {

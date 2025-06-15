@@ -1,5 +1,6 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+
 <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
 <style>
     .sidebar {
@@ -37,6 +38,7 @@
 <div class="sidebar">
     <!-- 글작성 버튼 -->
     <a href="${pageContext.request.contextPath}/productEnrollForm.pr" class="write-btn">글작성</a>
+    
     <c:if test="${empty cate}">
 <!--   		<script> -->
 // 	  	  $(function() {
@@ -84,7 +86,6 @@
 		<input type="hidden" name="condition" value="${condition}">
 	    <button type="submit" class="btn btn-sm btn-primary mt-2">검색</button>
 	</form>
-	
 	<script>
 	    $(function() {
 	        $('.sidebar').on('change', 'input[name=location], input[name=category]', function() {

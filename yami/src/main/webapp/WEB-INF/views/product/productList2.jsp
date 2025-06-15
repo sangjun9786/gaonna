@@ -1,5 +1,11 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%
+    // 뒤로가기 시 POST 재전송 방지 (브라우저 캐시 차단)
+    response.setHeader("Cache-Control", "no-store, no-cache, must-revalidate");
+    response.setHeader("Pragma", "no-cache");
+    response.setDateHeader("Expires", 0);
+%>
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -68,14 +74,18 @@
         }
 
         .photo-info {
-            margin-top: 8px;
-            font-size: 14px;
-            color: #555;
             display: flex;
-            flex-direction: column;
-            gap: 2px;
-            min-height: 65px;
+		    justify-content: space-between;
+		    font-size: 14px;
+		    color: #555;
+		    min-height: 65px;
         }
+        
+        .info-left, .info-right {
+		    display: flex;
+		    flex-direction: column;
+		    gap: 2px;
+		}
 
         .pagination .page-item.active .page-link {
             background-color: #fd7e14;
@@ -93,6 +103,12 @@
 <%@ include file="/WEB-INF/views/common/header.jsp" %>
 <%@ include file="/WEB-INF/views/common/searchbar.jsp" %>
 
+<c:if test="${not empty sessionScope.alertMsg}">
+    <script>
+        alert("${sessionScope.alertMsg}");
+    </script>
+    <c:remove var="alertMsg" scope="session"/>
+</c:if>
 <div class="container-main">
 
     <%@ include file="/WEB-INF/views/product/sidebar.jsp" %>
@@ -115,11 +131,23 @@
                     <div class="photo-title">${product.productTitle}</div>
                     <div class="photo-price">${product.price}원</div>
 
-                    <div class="photo-info">
-                        <div>${product.coordAddress}</div>
-                        <div>${product.userId}</div>
-                        <div>${product.categoryName}</div>
-                    </div>
+               <div class="photo-info d-flex justify-content-between">
+				    <!-- 왼쪽 정보 -->
+				    <div class="info-left">
+				        <div>${product.coordAddress}</div>
+				        <div>${product.userName}</div>
+				        <div>${product.categoryName}</div>
+				    </div>
+				
+				    <!-- 오른쪽 정보 -->
+				    <div class="info-right text-end">
+				        <div>👁️ ${product.productCount}</div>
+				        <div>❤️ ${product.wishCount}</div>
+				        <div>
+				            <fmt:formatDate value="${product.uploadDate}" pattern="yy.MM.dd" />
+				        </div>
+				    </div>
+				</div>
                 </div>
             </c:forEach>
         </div>

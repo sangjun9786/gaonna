@@ -23,12 +23,15 @@ public class Product {
 	private String status;
 	
 	private String coordAddress; // 유저 위치 정보
-	private String userId;
-	private String userName;
+	private String userId;   // 판매자 ID
+	private String userName; // 판매자 이름
 	private String categoryName;
 	private String originName;   
-	private String changeName;   
+	private String changeName;
+	private String userPhone; // 판매자 연락처
+	private int wishCount;
+
 	
-	private ArrayList<Attachment> atList;
+	private ArrayList<Attachment> atList = new ArrayList<>();
 	// private ArrayList<Comment> commentList;
 }

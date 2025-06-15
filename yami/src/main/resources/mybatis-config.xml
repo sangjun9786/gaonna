@@ -32,5 +32,6 @@
 		<typeAlias alias="chatRoom" type="com.gaonna.yami.chat.model.vo.ChatRoom"/>
     	<typeAlias alias="chatMessage" type="com.gaonna.yami.chat.model.vo.ChatMessage"/>
     	<typeAlias alias="chatListView" type="com.gaonna.yami.chat.model.vo.ChatListView"/>
+    	<typeAlias type="com.gaonna.yami.product.vo.Order" alias="Order"/>
 	</typeAliases>
 </configuration>

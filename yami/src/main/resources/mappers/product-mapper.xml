@@ -17,7 +17,6 @@
         UPDATE PRODUCT_BOARD
         SET PRODUCT_COUNT = PRODUCT_COUNT + 1
         WHERE PRODUCT_NO = #{productNo}
-          AND STATUS = 'N'
     </update>
 
     <!-- 상세 페이지 -->
@@ -34,6 +33,8 @@
 	        pb.PRODUCT_CONTENT,
 	        pb.STATUS AS PB_STATUS,
 	        m.USER_ID,
+	        m.USER_NAME,
+    		m.PHONE AS USER_PHONE,
 	        c.COORD_ADDRESS,
 	        ct.CATEGORY_NAME,
 	        at.FILE_NO,
@@ -48,7 +49,7 @@
 	    JOIN MEMBER m ON pb.USER_NO = m.USER_NO
 	    LEFT JOIN COORDS c ON m.MAIN_COORD = c.COORD_NO
 	    JOIN CATEGORY ct ON pb.CATEGORY_NO = ct.CATEGORY_NO
-	    LEFT JOIN ATTATCHMENT at ON pb.PRODUCT_NO = at.PRODUCT_NO AND at.STATUS = 'Y'
+	    LEFT JOIN ATTATCHMENT at ON pb.PRODUCT_NO = at.PRODUCT_NO
 	    WHERE pb.PRODUCT_NO = #{productNo}
     </select>
 
@@ -78,21 +79,21 @@
 
     <!-- 상품 사진 정보 등록 -->
     <insert id="insertAttachment">
-        INSERT INTO ATTATCHMENT (
-            FILE_NO,
-            PRODUCT_NO,
-            ORIGIN_NAME,
-            CHANGE_NAME,
-            FILE_PATH,
-            FILE_LEVEL
-        ) VALUES (
-            SEQ_FNO.NEXTVAL,
-            #{productBno},
-            #{originName},
-            #{changeName},
-            #{filePath},
-            #{fileLevel}
-        )
+        INSERT INTO ATTATCHMENT(
+					            FILE_NO,
+					            PRODUCT_NO,
+					            ORIGIN_NAME,
+					            CHANGE_NAME,
+					            FILE_PATH,
+					            FILE_LEVEL
+				        )VALUES(
+					            SEQ_FNO.NEXTVAL,
+					            #{productBno},
+					            #{originName},
+					            #{changeName},
+					            #{filePath},
+					            #{fileLevel}
+				        		)
     </insert>
 
     <!-- 상품 리스트 조회 -->
@@ -121,6 +122,7 @@
             at.UPLOAD_DATE AS AT_UPLOAD_DATE,
             at.FILE_LEVEL,
             at.STATUS AS AT_STATUS
+            NVL(w.cnt, 0) AS WISH_COUNT
         FROM PRODUCT_BOARD pb
         JOIN MEMBER m ON pb.USER_NO = m.USER_NO
         LEFT JOIN COORDS c ON m.MAIN_COORD = c.COORD_NO
@@ -128,6 +130,13 @@
             AND at.FILE_LEVEL = 1
             AND at.STATUS = 'Y'
         JOIN CATEGORY c ON pb.CATEGORY_NO = c.CATEGORY_NO
+        
+        LEFT JOIN (
+	        SELECT PRODUCT_NO, COUNT(*) AS cnt
+	        FROM WISH
+	        GROUP BY PRODUCT_NO
+    	) w ON pb.PRODUCT_NO = w.PRODUCT_NO
+        
         WHERE pb.STATUS = 'N'
         ORDER BY pb.UPLOAD_DATE DESC
     </select>
@@ -147,6 +156,62 @@
     FROM CATEGORY
     ORDER BY CATEGORY_NO
 	</select>
+	
+	<!-- 거래 리스트 -->
+	<insert id="insertOrder" parameterType="Order">
+	
+	<selectKey keyProperty="orderNo" resultType="int" order="AFTER">
+        SELECT SEQ_ORDER_NO.CURRVAL FROM DUAL
+    </selectKey>
+	
+    INSERT INTO ORDERS (
+				        ORDER_NO,
+				        BUYER_ID,
+				        SELLER_ID,
+				        PRODUCT_NO,
+				        PRICE,
+				        USED_POINT,
+				        PAY_METHOD,
+				        STATUS,
+				        REG_DATE,
+				        BUYER_NAME,
+				        BUYER_PHONE,
+				        MEET_LOCATION,
+				        MESSAGE,
+				        SELLER_NAME,
+				        SELLER_PHONE
+   			 	)VALUES(
+				        SEQ_ORDER_NO.NEXTVAL,
+				        #{buyerId},
+				        #{sellerId},
+				        #{productNo},
+				        #{price},
+				        #{usedPoint},
+				        #{payMethod},
+				        'REQ',
+				        SYSDATE,
+				        #{buyerName},
+				        #{buyerPhone},
+				        #{meetLocation},
+				        #{message},
+				        #{sellerName},
+				        #{sellerPhone}
+				       )
+	</insert>
+	
+	<!-- 포인트 차감 -->
+	<update id="updatePoint" parameterType="Member">
+	    UPDATE MEMBER
+	    SET POINT = #{point}
+	    WHERE USER_NO = #{userNo}
+	</update>
+	
+	<!-- 게시글 상태 변경 -->
+	<update id="updateProductStatus" parameterType="Order">
+	    UPDATE PRODUCT_BOARD
+	    SET STATUS = 'T'
+	    WHERE PRODUCT_NO = #{productNo}
+	</update>
 	
     <!-- 상품 ResultMap -->
     <resultMap id="productResultMap" type="Product">
@@ -181,8 +246,9 @@
         <result property="userId" column="USER_ID"/>
         <result property="userName" column="USER_NAME"/>
         <result property="categoryName" column="CATEGORY_NAME"/>
+        <result property="wishCount" column="WISH_COUNT"/>
         
-        <collection property="atList" ofType="Attachment">
+        <collection property="atList" ofType="Attachment" notNullColumn="FILE_NO">
             <id property="fileNo" column="FILE_NO"/>
             <result property="productBno" column="PRODUCT_NO"/>
             <result property="originName" column="ORIGIN_NAME"/>

@@ -5,6 +5,14 @@
 <head>
 <meta charset="UTF-8">
 <title>나의 게시글</title>
+  <style>
+    .clickable-status {
+      cursor: pointer;
+      text-decoration: underline;
+      position: relative;
+      z-index: 10;
+    }
+  </style>
 </head>
 <body>
 <%@include file="/WEB-INF/views/common/header.jsp"%>
@@ -148,8 +156,39 @@ $(function(){
       // 제목 10글자, 내용 30글자 제한
       let title = board.productTitle.length > 10 ? board.productTitle.substring(0,10) + '...' : board.productTitle;
       let content = board.productContent.length > 30 ? board.productContent.substring(0,30) + '...' : board.productContent;
-
-      // 카드 HTML
+		
+      // 상태 표시 처리 06/14 by 상준 추가
+    let confirmButtonHtml = '';
+	let status = board.orderStatus || 'ONSALE'; // ← null, undefined 모두 대응
+	if (status === 'ONSALE') {
+		  statusDisplay = '<span class="text-success fw-bold">판매중</span>';
+		} else if (status === 'REQ') {
+		  statusDisplay = '<span class="text-warning fw-bold">거래중</span>';
+		} else if (status === 'BUYER_OK') {
+			console.log("선택된 board:", board);
+			console.log("orderStatus:", board.orderStatus);
+			console.log("orderNo:", board.orderNo);
+			statusDisplay = `
+				  <span class="text-primary fw-bold buyer-ok clickable-status">
+			    구매확정
+			  </span>
+			  <input type="hidden" class="hidden-order-no" value="${board.orderNo}">
+			  `;
+			 
+// 			 const orderNo = board.orderNo;
+// 			  confirmButtonHtml = `
+// 				    <div class="card-footer bg-white border-top-0 text-end">
+// 				      <button type="button" class="btn btn-sm btn-outline-primary confirm-btn"
+// 				              data-order-no="\${board.orderNo}">
+// 				        판매확정 하기
+// 				      </button>
+// 				    </div>
+// 				  `;
+		} else if (status === 'DONE') {
+		  statusDisplay = '<span class="text-secondary fw-bold">거래완료</span>';
+		}
+      
+      // 카드 HTML 6/15 by상준 수정
       let cardHtml = `
         <div class="col">
           <div class="card h-100 shadow-sm position-relative">
@@ -163,10 +202,12 @@ $(function(){
             <div class="card-footer small text-muted d-flex justify-content-between align-items-center">
               <span>\${board.categoryName ? board.categoryName : '-'}</span>
               <span>\${board.uploadDateStr}</span>
-              <span class="ms-2">\${board.status}</span>
+              <span class="ms-2">` + statusDisplay + `</span>
             </div>
+       
             <a href="${root}/productDetail.pro?productNo=\${board.productNo}" class="stretched-link"></a>
           </div>
+          
         </div>
       `;
       $boardList.append(cardHtml);
@@ -194,6 +235,23 @@ $(function(){
 
   // 최초 진입시 전체 조회
   searchBoard();
+});
+
+//구매확정하기
+$('#boardList').on('click', '.clickable-status', function(e){
+  e.stopPropagation(); // 카드 클릭 무시
+
+  const orderNo = $(this).closest('.card').find('.hidden-order-no').val();
+  console.log("✅ 클릭된 orderNo:", orderNo);
+
+  if (!orderNo) {
+    alert("❌ orderNo가 비어있습니다. HTML에서 hidden-order-no가 제대로 삽입되었는지 확인하세요.");
+    return;
+  }
+
+  if (confirm('구매확정을 하시겠습니까?')) {
+    location.href = `${root}/order/productOrder?orderNo=${orderNo}`; // ✔️ 그냥 orderNo 넘기기
+  }
 });
 </script>
 </body>
