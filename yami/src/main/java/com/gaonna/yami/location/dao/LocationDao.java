@@ -87,4 +87,8 @@ public class LocationDao {
 		return sqlSession.update("locationMapper.deleteBakeryComment", commentNo);
 	}
 
+	public Bakery selectBakeryInfo(SqlSessionTemplate sqlSession, String bakeryNo) {
+		return sqlSession.selectOne("locationMapper.selectBakeryInfo", bakeryNo);
+	}
+
 }

@@ -6,7 +6,7 @@
 <link rel="stylesheet"
 	href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
 <meta charset="UTF-8">
-<title>나의 리플</title>
+<title>나의 댓글</title>
 </head>
 <body>
 <%@include file="/WEB-INF/views/common/header.jsp"%>
@@ -102,16 +102,16 @@ $(function(){
 
   // 댓글 검색 및 렌더링
   async function searchreply(){
-    const params = $('#searchForm').serialize();
+	let params = $('#searchForm').serialize();
+	let searchType1 = $('#searchType1').val();
 	let response;
-    
     try {
       // 댓글 조회
-      if(params.searchType1 == 'dongne'){
+      if(searchType1 == 'dongne'){
     	  //우리동네 빵집 댓글조회
 	      response = await $.ajax({
 	        url: '${root}/searchMyReplyDongne.co',
-	        method: 'GET',
+	        method: 'POST',
 	        data: params,
 	      });
 
@@ -127,13 +127,12 @@ $(function(){
 	      renderPagination(totalCount, page, pageSize);
     	  
       }else{
-    	  //판매게새판 댓글조회
+    	  //판매게시판 댓글조회
 	      response = await $.ajax({
 	        url: '${root}/searchMyReply.co',
-	        method: 'GET',
+	        method: 'POST',
 	        data: params,
 	      });
-    	  
 	      const replyList = response.result;
 	      const totalCount = response.totalCount;
 	      
@@ -143,7 +142,7 @@ $(function(){
 	      const page = parseInt($('#page').val());
 	      const pageSize = parseInt($('#searchCount').val());
 	
-	      renderreplyList(replyList, totalCount);
+	      renderReplyList(replyList, totalCount);
 	      renderPagination(totalCount, page, pageSize);
       }
       
@@ -153,38 +152,49 @@ $(function(){
     }
   }
 
-  // 게시글 카드 렌더링
-  function renderreplyList(replyList, totalCount){
-    let $replyList = $('#replyList');
-    $replyList.empty();
+  // 댓글 카드 렌더링
+  function renderReplyList(replyList, totalCount){
+	    let $replyList = $('#replyList');
+	    $replyList.empty();
 
-    if(!replyList || replyList.length === 0){
-      $replyList.html('<div class="col"><div class="alert alert-warning mb-0">검색 결과가 없습니다.</div></div>');
-      return;
-    }
+	    if(!replyList || replyList.length === 0){
+	        $replyList.html('<div class="col"><div class="alert alert-warning mb-0">검색 결과가 없습니다.</div></div>');
+	        return;
+	    }
 
-    $.each(replyList, function(idx, reply){
-      <%--동적으로 댓글 카드 생성하기
-      카드 위에 productTitle, 아래에 
-      
-		private String productTitle;
-		private String replyText;
-		private String replyDateStr;
-      
-		productNo
-      --%>
-    });
-  }
+	    $.each(replyList, function(idx, reply){
+	    	let productTitle = reply.productTitle || '';
+	        let titleDisplay = productTitle.length > 10 ? productTitle.substring(0, 10) + '...' : productTitle;
+	        let cardHtml = `
+	            <div class="col">
+	                <div class="card h-100 shadow-sm position-relative" style="cursor:pointer;" onclick="location.href='${root}/productDetail.pro?productNo=\${reply.productNo}'">
+	                    <div class="card-body">
+	                        <div class="d-flex justify-content-between align-items-center mb-2">
+	                        	<span class="text-truncate" style="max-width: 50%;">\${titleDisplay}</span>
+	                        </div>
+	                        <p class="card-text">\${reply.replyText || ''}</p>
+	                    </div>
+	                    <div class="card-footer small text-muted d-flex justify-content-between align-items-center">
+                            <span class="fw-bold">NO.\${reply.replyNo}</span>
+	                        <span>\${reply.replyDateStr}</span>
+	                    </div>
+	                </div>
+	            </div>
+	        `;
+	        $replyList.append(cardHtml);
+	    });
+	}
+
 
   // 페이지네이션 렌더링
   function renderPagination(totalCount, currentPage, pageSize){
-    const totalPage = Math.ceil(totalCount / pageSize);
+	const totalPage = Math.ceil(totalCount / pageSize) || 1;
     if(totalPage <= 1) {
       $('#paginationNav').empty();
       return;
     }
     let nav = `<ul class="pagination">`;
-    for(let i=1; i<=totalPage; i++){
+    for(let i=1; i<=totalPage; i++){ 
       nav += `
         <li class="page-item \${i === currentPage ? 'active' : ''}">
           <a class="page-link" href="#" data-page="\${i}">\${i}</a>
@@ -234,7 +244,10 @@ $(function(){
 	    }
 
 	    // 댓글 내용 (상태에 따라 스타일 다르게)
-	    let commentContent = reply.commentContent;
+	    let commentContent = reply.commentContent.length > 10 
+			  ? reply.commentContent.substring(0, 10) + '...' 
+			  : reply.commentContent;
+
 	    if(reply.status === 'N' || reply.status === 'P'){
 	      commentContent = `<span class="text-decoration-line-through">\${commentContent}</span>`;
 	    }
@@ -270,7 +283,7 @@ $(function(){
 	    const bakeryNo = $(this).data('bakery-no');
 	    const userNo = $(this).data('user-no');
 	    // 상세페이지 이동
-	    location.href = `${root}/myReplyDongneDetail.co?commentNo=\${commentNo}&bakeryNo=\${bakeryNo}&userNo=\${userNo}`;
+	    location.href = `${root}/myReplyDongneDetail.co?commentNo=\${commentNo}&bakeryNo=\${bakeryNo}`;
 	  });
 	}
 

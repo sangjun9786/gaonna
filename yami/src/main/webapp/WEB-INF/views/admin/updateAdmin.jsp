@@ -14,7 +14,7 @@
     <div class="row justify-content-center">
         <div class="col-md-10 col-lg-8">
             <div class="card shadow-lg mb-4">
-                <div class="card-header bg-primary text-white">
+                <div class="card-header bg-secondary text-white">
                     <h4 class="mb-0"><i class="bi bi-person-badge me-2"></i>관리자 조회 및 수정</h4>
                 </div>
                 <div class="card-body">
@@ -38,7 +38,7 @@
                             </label>
                         </div>
                         <div class="col-auto">
-                            <button type="button" id="adminSearch" class="btn btn-primary">
+                            <button type="button" id="adminSearch" class="btn btn-success">
                                 <i class="bi bi-search"></i> 검색하기
                             </button>
                         </div>

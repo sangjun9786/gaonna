@@ -19,6 +19,8 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.multipart.MultipartFile;
 
+import com.gaonna.yami.chat.model.service.ChatService;
+import com.gaonna.yami.chat.model.vo.ChatRoom;
 import com.gaonna.yami.common.PageInfo;
 import com.gaonna.yami.common.Pagination;
 import com.gaonna.yami.member.model.vo.Member;
@@ -42,6 +44,9 @@ public class ProductController {
     
     @Autowired
     private WishlistService wishlistService; // ✅ 이거 추가해줘야 빨간줄 사라짐
+    
+    @Autowired
+    private ChatService chatService;
 
 	//test 리스트 
     @RequestMapping("productList2.pro")
@@ -105,6 +110,11 @@ public class ProductController {
      // 로그인유저 체크
         Member loginUser = (Member) session.getAttribute("loginUser");
         if(loginUser != null) {
+        }
+        
+        if (loginUser.getUserNo() != product.getUserNo()) {
+            ChatRoom room = chatService.findRoomByUsersAndProduct(product.getUserNo(), loginUser.getUserNo(), productNo);
+            model.addAttribute("alreadyChatted", room != null);
         }
 
         model.addAttribute("product", product);
@@ -455,6 +465,7 @@ public class ProductController {
         	return "common/errorPage";
         }
     }
+
 }
 
 

@@ -38,18 +38,18 @@
     <!-- 글작성 버튼 -->
     <a href="${pageContext.request.contextPath}/productEnrollForm.pr" class="write-btn">글작성</a>
     <c:if test="${empty cate}">
-  		<script>
-	  	  $(function() {
-		     location.href = "${root}/get.ca";
-		  });
-	  </script>
+<!--   		<script> -->
+// 	  	  $(function() {
+// 		     location.href = "${root}/get.ca";
+// 		  });
+<!-- 	  </script> -->
 	</c:if>
 	<c:if test="${not empty loginUser and empty loca}">
-		<script>
-  			$(function() {
- 		       location.href = "${root}/get.lo";
-		    });
- 		</script>
+<!-- 		<script> -->
+//   			$(function() {
+//  		       location.href = "${root}/get.lo";
+// 		    });
+<!--  		</script> -->
 	</c:if>
     <h4>위치</h4>
     <h5>${userLoca }</h5>
@@ -80,7 +80,8 @@
 	
 	    <input type="hidden" name="location" value="${selectedLocation}">
 	    <input type="hidden" name="category" value="${selectedCategory}">
-		<input type="hidden" name="category" value="${keyword}">
+		<input type="hidden" name="keyword" value="${keyword}">
+		<input type="hidden" name="condition" value="${condition}">
 	    <button type="submit" class="btn btn-sm btn-primary mt-2">검색</button>
 	</form>
 	
@@ -91,9 +92,12 @@
 	            const selectedCate = $('.sidebar input[name=category]:checked').val();
 	            const price1 = $('.sidebar input[name=price1]').val();
 	            const price2 = $('.sidebar input[name=price2]').val();
-	            
+	            const keyword = $('.sidebar input[name=keyword]').val();
+	            const condition = $('.sidebar input[name=condition]').val();
 	            let url = "${root}/filter.bo?location=" + encodeURIComponent(selectedLoca)
-	                                        + "&category=" + encodeURIComponent(selectedCate);
+	                                        + "&category=" + encodeURIComponent(selectedCate)
+	                                        + "&keyword=" + encodeURIComponent(keyword)
+	                                        + "&condition=" + encodeURIComponent(condition);
 	
 	            if (price1 !== "" && price2 !== "") {
 	                url += "&price1=" + encodeURIComponent(price1)

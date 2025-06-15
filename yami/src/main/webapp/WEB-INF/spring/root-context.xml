@@ -15,6 +15,7 @@
     <bean id="dataSource" class="org.apache.commons.dbcp2.BasicDataSource">
         <property name="driverClassName" value="oracle.jdbc.OracleDriver"/>
 <!--         <property name="url" value="jdbc:oracle:thin:@192.168.150.31:1521:xe"/> -->
+<!--         <property name="url" value="jdbc:oracle:thin:@localhost:1521:xe"/> -->
         <property name="url" value="jdbc:oracle:thin:@192.168.195.200:1521:xe"/>
         <property name="username" value="yami"/>
         <property name="password" value="yami"/>
@@ -26,7 +27,11 @@
         <!-- mybatis-config.xml 경로 -->
         <property name="configLocation" value="classpath:mybatis-config.xml"/>
         <!-- Mapper XML 파일들이 있는 폴더 -->
-        <property name="mapperLocations" value="classpath:mappers/*-mapper.xml"/>
+       <property name="mapperLocations" value="classpath:mappers/*-mapper.xml"/>
+        
+            <!-- ✅ 이거 추가 -->
+    <property name="typeAliasesPackage" value="com.gaonna.yami.product.model.vo"/>
+        
     </bean>
 
     <!-- 3) SqlSessionTemplate (실제 DAO에서 주입 받을 SqlSession) -->

@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="ratingMapper">
+
+  <!-- 새 평점 INSERT -->
+  <insert id="insertRating"
+          parameterType="com.gaonna.yami.rating.model.vo.Rating"
+          keyProperty="ratingId">
+    <!-- 1) 시퀀스 NEXTVAL 을 조회해서 Rating.ratingId 에 세팅 -->
+    <selectKey keyProperty="ratingId" resultType="int" order="BEFORE">
+      SELECT SEQ_RATING_NO.NEXTVAL AS ratingId FROM DUAL
+    </selectKey>
+
+    <!-- 2) 실제 INSERT -->
+    INSERT INTO RATING (
+      RATING_ID,
+      PRODUCT_NO,
+      USER_NO,        <!-- 여기 USER_ID → USER_NO 로 바뀜 -->
+      USER_COMMENT,
+      RATING_DAY,
+      SCORE
+    ) VALUES (
+      #{ratingId},
+      #{productNo},
+      #{userNo},      <!-- #{userId} → #{userNo} 로 바뀜 -->
+      #{userComment},
+      SYSDATE,
+      #{score}
+    )
+  </insert>
+
+  <!-- 상품 게시글 평균 평점 갱신 -->
+  <update id="updateAvgScore" parameterType="int">
+    UPDATE PRODUCT_BOARD  <!-- 실제 게시글 테이블명을 쓰세요 -->
+    SET SCORE = (
+      SELECT ROUND(AVG(SCORE), 2)
+      FROM RATING
+      WHERE PRODUCT_NO = #{productNo}
+    )
+    WHERE PRODUCT_NO = #{productNo}
+  </update>
+  
+  
+  <select id="count" parameterType="map" resultType="int">
+  	SELECT COUNT(*)
+  	FROM SCORE
+  	WHERE USER_NO = #{userNo}
+  </select>
+  
+  <insert id="insert" parameterType="map">
+    INSERT INTO SCORE(SCORE_NO, USER_NO, COUNT, RATING)
+    VALUES(SEQ_SNO.NEXTVAL, #{userNo}, 1, #{rating})    
+  </insert>
+  
+  <update id="rating" parameterType="map">
+  	UPDATE SCORE
+  	SET COUNT = COUNT + 1,
+  	RATING = RATING + #{rating}
+  	WHERE USER_NO = #{userNo}
+  </update>
+  
+</mapper>

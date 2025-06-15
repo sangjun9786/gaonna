@@ -8,6 +8,7 @@
 	href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
 <meta charset="UTF-8">
 <title>동네 한바퀴</title>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
 <style>
     #map { margin: 30px auto; border-radius: 20px; }
     .bakery-marker { cursor: pointer; }
@@ -140,7 +141,7 @@
 </head>
 <body>
 <%@include file="/WEB-INF/views/common/header.jsp"%>
-
+<%@ include file="/WEB-INF/views/common/searchbar.jsp" %>
 
 <div class="container mt-5">
     <div class="d-flex justify-content-center align-items-start main-row">
@@ -215,6 +216,8 @@ window.onload = function() {
     const centerLat = parseFloat(centerCoord.latitude);
     const centerLng = parseFloat(centerCoord.longitude);
 
+    const keyword = $('#keyword').val();
+    const encodedKeyword = encodeURIComponent(keyword);
     // 지도 생성
     const map = new naver.maps.Map('map', {
         center: new naver.maps.LatLng(centerLat, centerLng),
@@ -254,6 +257,25 @@ window.onload = function() {
             showBakeryModal(bakery.bakeryNo, 1);
         });
     });
+    
+    if(keyword && keyword.trim() !== "") {
+		$.ajax({
+			url : "ajax.do",
+			data : {
+				keyword : keyword
+			},
+			success : function(result) {
+				//응답데이터가 잇다면 success function의 매개변수로 전달됨
+				console.log("서버 응답 결과:", result);
+				if(result != null) {
+					showBakeryModal(result, 1);
+				}
+			},
+			error : function() {
+				console.log("통신 실패");
+			}
+		});
+    }
 };
 
 /* ====== 빵집 모달 표시 및 댓글 로딩 ====== */
@@ -622,7 +644,7 @@ function renderCommentActions(comment, isRecomment) {
     let html = '';
     if (comment.status === 'Y' || comment.status === 'M') {
         if (!isRecomment) html += `<button class="btn btn-outline-secondary btn-sm me-1" onclick="showRecommentForm(\${comment.commentNo})">대댓글 작성</button>`;
-        if (comment.userNo === loginUser.userNo || loginUser.roleType !== 'N') {
+        if (comment.userNo == loginUser.userNo || loginUser.roleType !== 'N') {
             html += `<button class="btn btn-outline-primary btn-sm me-1" onclick="showEditForm(\${comment.commentNo}, \${isRecomment}, \${comment.userNo})">수정</button>`;
             html += `<button class="btn btn-outline-danger btn-sm me-1" onclick="deleteComment(\${comment.commentNo}, \${comment.userNo})">삭제</button>`;
         }

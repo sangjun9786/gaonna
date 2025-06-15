@@ -14,10 +14,15 @@ import lombok.NoArgsConstructor;
 public class ReplyCo {
 	private int replyNo;
 	private int productNo;
-	private String productTitle;//product_board에서 추출
+	
+	private String userId;
 	private String replyText;
 	private Date replyDate;
-	private String replyDateStr; //sdf
+	
+	private String userName; //member에서 추출
+	private String productTitle;//product_board에서 추출
+	private String replyDateStr;//sdf
+	
 	
 	//sdf로 변경
 	public void replySDF(List<ReplyCo> result) {

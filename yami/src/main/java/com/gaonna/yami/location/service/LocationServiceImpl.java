@@ -543,4 +543,17 @@ public class LocationServiceImpl implements LocationService{
 	public int deleteBakeryComment(int commentNo) {
 		return dao.deleteBakeryComment(sqlSession,commentNo);
 	}
+	
+	//뽱집 조회하기
+	@Override
+	public Bakery selectBakeryInfo(String bakeryNo) {
+		Bakery bakery = dao.selectBakeryInfo(sqlSession,bakeryNo);
+		
+		//sdf처리
+		List<Bakery> list = new ArrayList<>();
+		list.add(bakery);
+		new Bakery().bakerySDF(list);
+		
+		return bakery;
+	}
 }

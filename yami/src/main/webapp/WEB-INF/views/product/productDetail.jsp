@@ -21,10 +21,7 @@
         border-radius: 10px;
         box-shadow: 0 0 10px rgba(0,0,0,0.1);
     }
-    .flex {
-        display: flex;
-        flex-wrap: wrap;
-    }
+    .flex { display: flex; flex-wrap: wrap; }
     .image-area {
         width: 50%;
         padding: 10px;
@@ -34,26 +31,19 @@
         border-radius: 10px;
         border: 1px solid #ddd;
         cursor: pointer;
-        
     }
     .info-area {
         width: 50%;
         padding: 10px;
     }
-    .info-area h2 {
-        margin-top: 0;
-        font-size: 24px;
-    }
+    .info-area h2 { margin-top: 0; font-size: 24px; }
     .price {
         color: #ff6600;
         font-size: 22px;
         font-weight: bold;
         margin: 10px 0;
     }
-    .desc {
-        margin: 20px 0;
-        line-height: 1.6;
-    }
+    .desc { margin: 20px 0; line-height: 1.6; }
     .meta {
         font-size: 13px;
         color: gray;
@@ -67,9 +57,7 @@
         justify-content: space-between;
         align-items: center;
     }
-    .writer-info {
-        font-size: 14px;
-    }
+    .writer-info { font-size: 14px; }
     .score {
         text-align: right;
         color: #ff6600;
@@ -85,9 +73,7 @@
         border-radius: 4px;
         margin-top: 10px;
     }
-    .comment-section {
-        margin-top: 40px;
-    }
+    .comment-section { margin-top: 40px; }
     .comment-box {
         margin-top: 10px;
         padding: 10px;
@@ -105,71 +91,57 @@
         cursor: pointer;
         font-weight: bold;
     }
-    
     #imageModal {
-	   display: none;
-	   position: fixed;
-	   top: 0; left: 0;
-	   width: 100%; height: 100%;
-	   background: rgba(0, 0, 0, 0.9);
-	   z-index: 1000;
-	   justify-content: center;
-	   align-items: center;
-	   cursor: pointer;
-	   
-	}
-	
-	#imageModalContent {
-	    background: none;
-	    padding: 0;
-	    text-align: center;
-	    position: relative;
-	}
-
-	#modalImage {
-	     max-width: 90%;
-	    max-height: 90%;
-	    object-fit: contain;
-	}
-	
-	.arrow {
-	    position: absolute;
-	    top: 50%;
-	    transform: translateY(-50%);
-	    color: white;
-	    font-size: 50px;
-	    font-weight: bold;
-	    cursor: pointer;
-	    user-select: none;
-	    z-index: 1001;
-	    padding: 0 15px;
-	}
-	
-	#leftArrow {
-	    left: 0;
-	}
-	
-	#rightArrow {
-	    right: 0;
-	}
-	
-	.close-btn {
-	    position: absolute;
-	    top: 25px;
-	    right: 40px;
-	    font-size: 40px;
-	    color: white;
-	    font-weight: bold;
-	    cursor: pointer;
-	    z-index: 2001;
-	    user-select: none;
-	    background: transparent;
-	    border: none;
-	    padding: 0;
-	    line-height: 1;
-	}
-	
-	
+        display: none;
+        position: fixed;
+        top: 0; left: 0;
+        width: 100%; height: 100%;
+        background: rgba(0, 0, 0, 0.9);
+        z-index: 1000;
+        justify-content: center;
+        align-items: center;
+        cursor: pointer;
+    }
+    #imageModalContent {
+        background: none;
+        padding: 0;
+        text-align: center;
+        position: relative;
+    }
+    #modalImage {
+        max-width: 90%;
+        max-height: 90%;
+        object-fit: contain;
+    }
+    .arrow {
+        position: absolute;
+        top: 50%;
+        transform: translateY(-50%);
+        color: white;
+        font-size: 50px;
+        font-weight: bold;
+        cursor: pointer;
+        user-select: none;
+        z-index: 1001;
+        padding: 0 15px;
+    }
+    #leftArrow { left: 0; }
+    #rightArrow { right: 0; }
+    .close-btn {
+        position: absolute;
+        top: 25px;
+        right: 40px;
+        font-size: 40px;
+        color: white;
+        font-weight: bold;
+        cursor: pointer;
+        z-index: 2001;
+        user-select: none;
+        background: transparent;
+        border: none;
+        padding: 0;
+        line-height: 1;
+    }
 </style>
 </head>
 <body>
@@ -180,13 +152,14 @@
 
 <div class="container">
     <div class="flex">
-        <!-- 상품 이미지 영역 -->
+        <!-- 이미지 -->
         <div class="image-area">
             <c:if test="${not empty product.atList}">
                 <img id="main-image" src="${contextPath}${product.atList[0].filePath}${product.atList[0].changeName}" alt="대표이미지">
-           </c:if>
+            </c:if>
         </div>
-        <!-- 상품 정보 영역 -->
+
+        <!-- 정보 -->
         <div class="info-area">
             <div class="meta" style="font-weight:bold; color:#888;">
                 ${product.categoryName}
@@ -198,10 +171,11 @@
                 조회수: ${product.productCount}
             </div>
             <div class="price">
-                <fmt:formatNumber value="${product.price}" pattern="#\,###" />원
+                <fmt:formatNumber value="${product.price}" pattern="#,###" />원
             </div>
             <div class="desc">${product.productContent}</div>
-            <!-- 진( 좋아요) 버튼 영역 -->
+
+            <!-- 좋아요 -->
             <div class="like-area">
                 채팅 0 · 조회 ${product.productCount}
                 <form id="wishForm" style="display:inline;">
@@ -211,30 +185,39 @@
                     </button>
                 </form>
             </div>
-            <!--  관리자나 ,로그인 안되어있을때 안보이도록 처리 -->
+
+            <!-- 일반 유저만 -->
             <c:if test="${not empty loginUser and loginUser.roleType != 'superAdmin' and loginUser.roleType != 'admin' and loginUser.roleType != 'viewer'}">
-            <button class="action-btn" style="width:100%;">채팅으로 거래하기</button>
+	            <c:if test="${loginUser.userNo ne product.userNo and not alreadyChatted}">
+	                <form action="${pageContext.request.contextPath}/chat/room" method="get" style="margin-bottom: 10px;">
+					    <input type="hidden" name="productNo" value="${product.productNo}" />
+					    <input type="hidden" name="sellerNo" value="${product.userNo}" />
+					    <button type="submit" class="action-btn" style="width:100%;">💬 채팅으로 거래하기</button>
+					</form>
+			  	</c:if>
+	
+	                <!-- 구매하기 -->
+                <form action="${contextPath}/buyProduct" method="get">
+                    <input type="hidden" name="productNo" value="${product.productNo}" />
+                    <input type="hidden" name="buyerId" value="${loginUser.userNo}" />
+                    <button type="submit" class="action-btn" style="width:100%;">💳 이 상품 구매하기</button>
+                </form>
             </c:if>
-       <!-- 삭제/구매 버튼 영역 -->
-			<div style="display: flex; flex-direction: row-reverse; gap: 8px; margin-top: 8px;">
-			    <c:if test="${loginUser.userId eq product.userId}">
-			        <form id="deleteForm" method="post" action="${contextPath}/delete.pro" style="display:none;">
-			            <input type="hidden" name="productNo" value="${product.productNo}" />
-			            <input type="hidden" name="filePath" value="/resources/uploadFiles/${product.atList[0].changeName}" />
-			        </form>
-			        <button type="button" id="deleteBtn" class="action-btn" style="width:auto;">삭제하기</button>
-			    </c:if>
-			    <c:if test="${not empty loginUser and loginUser.roleType != 'superAdmin' and loginUser.roleType != 'admin' and loginUser.roleType != 'viewer' and loginUser.userId ne product.userId}">
-			        <form id="buyForm" method="get" action="${contextPath}/buyProduct" style="display:inline;">
-			            <input type="hidden" name="productNo" value="${product.productNo}" />
-			            <button type="submit" class="action-btn" style="width:auto;">구매하기</button>
-			        </form>
-			    </c:if>
-			</div>
+
+
+            <!-- 삭제 버튼 -->
+            <c:if test="${loginUser.userId eq product.userId}">
+                <form id="deleteForm" method="post" action="${contextPath}/delete.pro" style="display:none;">
+                    <input type="hidden" name="productNo" value="${product.productNo}" />
+                    <input type="hidden" name="filePath" value="/resources/uploadFiles/${product.atList[0].changeName}" />
+                </form>
+                <button type="button" id="deleteBtn" class="action-btn" style="width:auto; float:right;">삭제하기</button>
+            </c:if>
+
         </div>
     </div>
 
-    <!-- 작성자 정보 + 평점 -->
+    <!-- 작성자 -->
     <div class="writer-box">
         <div class="writer-info">
             <strong>${product.userId}</strong><br>
@@ -246,47 +229,41 @@
         </div>
     </div>
 
-    <!-- 댓글 영역 -->
+    <!-- 댓글 -->
     <div class="comment-section">
         <h4>💬 댓글</h4>
         <div class="mb-3">
             <textarea id="replyContent" class="form-control" placeholder="댓글을 입력하세요" rows="3" style="width:100%;"></textarea>
             <button onclick="insertReply();" type="button" class="btn btn-primary mt-2">등록</button>
         </div>
-        <%-- <c:forEach var="c" items="${product.commentList}">
-        <div class="comment-box">${c.content}</div>
-        </c:forEach> --%>
-		<div id="replyArea" class="mt-3"></div>
+        <div id="replyArea" class="mt-3"></div>
     </div>
 </div>
 
 <!-- 상세 이미지 리스트 -->
-    <c:set var="count" value="0" />
-		<c:forEach var="img" items="${product.atList}">
-		    <c:if test="${img.fileLevel == 2 and count lt 3}">
-		        <div class="slide-image" data-src="${contextPath}${img.filePath}${img.changeName}"></div>
-		        <c:set var="count" value="${count + 1}" />
-		    </c:if>
-	</c:forEach>
+<c:set var="count" value="0" />
+<c:forEach var="img" items="${product.atList}">
+    <c:if test="${img.fileLevel == 2 and count lt 3}">
+        <div class="slide-image" data-src="${contextPath}${img.filePath}${img.changeName}"></div>
+        <c:set var="count" value="${count + 1}" />
+    </c:if>
+</c:forEach>
 
-    <!-- 이미지 모달 -->
-    <div id="imageModal">
-    	<span id="closeModalBtn" class="close-btn">&times;</span>
-    	<div id="leftArrow" class="arrow">&#10094;</div>
-        <div id="imageModalContent">
-            <h4>상세 이미지</h4>
-            <img id="modalImage" src="" alt="상세 이미지">
-<!--             <div id="modal-controls"> -->
-<!-- <!--                 <button id="prevBtn" class="btn btn-outline-secondary">이전</button> --> -->
-<!-- <!--                 <button id="nextBtn" class="btn btn-outline-secondary">다음</button> --> -->
-<!--                 <button onclick="closeModal()" class="btn btn-secondary">닫기</button> -->
-<!--             </div> -->
-        </div>
-        <div id="rightArrow" class="arrow">&#10095;</div>
+<!-- 모달 -->
+<div id="imageModal">
+    <span id="closeModalBtn" class="close-btn">&times;</span>
+    <div id="leftArrow" class="arrow">&#10094;</div>
+    <div id="imageModalContent">
+        <h4>상세 이미지</h4>
+        <img id="modalImage" src="" alt="상세 이미지">
     </div>
+    <div id="rightArrow" class="arrow">&#10095;</div>
 </div>
+
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script>
+let detailImages = [];
+let currentIndex = 0;
 
 $(function () {
     $("#deleteBtn").click(function () {
@@ -294,8 +271,7 @@ $(function () {
             $("#deleteForm").submit();
         }
     });
-    
- // 대표 이미지 클릭 시 모달 열기
+
     $("#main-image").on("click", function () {
         detailImages = $(".slide-image").map(function () {
             return $(this).data("src");
@@ -310,9 +286,9 @@ $(function () {
         $("#modalImage").attr("src", detailImages[currentIndex]);
         $("#imageModal").css("display", "flex");
     });
- 
+
     $("#leftArrow").on("click", function (e) {
-        e.stopPropagation(); // 이미지 클릭 이벤트 방지
+        e.stopPropagation();
         if (detailImages.length > 0) {
             currentIndex = (currentIndex - 1 + detailImages.length) % detailImages.length;
             $("#modalImage").attr("src", detailImages[currentIndex]);
@@ -326,12 +302,11 @@ $(function () {
             $("#modalImage").attr("src", detailImages[currentIndex]);
         }
     });
-    
-    //버튼 클릭시 닫기
+
     $("#closeModalBtn").on("click", function (e) {
         e.stopPropagation();
         closeModal();
-    })
+    });
 });
 
 function closeModal() {
@@ -403,7 +378,6 @@ function selectReplyList() {
 $(document).ready(function() {
     selectReplyList();
 });
-
 </script>
 </body>
 </html>

@@ -58,12 +58,6 @@
                                 </button>
                             </div>
                             <div class="mt-3 d-flex flex-column flex-md-row align-items-md-center justify-content-between">
-							    <div class="form-check mb-2 mb-md-0">
-							        <input class="form-check-input" type="checkbox" value="Y" id="saveLoginInfo" name="saveLoginInfo">
-							        <label class="form-check-label" for="saveLoginInfo">
-							            로그인 정보 저장하기
-							        </label>
-							    </div>
 							    <div class="form-check mb-2 mb-md-0 ms-md-3">
 							        <input class="form-check-input" type="checkbox" value="Y" id="autoLogin" name="autoLogin">
 							        <label class="form-check-label" for="autoLogin">

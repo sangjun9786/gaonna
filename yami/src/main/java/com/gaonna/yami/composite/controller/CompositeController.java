@@ -80,14 +80,15 @@ public class CompositeController {
 	
 	//ajax - 판매게시판 댓글 조회
 	@ResponseBody
-	@GetMapping("searchMyReply.co")
+	@PostMapping("searchMyReply.co")
 	public Map<String, Object> searchMyReply(HttpSession session,Model model
 			,SearchForm searchForm) {
 		try {
-			//loginUser의 userNo따서 searchForm에 넣기
-			searchForm.setUserNo(((Member)session
-					.getAttribute("loginUser")).getUserNo());
+			//loginUser의 userId따서 searchForm에 넣기
+			searchForm.setUserId(((Member)session
+					.getAttribute("loginUser")).getUserId());
 			Map<String, Object> result = service.searchMyReply(searchForm);
+			
 			return result;
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -97,7 +98,7 @@ public class CompositeController {
 	
 	//ajax - 우리동네빵집 댓글 조회
 	@ResponseBody
-	@GetMapping("searchMyReplyDongne.co")
+	@PostMapping("searchMyReplyDongne.co")
 	public Map<String, Object> searchMyReplyDongne(HttpSession session,Model model
 			,SearchForm searchForm) {
 		try {
@@ -105,6 +106,7 @@ public class CompositeController {
 			searchForm.setUserNo(((Member)session
 					.getAttribute("loginUser")).getUserNo());
 			Map<String, Object> result = service.searchMyReplyDongne(searchForm);
+			
 			return result;
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -115,18 +117,10 @@ public class CompositeController {
 	//우리동네빵집 댓글 바로가기
 	@GetMapping("myReplyDongneDetail.co")
 	public String myReplyDongneDetail(Model model, HttpSession session,
-			int commentNo, int userNo, String bakeryNo) {
+			int commentNo, String bakeryNo) {
 		try {
-			//유효성 검사
-			int loginUserNo = ((Member)session.getAttribute("loginUser")).getUserNo();
-			if(userNo != loginUserNo) {
-				model.addAttribute("errorMsg","잘못된 접근입니다.");
-				return "common/errorPage";
-			}
-			
 			model.addAttribute("targetBakeryNo", bakeryNo);
 			model.addAttribute("targetCommentNo", commentNo);
-			
 			return "member/myReplyDongneDetail";
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -135,11 +129,9 @@ public class CompositeController {
 		}
 	}
 	
-	
-	
 	//ajax - 찜 조회
 	@ResponseBody
-	@PostMapping("wishlist.co")
+	@PostMapping("searchMyWishlist.co")
 	public Map<String, Object> myWishlist(Model model
 			,HttpSession session, SearchForm searchForm) {
 		try {
@@ -152,6 +144,28 @@ public class CompositeController {
 			e.printStackTrace();
 			model.addAttribute("errorMsg","500 err");
 			return null;
+		}
+	}
+	
+	//ajax - 찜 삭제
+	@ResponseBody
+	@PostMapping("deleteMyWishlist.co")
+	public String deleteMyWishlist(HttpSession session, int productNo, int userNo) {
+		try {
+			//유효성 확인
+			if(userNo != ((Member)session.getAttribute("loginUser")).getUserNo()) {
+				return "noPass";
+			}
+			
+			if(service.deleteMyWishlist(productNo,userNo)>0) {
+				return "pass";
+			}else {
+				return "noPass";
+			}
+			
+		} catch (Exception e) {
+			e.printStackTrace();
+			return "noPass";
 		}
 	}
 	

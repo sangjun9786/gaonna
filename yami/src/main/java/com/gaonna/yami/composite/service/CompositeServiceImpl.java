@@ -87,7 +87,7 @@ public class CompositeServiceImpl implements CompositeService{
 		//resultCount(댓글 수) 구하기
 		searchForm.setResultCount(dao.countMyWishlist(sqlSession, searchForm));
 		
-		//searchForm 정상화
+		//wishlist searchForm 정상화
 		searchForm.normalize();
 		
 		//찜 게시글 구하기
@@ -97,6 +97,14 @@ public class CompositeServiceImpl implements CompositeService{
 		new BoardCo().boardSDF(result);
 		
 		return Map.of("result", result, "totalCount", searchForm.getResultCount());
+	}
+	
+	//ajax - 찜 삭제
+	@Override
+	public int deleteMyWishlist(int productNo, int userNo) {
+		Map<String, Integer> map 
+			= Map.of("productNo",productNo,"userNo",userNo);
+		return dao.deleteMyWishlist(sqlSession,map);
 	}
 	
 }

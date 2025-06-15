@@ -69,7 +69,7 @@
 							
 							<!-- 전화번호 -->
 							<div class="mb-4">
-							    <label for="phone" class="form-label">전화번호</label>
+							    <label for="phone" class="form-label fw-bold">* 전화번호</label>
 							    <div class="input-group">
 							        <input type="text" class="form-control phone-part" id="phone1" 
 							               maxlength="3" placeholder="010" required>
@@ -108,8 +108,7 @@
 		let idPass = false;
 		let pwdPass = false;
 		let namePass = false;
-		//phone은 필수가 아니라서 ture가 초기값
-		let phonePass = true;
+		let phonePass = false;
 		
 		//아이디 검증
 		document.getElementById("userId").addEventListener('input', function(){
@@ -130,9 +129,9 @@
 			const userId = document.getElementById("userId").value;
 			const domain = document.getElementById("domainList").value;
 			const email = userId && domain ? userId + "@" + domain : "";
-		    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+			const emailRegex = /^[A-Za-z0-9]+@[A-Za-z0-9.]+$/;
 		    
-		    if (emailRegex.test(email)) {
+		    if (emailRegex.test(email) && email.length <= 30) {
 		    	if(document.getElementById("domainList").value !=""){
 			    	debounce();
 		    	}else{
@@ -263,6 +262,7 @@
 		
 		//전화번호 검증 - 숫자 개수 검사
 		function validatePhone() {
+			phonePass = false;
 			let phone1 = document.getElementById('phone1').value;
 			let phone2 = document.getElementById('phone2').value;
 			let phone3 = document.getElementById('phone3').value;
@@ -285,14 +285,14 @@
 		    toggleSubmit();
 		}
 		
-		//리셋 버튼과 확인을 누르면 리셋됨
+		//리셋 버튼이나 확인을 누르면 리셋됨
 		document.getElementById("insertReset").addEventListener('click', function(){
 			if(confirm("진짜?")){
 				document.getElementById("insertForm").reset();
 				idPass = false;
 				pwdPass = false;
 				namePass = false;
-				phonePass = true;
+				phonePass = false;
 				
 				document.getElementById('checkIdResult').className = "form-text text-muted mt-1";
 				document.getElementById('checkIdResult').textContent = "아이디를 입력해주세요.";

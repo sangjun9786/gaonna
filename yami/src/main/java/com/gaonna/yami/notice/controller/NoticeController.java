@@ -129,8 +129,9 @@ public class NoticeController {
     @GetMapping("/list")
     public String selectNoticeList(@RequestParam(value = "cpage", defaultValue = "1") int currentPage,
                                    Model model,
-                                   HttpSession session) {
-    	String keyword = (String)session.getAttribute("keyword");
+                                   @RequestParam(value = "keyword", defaultValue = "") String keyword,
+                                   @RequestParam(value = "condition", defaultValue = "notice") String condition) {
+    	
         int listCount = noticeService.selectListCount(keyword); 
         int pageLimit = 5;   
         int boardLimit = 10; 
@@ -141,7 +142,8 @@ public class NoticeController {
 
         model.addAttribute("list", list);
         model.addAttribute("pageInfo", pi);
-
+        model.addAttribute("keyword", keyword);
+        model.addAttribute("condition", condition);
         return "notice/noticeList";
     }
 }

@@ -9,9 +9,12 @@ import org.mybatis.spring.SqlSessionTemplate;
 import org.springframework.stereotype.Repository;
 
 import com.gaonna.yami.common.PageInfo;
+import com.gaonna.yami.composite.vo.BoardCo;
+import com.gaonna.yami.composite.vo.SearchForm;
 import com.gaonna.yami.member.model.vo.Member;
 import com.gaonna.yami.product.vo.Category;
 import com.gaonna.yami.product.vo.Product;
+import com.gaonna.yami.search.model.vo.PerchasedBo;
 
 @Repository
 public class SearchDao {
@@ -33,7 +36,7 @@ public class SearchDao {
 		return (ArrayList)sqlSession.selectList("searchMapper.getLoca", userLoca);
 	}
 
-	public int getFilterCount(SqlSessionTemplate sqlSession, String location, int category, Integer price1, Integer price2, String keyword) {
+	public int getFilterCount(SqlSessionTemplate sqlSession, String location, int category, Long price1, Long price2, String keyword) {
 		HashMap<String, Object> map = new HashMap<>();
 	    map.put("location", location);
 	    map.put("category", category);
@@ -45,7 +48,7 @@ public class SearchDao {
 	}
 
 	public ArrayList<Product> productFilter(SqlSessionTemplate sqlSession, String location, int category,
-			Integer price1, Integer price2, PageInfo pi, String keyword) {
+			Long price1, Long price2, PageInfo pi, String keyword) {
 		HashMap<String, Object> map = new HashMap<>();
 	    map.put("location", location);
 	    map.put("category", category);
@@ -58,6 +61,26 @@ public class SearchDao {
 		RowBounds rowBounds = new RowBounds(offset,limit);
 		
 		return (ArrayList)sqlSession.selectList("searchMapper.productFilter", map, rowBounds);
+	}
+
+	public int searchBread(SqlSessionTemplate sqlSession, String keyword) {
+		return sqlSession.selectOne("searchMapper.searchBread", keyword);
+	}
+
+	public String getBread(SqlSessionTemplate sqlSession, String keyword) {
+		return sqlSession.selectOne("searchMapper.getBread", keyword);
+	}
+
+	public List<Category> selectCategory(SqlSessionTemplate sqlSession) {
+		return sqlSession.selectList("searchMapper.getCategory");
+	}
+
+	public int countMyBoard(SqlSessionTemplate sqlSession, SearchForm searchForm) {
+		return sqlSession.selectOne("searchMapper.countMyBoard", searchForm);
+	}
+
+	public List<PerchasedBo> searchMyBoard(SqlSessionTemplate sqlSession, SearchForm searchForm) {
+		return sqlSession.selectList("searchMapper.searchMyBoard", searchForm);
 	}
 
 }
