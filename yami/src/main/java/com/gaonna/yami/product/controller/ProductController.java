@@ -277,55 +277,87 @@ public class ProductController {
 		//글번호로 게시글 정보 조회
 		Product p =service.selectProductDetail(productNo);
 		
+		ArrayList<Category> categoryList = service.selectCategoryList();
+		
 	 	//위임하는 페이지에 게시글 정보 담아가기
 		model.addAttribute("p",p);
+		model.addAttribute("categoryList", categoryList);
 		
 		return "product/productUpdate";
 	}
 	
 	//게시글 수정 등록작업 메소드
 	@PostMapping("update.pro")
-	public String productUpdate(Product p
-							 	,MultipartFile reUploadFile
-							 	,HttpSession session) {
-		
-		//정보수정 성공시 성공메시지와 함께 기존에 첨부파일이 잇었다면 삭제 후 디테일뷰로 재요청
-		//정보수정 실패시 실패 메ㅣ지와 함께 디테일뷰로 재요청
-		
-		//새로운 첨부파일이 있는 경우 - 데이터베이스에 변경된 데이터 적용 + 서버에 업로드된 기존 첨부파일 삭제해야함
-		//새로운 첨부파일이 없는 경우 - 데이터베이스에 변경된 데이터 적용
-		//게시글 등록 기능에서 사용했던 첨부파일 처리 참고해서 진행
+	public String productUpdate(
+	        Product p,
+	        @RequestParam(value = "thumbnail", required = false) MultipartFile thumbnail,
+	        @RequestParam(value = "uploadFiles", required = false) ArrayList<MultipartFile> uploadFiles,
+	        @RequestParam(value = "keepDetailFiles", required = false) String[] keepDetailFiles,
+	        HttpSession session) {
 
-		String deleteFile =null;
-		//기존에 첨부파일이 있었는지 확인작업
-		if(!reUploadFile.getOriginalFilename().equals("")){//파일경로가 빈문자열이 아니라면(파일이 있다면)
-			//기존에 첨부파일이 있었는지 확인
-			if(p.getOriginName()!= null) {
-				deleteFile = p.getChangeName(); //서버에 업로드되어있는 파일명 저장(추후 삭제 처리용)
-			}
-			
-			//새로 업로드된 파일 정보를 데이터베이스에 등록 및 서버 업로드 작업 수행
-			String changeName = saveFile(reUploadFile,session);
-			
-			//업로드 처리 후 변경된 파일명 데이터 베이스에 등록하기 위해서 p에 세팅해주기
-			p.setOriginName(reUploadFile.getOriginalFilename()); //원본파일명	
-			p.setChangeName(changeName);
-	
-		}
-			int result = service.productUpdate(p);
-			if(result>0) {
-				session.setAttribute("alertMsg", "게시글 수정 성공!");
-				//기존파일 있었으면 삭제처리하기
-				if(deleteFile != null) {
-					new File(session.getServletContext().getRealPath(deleteFile)).delete();
-				}
-			}else {
-				//정보수정 실패시 실패 메시지와 함꼐 디테일뷰로 재요청
-				session.setAttribute("alertMsg", "게시글 수정 실패!");				
-			}
+	    ArrayList<Attachment> atList = new ArrayList<>();
 
-			return "redirect:/productDetail.pro?productNo="+p.getProductNo(); //디테일뷰 페이지
-		
+	    // 대표 이미지
+	    if (thumbnail != null && !thumbnail.isEmpty()) {
+	        String origin = thumbnail.getOriginalFilename();
+	        String change = saveFile(thumbnail, session);
+	        Attachment at = new Attachment();
+	        at.setFileLevel(1);
+	        at.setOriginName(origin);
+	        at.setChangeName(change);
+	        at.setFilePath("/resources/uploadFiles/");
+	        atList.add(at);
+	    } else if (p.getChangeName() != null && !p.getChangeName().isEmpty()) {
+	        Attachment at = new Attachment();
+	        at.setFileLevel(1);
+	        at.setOriginName(p.getOriginName());
+	        at.setChangeName(p.getChangeName());
+	        at.setFilePath("/resources/uploadFiles/");
+	        atList.add(at);
+	    }
+
+	    // 기존 유지할 상세 이미지
+	    if (keepDetailFiles != null) {
+	        for (String fileName : keepDetailFiles) {
+	            if (fileName != null && !fileName.trim().isEmpty()) {
+	                Attachment at = new Attachment();
+	                at.setFileLevel(2);
+	                at.setChangeName(fileName);
+	                at.setOriginName(fileName); // 실제 원본명을 따로 조회하지 않는다면 동일하게 넣음
+	                at.setFilePath("/resources/uploadFiles/");
+	                atList.add(at);
+	            }
+	        }
+	    }
+
+	    // 새로 업로드된 상세 이미지
+	    if (uploadFiles != null && !uploadFiles.isEmpty()) {
+	        for (MultipartFile mf : uploadFiles) {
+	            if (mf != null && !mf.isEmpty()) {
+	                String origin = mf.getOriginalFilename();
+	                String change = saveFile(mf, session);
+	                Attachment at = new Attachment();
+	                at.setFileLevel(2);
+	                at.setOriginName(origin);
+	                at.setChangeName(change);
+	                at.setFilePath("/resources/uploadFiles/");
+	                atList.add(at);
+	            }
+	        }
+	    }
+
+	    // 상세 이미지 3개 제한
+	    long detailCount = atList.stream().filter(a -> a.getFileLevel() == 2).count();
+	    if (detailCount > 3) {
+	        session.setAttribute("errorMsg", "상세 이미지는 최대 3개까지 등록 가능합니다.");
+	        return "common/errorPage";
+	    }
+
+	    // 서비스 호출
+	    int result = service.productUpdate(p, atList);
+	    session.setAttribute("alertMsg", result > 0 ? "게시글 수정 성공!" : "게시글 수정 실패!");
+
+	    return "redirect:/filter.bo?currentPage=1&location=all&category=0";
 	}
 	
 	

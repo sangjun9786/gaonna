@@ -213,6 +213,24 @@
 	    WHERE PRODUCT_NO = #{productNo}
 	</update>
 	
+	<!-- 게시글 내용 수정 -->
+    <update id="updateProduct" parameterType="Product">
+        UPDATE PRODUCT_BOARD
+        SET CATEGORY_NO = #{categoryNo},
+            PRODUCT_TITLE = #{productTitle},
+            PRODUCT_CONTENT = #{productContent},
+            PRICE = #{price}
+        WHERE PRODUCT_NO = #{productNo}
+    </update>
+    
+    <!-- 첨부파일 삭제 (해당 게시물 전체) -->
+    <delete id="deleteAttachmentProduct" parameterType="int">
+        DELETE FROM ATTATCHMENT
+        WHERE PRODUCT_NO = #{productNo}
+    </delete>
+    
+    
+	
     <!-- 상품 ResultMap -->
     <resultMap id="productResultMap" type="Product">
         <id property="productNo" column="PRODUCT_NO"/>

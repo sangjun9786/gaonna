@@ -117,5 +117,17 @@ public class ProductDao {
 		return sqlSession.update("productMapper.updateProductStatus",o);
 	}
 	
+	//첨부파일 삭제
+	public int deleteAttachmentProduct(SqlSessionTemplate sqlSession, int productNo) {
+		// TODO Auto-generated method stub
+		return sqlSession.delete("productMapper.deleteAttachmentProduct", productNo);
+	}
+	
+	//수정
+	public int updateProduct(SqlSessionTemplate sqlSession, Product p) {
+		// TODO Auto-generated method stub
+		return sqlSession.update("productMapper.updateProduct", p);
+	}
+	
 
 }

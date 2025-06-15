@@ -43,7 +43,7 @@ public interface ProductService {
 	int deleteProduct(int productNo);
 	
 	//상품 수정
-	int productUpdate(Product p);
+	int productUpdate(Product p, ArrayList<Attachment> atList);
 
 	//오더 등록
 	int productOrder(Order o, Member m);

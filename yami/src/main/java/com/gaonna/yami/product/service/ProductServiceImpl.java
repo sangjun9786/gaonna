@@ -113,10 +113,33 @@ public class ProductServiceImpl implements ProductService {
 	}
 	
 	//수정
+	@Transactional
 	@Override
-	public int productUpdate(Product p) {
-		// TODO Auto-generated method stub
-		return dao.productUpdate(sqlSession,p);
+	public int productUpdate(Product p, ArrayList<Attachment> atList) {
+		
+	    // ✅ 1. 대표 이미지 유효성 검사 (기존 유지 OR 새로 업로드된 것 중 하나는 있어야 함)
+	    boolean hasThumbnail =
+	        atList.stream().anyMatch(at -> at.getFileLevel() == 1) ||
+	        (p.getChangeName() != null && !p.getChangeName().isEmpty());
+
+	    if (!hasThumbnail) {
+	        throw new IllegalArgumentException("대표 이미지는 반드시 등록해야 합니다.");
+	    }
+
+	    // ✅ 2. 기존 첨부파일 삭제
+	    dao.deleteAttachmentProduct(sqlSession, p.getProductNo());
+
+	    // ✅ 3. 새로운 첨부파일 등록
+	    int result2 = 1;
+	    for (Attachment at : atList) {
+	        at.setProductBno(p.getProductNo());
+	        result2 *= dao.insertAttachment(sqlSession, at);
+	    }
+
+	    // ✅ 4. 게시글 본문 수정
+	    int result1 = dao.updateProduct(sqlSession, p);
+
+	    return result1 * result2;
 	}
 	
 	//주문 등록 및 포인트 차감
