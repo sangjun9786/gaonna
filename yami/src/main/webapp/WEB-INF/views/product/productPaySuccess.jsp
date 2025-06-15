@@ -5,7 +5,7 @@
 <html lang="ko">
 <head>
 <meta charset="UTF-8">
-<title>구매확정 안내</title>
+<title>판매확정 안내</title>
 <style>
 /* 기존 스타일 유지 */
 body {
@@ -82,12 +82,12 @@ body {
 
 <div class="container">
     <div class="section">
-        <div class="section-title">구매확정 안내</div>
+        <div class="section-title">판매확정 안내</div>
         <div class="info-box">
             <p>
-                해당 상품의 구매를 확정하시겠습니까?<br>
+                해당 상품의 판매를 확정하시겠습니까?<br>
                 판매자가 <b>판매확정</b>을 하지 않더라도 <u>24시간 내 자동으로 판매확정</u>이 처리됩니다.<br><br>
-                판매확정이 완료되면 <span class="highlight">차액 포인트 <fmt:formatNumber value="${order.usedPoint}" pattern="#\,###"/>P</span>가 적립됩니다.
+                판매확정이 완료되면 <span class="highlight">차액 포인트 <fmt:formatNumber value="${order.usedPoint}" pattern="#,###"/>P</span>가 적립됩니다.
             </p>
         </div>
     </div>
@@ -101,23 +101,23 @@ body {
             </tr>
             <tr>
                 <td class="label">상품가</td>
-                <td><fmt:formatNumber value="${order.price}" pattern="#\,###"/>원</td>
+                <td><fmt:formatNumber value="${order.price}" pattern="#,###"/>원</td>
             </tr>
             <tr>
                 <td class="label">현장 결제금액</td>
-                <td><fmt:formatNumber value="${order.price - order.usedPoint}" pattern="#\,###"/>원</td>
+                <td><fmt:formatNumber value="${order.price - order.usedPoint}" pattern="#,###"/>원</td>
             </tr>
             <tr>
                 <td class="label">적립 예정 포인트</td>
-                <td class="highlight"><fmt:formatNumber value="${order.usedPoint}" pattern="#\,###"/>P</td>
+                <td class="highlight"><fmt:formatNumber value="${order.usedPoint}" pattern="#,###"/>P</td>
             </tr>
         </table>
     </div>
 
-    <form action="${contextPath}/order/confirmOrder" method="post">
+    <form action="${contextPath}/order/OrderSuccess" method="post">
         <input type="hidden" name="orderNo" value="${order.orderNo}"/>
         <div class="section" style="text-align:center;">
-            <button type="submit" class="btn-main">구매 확정하기</button>
+            <button type="submit" class="btn-main">판매 확정하기</button>
         </div>
     </form>
 </div>

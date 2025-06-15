@@ -172,18 +172,7 @@ $(function(){
 				  <span class="text-primary fw-bold buyer-ok clickable-status">
 			    구매확정
 			  </span>
-			  <input type="hidden" class="hidden-order-no" value="${board.orderNo}">
 			  `;
-			 
-// 			 const orderNo = board.orderNo;
-// 			  confirmButtonHtml = `
-// 				    <div class="card-footer bg-white border-top-0 text-end">
-// 				      <button type="button" class="btn btn-sm btn-outline-primary confirm-btn"
-// 				              data-order-no="\${board.orderNo}">
-// 				        판매확정 하기
-// 				      </button>
-// 				    </div>
-// 				  `;
 		} else if (status === 'DONE') {
 		  statusDisplay = '<span class="text-secondary fw-bold">거래완료</span>';
 		}
@@ -192,6 +181,9 @@ $(function(){
       let cardHtml = `
         <div class="col">
           <div class="card h-100 shadow-sm position-relative">
+          	
+          <input type="hidden" class="hidden-order-no" value="\${board.orderNo}" />
+          
             <div class="card-body">
               <div class="d-flex justify-content-between align-items-center mb-2">
                 <h5 class="card-title mb-0 text-truncate" style="max-width: 70%;">\${title}</h5>
@@ -242,15 +234,10 @@ $('#boardList').on('click', '.clickable-status', function(e){
   e.stopPropagation(); // 카드 클릭 무시
 
   const orderNo = $(this).closest('.card').find('.hidden-order-no').val();
-  console.log("✅ 클릭된 orderNo:", orderNo);
 
-  if (!orderNo) {
-    alert("❌ orderNo가 비어있습니다. HTML에서 hidden-order-no가 제대로 삽입되었는지 확인하세요.");
-    return;
-  }
 
-  if (confirm('구매확정을 하시겠습니까?')) {
-    location.href = `${root}/order/productOrder?orderNo=${orderNo}`; // ✔️ 그냥 orderNo 넘기기
+  if (confirm('판매확정을 하시겠습니까?')) {
+    location.href = `${root}/order/OrderSuccess?orderNo=\${orderNo}`; // ✔️ 그냥 orderNo 넘기기
   }
 });
 </script>

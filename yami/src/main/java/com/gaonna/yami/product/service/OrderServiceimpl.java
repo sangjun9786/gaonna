@@ -28,4 +28,15 @@ public class OrderServiceimpl implements OrderService {
 		// TODO Auto-generated method stub
 		return dao.selectOrder(sqlSession, orderNo);
 	}
+	
+	@Transactional
+	@Override
+	public int orderSuccess(Order o) {
+		// TODO Auto-generated method stub
+		int r1 = dao.updateOrderSuccess(sqlSession, o.getOrderNo());
+	    int r2 = dao.increasePoint(sqlSession, o.getSellerId(), o.getUsedPoint());
+	    int r3 = dao.updateProductStatus(sqlSession, o.getProductNo());
+
+	    return r1 * r2 * r3; // 하나라도 실패하면 0 반환
+	}
 }

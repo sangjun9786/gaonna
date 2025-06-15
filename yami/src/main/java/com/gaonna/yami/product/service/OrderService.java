@@ -11,6 +11,9 @@ public interface OrderService {
 	int confirmOrder(int orderNo, int buyerId);
 	
 	//주문 조회
-	Order selectOrder(int orderNo); 
+	Order selectOrder(int orderNo);
+	
+	//판매 확정
+	int orderSuccess(Order o); 
 
 }

@@ -14,9 +14,9 @@
     <!-- 1) 데이터 소스 설정 (Oracle 예시) -->
     <bean id="dataSource" class="org.apache.commons.dbcp2.BasicDataSource">
         <property name="driverClassName" value="oracle.jdbc.OracleDriver"/>
-<!--         <property name="url" value="jdbc:oracle:thin:@192.168.150.31:1521:xe"/> -->
+        <property name="url" value="jdbc:oracle:thin:@192.168.150.31:1521:xe"/>
 <!--         <property name="url" value="jdbc:oracle:thin:@localhost:1521:xe"/> -->
-        <property name="url" value="jdbc:oracle:thin:@192.168.195.200:1521:xe"/>
+<!--         <property name="url" value="jdbc:oracle:thin:@192.168.195.200:1521:xe"/> -->
         <property name="username" value="yami"/>
         <property name="password" value="yami"/>
     </bean>

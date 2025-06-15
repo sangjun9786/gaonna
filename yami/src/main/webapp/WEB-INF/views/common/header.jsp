@@ -64,6 +64,8 @@
 
 <c:set var="root" value="${pageContext.request.contextPath}"/>
 <c:set var="loginUser" value="${sessionScope.loginUser}"/>
+
+<c:if test="${not empty alertMsg}">
 <script>
 	  var msg="${alertMsg}";
 			
@@ -71,7 +73,8 @@
 		alert(msg);
 	  }
 	</script>
-	<c:remove var="alertMsg"/>
+	<c:remove var="alertMsg" scope="session"/>
+	</c:if>
 <nav class="navbar navbar-expand-lg custom-navbar position-relative">
   <div class="container-fluid">
 

@@ -166,9 +166,8 @@
             </div>
             <h2>${product.productTitle}</h2>
             <div class="meta">
-                ${product.userId} · 
-                <fmt:formatDate value="${product.uploadDate}" pattern="yyyy-MM-dd" /> · 
-                조회수: ${product.productCount}
+                ${product.userName} · 
+                <fmt:formatDate value="${product.uploadDate}" pattern="yyyy-MM-dd" /> 
             </div>
             <div class="price">
                 <fmt:formatNumber value="${product.price}" pattern="#,###" />원
@@ -198,21 +197,29 @@
 			  	</c:if>
 	
 	                <!-- 구매하기 -->
+	            <c:if test="${loginUser.userNo ne product.userNo}">   
                 <form action="${contextPath}/buyProduct" method="get">
                     <input type="hidden" name="productNo" value="${product.productNo}" />
                     <input type="hidden" name="buyerId" value="${loginUser.userNo}" />
                     <button type="submit" class="action-btn" style="width:100%;">💳 이 상품 구매하기</button>
                 </form>
+                </c:if>
             </c:if>
 
 
-            <!-- 삭제 버튼 -->
+            <!-- 수정  삭제 버튼 -->
             <c:if test="${loginUser.userId eq product.userId}">
-                <form id="deleteForm" method="post" action="${contextPath}/delete.pro" style="display:none;">
+                <div style="margin-top: 15px; display: flex; justify-content: flex-end; gap: 10px;">
+           	   <form method="get" action="${contextPath}/update.pro" style="display:inline;">
+			        <input type="hidden" name="productNo" value="${product.productNo}" />
+			        <button type="submit" class="action-btn" style="width:auto;">수정하기</button>
+			    </form>
+                <form id="deleteForm" method="post" action="${contextPath}/delete.pro">
                     <input type="hidden" name="productNo" value="${product.productNo}" />
                     <input type="hidden" name="filePath" value="/resources/uploadFiles/${product.atList[0].changeName}" />
+                <button type="button" id="deleteBtn" class="action-btn" style="width:auto;">삭제하기</button>
                 </form>
-                <button type="button" id="deleteBtn" class="action-btn" style="width:auto; float:right;">삭제하기</button>
+             </div>   
             </c:if>
 
         </div>
