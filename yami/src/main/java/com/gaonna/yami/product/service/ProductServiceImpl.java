@@ -143,6 +143,8 @@ public class ProductServiceImpl implements ProductService {
 	    
 	    return result * result2 * result3 ;  // 셋 다 성공해야 1 반환
 	}
+	
+
 
 }
 

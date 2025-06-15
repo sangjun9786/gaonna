@@ -82,4 +82,44 @@ public class OrderController {
 	    return "product/productOrder"; 
 	}
 	
+	//판매확정 페이지로
+	@GetMapping("/OrderSuccess")
+	public String showProductPayPage(@RequestParam("orderNo") int orderNo, Model model) {
+	    Order order = service.selectOrder(orderNo);
+	    Product product = pservice.selectProductDetail(order.getProductNo());
+
+	    model.addAttribute("order", order);
+	    model.addAttribute("product", product);
+
+	    return "product/productPaySuccess"; // 상태값 변경 없이 안내만
+	}
+	
+	
+//	//판매확정
+//	@PostMapping("/OrderSuccess")
+//	public String confirmAndRedirect(HttpSession session, Model model) {
+//		
+//		Member m = (Member) session.getAttribute("loginUser");
+//
+//	    if (m == null) {
+//	        model.addAttribute("msg", "로그인이 필요합니다.");
+//	        return "common/errorPage";
+//	    }
+//	    // 구매확정된 주문만 가져옴
+//	    List<Order> confirmedOrders = service.selectBuyerConfirmedOrders(loginUser.getUserNo());
+//	    
+//	    // 1. 상태값 변경
+//	    int result = orderService.confirmOrder(orderNo);  // order_status → 'Done'
+//
+//	    // 2. 데이터 조회해서 모델에 담기
+//	    Order order = orderService.selectOrderByNo(orderNo);
+//	    Product product = productService.selectProductByNo(order.getProductNo());
+//
+//	    model.addAttribute("order", order);
+//	    model.addAttribute("product", product);
+//
+//	    // 3. 성공 안내 페이지로 이동
+//	    return "product/productPaySuccess";
+//	}
+	
 }

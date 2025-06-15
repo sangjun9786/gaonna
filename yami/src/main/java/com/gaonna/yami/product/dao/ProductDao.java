@@ -117,6 +117,5 @@ public class ProductDao {
 		return sqlSession.update("productMapper.updateProductStatus",o);
 	}
 	
-	
 
 }
