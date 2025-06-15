@@ -3,16 +3,21 @@ package com.gaonna.yami.rating.model.dao;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.apache.ibatis.session.SqlSession;
 import org.mybatis.spring.SqlSessionTemplate;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
+import com.gaonna.yami.member.model.vo.Member;
 import com.gaonna.yami.rating.model.vo.Rating;
 
 @Repository
 public class RatingDaoImpl implements RatingDao {
 
-//    @Autowired
-//    private SqlSessionTemplate sqlSession;
+    @Autowired
+    private SqlSessionTemplate sqlSession;
+    @Autowired
+    private RatingDao dao;
 
 //    @Override
 //    public int insertRating(Rating rating) {
@@ -48,6 +53,11 @@ public class RatingDaoImpl implements RatingDao {
 	@Override
 	public int updateAvgScore(int productNo) {
 		// TODO Auto-generated method stub
+		return 0;
+	}
+	
+	@Override
+	public int countRatingMember(SqlSessionTemplate sqlSession, Member m) {
 		return 0;
 	}
 }

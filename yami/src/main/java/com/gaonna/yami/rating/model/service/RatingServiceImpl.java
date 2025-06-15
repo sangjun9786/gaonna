@@ -5,6 +5,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.gaonna.yami.member.model.vo.Member;
 import com.gaonna.yami.rating.model.dao.RatingDao;
 import com.gaonna.yami.rating.model.vo.Rating;
 
@@ -35,5 +36,18 @@ public class RatingServiceImpl implements RatingService {
     @Override
     public int rating(String userNo, int score) {
     	return ratingDao.rating(sqlSession, userNo, score);
+    }
+    
+    //마이페이지 - 평점조회
+    @Override
+    public double selectRatingScore(Member m) {
+    	double result=0;
+    	
+    	int count = ratingDao.countRatingMember(sqlSession,m);
+    	
+    	
+    	
+    	
+    	return result;
     }
 }

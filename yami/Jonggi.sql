@@ -311,8 +311,10 @@ CREATE TABLE COOKIE_TOKEN (
     token_no     NUMBER,
     token        VARCHAR2(50),
     user_no      NUMBER,
-    token_type   VARCHAR2(10), 
+    generated_time DATE DEFAULT SYSDATE,
+    token_type   VARCHAR2(10),
 
+    
     CONSTRAINT cookie_token_no_pk PRIMARY KEY (token_no),
     CONSTRAINT cookie_user_no_fk FOREIGN KEY (user_no) REFERENCES member(user_no) ON DELETE CASCADE
 );

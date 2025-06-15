@@ -122,6 +122,7 @@
             at.UPLOAD_DATE AS AT_UPLOAD_DATE,
             at.FILE_LEVEL,
             at.STATUS AS AT_STATUS
+            NVL(w.cnt, 0) AS WISH_COUNT
         FROM PRODUCT_BOARD pb
         JOIN MEMBER m ON pb.USER_NO = m.USER_NO
         LEFT JOIN COORDS c ON m.MAIN_COORD = c.COORD_NO
@@ -129,6 +130,13 @@
             AND at.FILE_LEVEL = 1
             AND at.STATUS = 'Y'
         JOIN CATEGORY c ON pb.CATEGORY_NO = c.CATEGORY_NO
+        
+        LEFT JOIN (
+	        SELECT PRODUCT_NO, COUNT(*) AS cnt
+	        FROM WISH
+	        GROUP BY PRODUCT_NO
+    	) w ON pb.PRODUCT_NO = w.PRODUCT_NO
+        
         WHERE pb.STATUS = 'N'
         ORDER BY pb.UPLOAD_DATE DESC
     </select>
@@ -238,6 +246,7 @@
         <result property="userId" column="USER_ID"/>
         <result property="userName" column="USER_NAME"/>
         <result property="categoryName" column="CATEGORY_NAME"/>
+        <result property="wishCount" column="WISH_COUNT"/>
         
         <collection property="atList" ofType="Attachment" notNullColumn="FILE_NO">
             <id property="fileNo" column="FILE_NO"/>

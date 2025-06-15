@@ -28,7 +28,8 @@ public class Product {
 	private String categoryName;
 	private String originName;   
 	private String changeName;
-	private String userPhone; // 판매자 연락처 
+	private String userPhone; // 판매자 연락처
+	private int wishCount;
 
 	
 	private ArrayList<Attachment> atList = new ArrayList<>();

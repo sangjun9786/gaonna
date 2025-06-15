@@ -7,7 +7,7 @@
 		src="https://oapi.map.naver.com/openapi/v3/maps.js?ncpKeyId=85oq183idp">
 	</script>
     <meta charset="UTF-8">
-    <title>가고구 드래그 등록</title>
+    <title>상품 등록</title>
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <style>
@@ -151,7 +151,7 @@
             </div>
             <div class="form-group">
                 <label class="form-label">가격 (원)</label>
-                <input type="number" name="price" class="form-control" required>
+                <input type="number" name="price" class="form-control" required min="0" step="100">
             </div>
             <!-- 거래희망장소 -->
 			<div class="form-group">
@@ -286,6 +286,16 @@
     function validateForm() {
         if (!$('#thumbnail').val()) {
             alert("대표 이미지를 선택해주세요.");
+            return false;
+        }
+        
+        if (isNaN(price) || price < 0) {
+            alert("가격은 0원 이상의 숫자만 입력 가능합니다.");
+            return false;
+        }
+        
+        if (price % 100 !== 0) {
+            alert("가격은 100원 단위로 입력해주세요.");
             return false;
         }
         return true;

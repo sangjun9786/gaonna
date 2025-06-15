@@ -1,5 +1,6 @@
 package com.gaonna.yami.rating.model.service;
 
+import com.gaonna.yami.member.model.vo.Member;
 import com.gaonna.yami.rating.model.vo.Rating;
 
 public interface RatingService {
@@ -7,4 +8,6 @@ public interface RatingService {
     int insertRating(Rating rating);
 
 	int rating(String userNo, int score);
+
+	double selectRatingScore(Member m);
 }

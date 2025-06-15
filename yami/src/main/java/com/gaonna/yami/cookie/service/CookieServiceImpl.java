@@ -100,7 +100,7 @@ public class CookieServiceImpl implements CookieService{
 		}
 	}
 	
-	//로그아웃 - 자동로그인 토큰 삭제
+	//자동로그인 토큰 삭제
 	@Override
 	public void deleteAutoLogin(HttpServletResponse response,HttpSession session) {
 		CookieToken cookieToken = new CookieToken();

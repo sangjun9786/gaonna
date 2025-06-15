@@ -21,4 +21,15 @@
         VALUES
           (SEQ_REPLY_NO.NEXTVAL, #{productNo}, #{userId}, #{replyText}, SYSDATE)
     </insert>
+    
+    <update id="updateReply" parameterType="Reply">
+    	update reply
+    	set REPLY_TEXT = #{replyText}
+    	where REPLY_NO = #{replyNo}
+    </update>
+    
+    <delete id="deleteReply" parameterType="Reply">
+    	delete from reply
+    	where REPLY_NO = #{replyNo}
+    </delete>
 </mapper>
