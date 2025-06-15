@@ -4,7 +4,7 @@
 <html>
 <head>
 <meta charset="UTF-8">
-<title>찜 목록</title>
+<title>좋아요 목록</title>
 <link rel="stylesheet"
 	href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
 <style>
@@ -72,7 +72,7 @@
     <div class="col-md-11 col-lg-10">
       <div class="card shadow-lg mb-4">
         <div class="card-header bg-danger text-white">
-          <h4 class="mb-0"><i class="bi bi-heart-fill me-2"></i>찜한 게시글</h4>
+          <h4 class="mb-0"><i class="bi bi-heart-fill me-2"></i>좋아요한 게시글</h4>
         </div>
       </div>
 
@@ -80,10 +80,10 @@
         <span id="wishlistResultCount">검색결과 <span class="fw-bold">0</span>건</span>
       </div>
 
-      <!-- 찜 게시글 카드 리스트 -->
+      <!-- 좋아요 게시글 카드 리스트 -->
       <div id="wishlistList" class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4 mb-4">
         <div class="col">
-          <div class="alert alert-info mb-0">찜한 게시글이 이곳에 표시됩니다.</div>
+          <div class="alert alert-info mb-0">좋아요한 게시글이 이곳에 표시됩니다.</div>
         </div>
       </div>
 
@@ -97,13 +97,13 @@
 <script>
 $(function(){
 
-  // 찜 카드 렌더링
+  // 좋아요 카드 렌더링
   function renderWishlist(wishlist, totalCount){
     let $wishlistList = $('#wishlistList');
     $wishlistList.empty();
 
     if(!wishlist || wishlist.length === 0){
-      $wishlistList.html('<div class="col"><div class="alert alert-warning mb-0">찜한 게시글이 없습니다.</div></div>');
+      $wishlistList.html('<div class="col"><div class="alert alert-warning mb-0">좋아요한 게시글이 없습니다.</div></div>');
       return;
     }
 
@@ -128,7 +128,7 @@ $(function(){
               <div class="card-footer small text-muted d-flex justify-content-between align-items-center" style="visibility:hidden;height:0;padding:0;border:none;"></div>
             \${blurDivEnd}
             <div class="card-bottom-btns">
-              <button type="button" class="btn btn-outline-danger btn-sm wishlist-delete-btn" title="찜 삭제">
+              <button type="button" class="btn btn-outline-danger btn-sm wishlist-delete-btn" title="좋아요 삭제">
                 <i class="bi bi-trash"></i>
               </button>
             </div>
@@ -210,7 +210,7 @@ $(function(){
     searchWishlist();
   });
 
-  // 찜 목록 조회 및 렌더링
+  // 좋아요 목록 조회 및 렌더링
   async function searchWishlist(){
     const params = $('#searchForm').serialize();
 

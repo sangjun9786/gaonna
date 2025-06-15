@@ -25,6 +25,7 @@ import com.gaonna.yami.location.vo.Location;
 import com.gaonna.yami.member.common.TokenGenerator;
 import com.gaonna.yami.member.model.service.MemberService;
 import com.gaonna.yami.member.model.vo.Member;
+import com.gaonna.yami.rating.model.service.RatingService;
 
 @Controller
 public class MemberController {
@@ -39,36 +40,14 @@ public class MemberController {
 	@Autowired
 	public AdminService adminService;
 	@Autowired
+	public RatingService ratingService;
+	@Autowired
 	private BCryptPasswordEncoder bcrypt;
 	
-	//메인 페이지 - 자동 로그인
+	//메인 페이지 이동
 	@RequestMapping("/main")
-	public String home(@CookieValue(name = "autoLogin", required = false) String autoLogin,
-		    HttpSession session, HttpServletResponse response,Model model) {
-		try {
-			//자동 로그인 쿠키 인식
-			if(autoLogin != null &&
-					(Member)session.getAttribute("loginUser") ==null) {
-				
-				//쿠키에서 토큰, 회원번호 추출
-				String[] userNoStr = autoLogin.split("_"); 
-				int userNo = Integer.parseInt(userNoStr[0]);
-				String token = userNoStr[1];
-				CookieToken cookieToken = new CookieToken(token,userNo);
-				
-				//토큰 조회해서 로그인하기
-				int result = cookieService.autoLogin(session,response,cookieToken);
-				
-				if(result!=1) {
-					return errorPage(model,"자동 로그인 실패");
-				}
-			}
-			
-			return "main";
-		} catch (Exception e) {
-			e.printStackTrace();
-			return errorPage(model,"쿠키 인식 실패");
-		}
+	public String home() {
+		return "main";
 	}
 	
 	//실험실 이동
@@ -239,9 +218,12 @@ public class MemberController {
 					//('superAdmin', 'admin', 'viewer')
 				}
 				
-			    //자동로그인 켜져 있으면 쿠키에 저장
 			    if(autoLogin != null && autoLogin.equals("Y")) {
+			    	//자동로그인 켜져 있으면 쿠키에 저장
 			    	cookieService.autoLogin(response, loginUser);
+			    }else {
+			    	//자동 로그인 가세요 있으면 쿠키삭제 및 토큰삭제
+			    	cookieService.deleteAutoLogin(response, session);
 			    }
 				
 				return "redirect:" + response.encodeRedirectURL("/");
@@ -612,6 +594,22 @@ public class MemberController {
 		} catch (Exception e) {
 			e.printStackTrace();
 			return errorPage(model,"500 err");
+		}
+	}
+	
+	//마이페이지 평점 조회
+	@PostMapping("selectRatingScore.me")
+	@ResponseBody
+	public String selectRatingScore(HttpSession session) {
+		try {
+			Member m = (Member)session.getAttribute("loginUser");
+			double score = ratingService.selectRatingScore(m);
+			
+			
+			return "";
+		} catch (Exception e) {
+			e.printStackTrace();
+			return "";
 		}
 	}
 	

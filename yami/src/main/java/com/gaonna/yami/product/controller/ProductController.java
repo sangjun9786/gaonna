@@ -385,10 +385,58 @@ public class ProductController {
         return replyService.selectReplyList(productNo);
     }
     
+    //댓글 업데이트
+    @PostMapping("updateReply")
+    @ResponseBody
+    public String updateReply(HttpSession session
+    		,Reply reply) {
+    	try {
+    		Member m = (Member)session.getAttribute("loginUser");
+    		if(m.getRoleType() == "N" &&
+    				m.getUserId() != reply.getUserId()) {
+    			return "fail";
+    		}
+    		
+    		int result = replyService.updateReply(reply);
+    		
+    		if(result>0) {
+    			return "success";
+    		}else {
+    			return "fail";
+    		}
+		} catch (Exception e) {
+			session.setAttribute("alertMsg", "댓글 수정 실패");
+			e.printStackTrace();
+			return "fail";
+		}
+    }
     
     
-    
-    
+    //댓글 삭제
+    @PostMapping("deleteReply")
+    @ResponseBody
+    public String deleteReply(HttpSession session
+    		,Reply reply) {
+    	try {
+    		Member m = (Member)session.getAttribute("loginUser");
+    		if(m.getRoleType() == "N" &&
+    				m.getUserId() != reply.getUserId()) {
+    			return "fail";
+    		}
+    		
+    		int result = replyService.deleteReply(reply);
+    		
+    		if(result>0) {
+    			return "success";
+    		}else {
+    			return "fail";
+    		}
+		} catch (Exception e) {
+			session.setAttribute("alertMsg", "댓글 수정 실패");
+			e.printStackTrace();
+			return "fail";
+		}
+    }
     
     
     

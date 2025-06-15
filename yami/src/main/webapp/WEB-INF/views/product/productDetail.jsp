@@ -263,6 +263,9 @@
 let detailImages = [];
 let currentIndex = 0;
 
+let isNotManager = ${loginUser.roleType != "N"};
+let currUserId = "${loginUser.userId}";
+
 $(function () {
     $("#deleteBtn").click(function () {
         if (confirm("정말로 삭제하시겠습니까?")) {
@@ -312,6 +315,11 @@ function closeModal() {
 }
 
 function wishProduct() {
+	if(currUserId == "${product.userId}"){
+		alert("자신의 물품에 좋아요를 누를 수 없습니다.");
+		return;
+	}
+	
     const productNo = $("#productNo").val();
     $.post("${contextPath}/product/wish", { productNo: productNo }, function(result) {
         if (result === "not-login") {
@@ -346,6 +354,7 @@ function insertReply() {
     });
 }
 
+
 function selectReplyList() {
     $.ajax({
         url: "${contextPath}/replyList",
@@ -360,10 +369,16 @@ function selectReplyList() {
                 const uid = r.userId || "";
                 const txt = r.replyText || "";
                 const dt = r.replyDate ? new Date(r.replyDate).toLocaleString('ko-KR') : "";
-                str += '<div class="comment-box">' +
-                       '<b>' + uid + '</b>: ' + txt +
-                       ' <span style="color:gray;">[' + dt + ']</span>' +
-                       '</div>';
+                str += '<div class="comment-box">';
+                str += '<b>' + uid + '</b>: <span class="reply-text">' + txt + '</span>';
+                str += ' <span style="color:gray;">[' + dt + ']</span>';
+                if (isNotManager || currUserId == r.userId) {
+                    str += '<div class="btn-group ms-2">';
+                    str += '<button class="edit-btn btn btn-outline-primary btn-sm" data-id="' + r.replyNo + '">수정</button>';
+                    str += '<button class="delete-btn btn btn-outline-danger btn-sm" data-id="' + r.replyNo + '">삭제</button>';
+                    str += '</div>';
+                }
+                str += '</div>';
             }
             $("#replyArea").html(str);
         },
@@ -372,6 +387,88 @@ function selectReplyList() {
         }
     });
 }
+
+// 수정 버튼 핸들러
+$('#replyArea').on('click', '.edit-btn', function() {
+    const commentBox = $(this).closest('.comment-box');
+    const replyNo = $(this).data('id');
+    const replyTextElem = commentBox.find('.reply-text');
+    const originalText = replyTextElem.text().trim();
+
+    let editForm = commentBox.find('.edit-form');
+    if (editForm.length > 0) {
+        // 이미 폼이 있으면 show만!
+        editForm.show();
+        // textarea 값도 원본으로 복구
+        editForm.find('textarea').val(originalText);
+        return;
+    }
+
+    // 폼이 없으면 새로 생성
+    const formHtml = `
+        <div class="edit-form mt-2">
+            <textarea class="form-control mb-2" rows="3">\${originalText}</textarea>
+            <button class="btn btn-sm btn-primary edit-confirm me-1">확인</button>
+            <button class="btn btn-sm btn-secondary edit-cancel">취소</button>
+        </div>
+    `;
+    commentBox.append(formHtml);
+});
+
+
+//수정 확인 버튼 핸들러
+$('#replyArea').on('click', '.edit-confirm', function() {
+    const replyNo = $(this).closest('.comment-box').find('.edit-btn').data('id');
+    const newText = $(this).siblings('textarea').val().trim();
+    const editForm = $(this).closest('.edit-form');
+    
+    if(newText === "") {
+        alert("댓글 내용을 입력하세요.");
+        return;
+    }
+    
+    $.ajax({
+        url: '${root}/updateReply',
+        method: 'POST',
+        data: { 
+            userId: '${loginUser.userId}',
+            replyNo: replyNo,
+            replyText: newText  // 수정된 내용 추가
+        },
+        success: function(result) {
+            if(result === 'success') {
+                selectReplyList(); // 목록 재갱신
+            }
+            editForm.remove();  // 수정 폼 제거
+        }
+    });
+});
+
+//수정 취소 버튼 핸들러
+$('#replyArea').on('click', '.edit-cancel', function() {
+    $(this).closest('.edit-form').hide();
+});
+
+//삭제 버튼 핸들러
+$('#replyArea').on('click', '.delete-btn', function() {
+    const replyNo = $(this).data('id');
+    if(confirm('정말 삭제하시겠습니까?')) {
+        $.ajax({
+            url: '${root}/deleteReply',
+            method: 'POST',
+            data: { 
+                userId: '${loginUser.userId}',
+                replyNo: replyNo
+            },
+            success: function(result) {
+                if(result === 'success') {
+                    selectReplyList(); // 목록 재갱신
+                    alert('삭제 완료');
+                }
+            }
+        });
+    }
+});
 
 $(document).ready(function() {
     selectReplyList();

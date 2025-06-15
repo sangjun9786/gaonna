@@ -648,7 +648,7 @@ function renderCommentActions(comment, isRecomment) {
             html += `<button class="btn btn-outline-primary btn-sm me-1" onclick="showEditForm(\${comment.commentNo}, \${isRecomment}, \${comment.userNo})">수정</button>`;
             html += `<button class="btn btn-outline-danger btn-sm me-1" onclick="deleteComment(\${comment.commentNo}, \${comment.userNo})">삭제</button>`;
         }
-        html += `<button class="btn btn-outline-warning btn-sm" onclick="reportComment(\${comment.commentNo})">신고</button>`;
+        <%--html += `<button class="btn btn-outline-warning btn-sm" onclick="reportComment(\${comment.commentNo})">신고</button>`;--%>
     }
     return html;
 }
@@ -675,7 +675,16 @@ function renderCommentWriteArea() {
 function checkCommentInput() {
     const content = document.getElementById('commentInput').value.trim();
     const like = document.getElementById('commentLike').value;
-    document.getElementById('btnCommentSubmit').disabled = !(content && like);
+    const btn = document.getElementById('btnCommentSubmit');
+    if (content.length === 0 || content.length > 100 || !like) {
+        btn.disabled = true;
+    } else {
+        btn.disabled = false;
+    }
+    // 100자 초과시 자동 자르기
+    if (content.length > 100) {
+        document.getElementById('commentInput').value = content.substring(0, 100);
+    }
 }
 function submitComment() {
     const content = document.getElementById('commentInput').value.trim();
@@ -744,8 +753,17 @@ function showRecommentForm(commentNo) {
 
 //대댓글 입력확인
 function checkRecommentInput(commentNo) {
-    const content = document.getElementById(`recommentInput-\${commentNo}`).value.trim();
-    document.getElementById(`btnSubmitRecomment-\${commentNo}`).disabled = !content;
+    const input = document.getElementById(`recommentInput-\${commentNo}`);
+    const content = input.value.trim();
+    const btn = document.getElementById(`btnSubmitRecomment-\${commentNo}`);
+    if (content.length === 0 || content.length > 100) {
+        btn.disabled = true;
+    } else {
+        btn.disabled = false;
+    }
+    if (content.length > 100) {
+        input.value = content.substring(0, 100);
+    }
 }
 
 //대댓글 작성취소
@@ -865,11 +883,19 @@ function showEditForm(commentNo, isRecomment,commentUserNo) {
 }
 
 function checkEditInput(commentNo, isRecomment) {
-    const content = document.getElementById(`editContent-\${commentNo}`).value.trim();
+    const input = document.getElementById(`editContent-\${commentNo}`);
+    const content = input.value.trim();
     const like = isRecomment ? 'P' : document.getElementById(`editLike-\${commentNo}`).value;
-    document.getElementById(`btnSubmitEdit-\${commentNo}`).disabled = !content || (!isRecomment && !like);
+    const btn = document.getElementById(`btnSubmitEdit-\${commentNo}`);
+    if (content.length === 0 || content.length > 100 || (!isRecomment && !like)) {
+        btn.disabled = true;
+    } else {
+        btn.disabled = false;
+    }
+    if (content.length > 100) {
+        input.value = content.substring(0, 100);
+    }
 }
-
 function cancelEdit(commentNo, isRecomment) {
     isCommentEditing = false;
     showBakeryModal(currentBakeryNo, currentPage); // 모달 다시 로드
