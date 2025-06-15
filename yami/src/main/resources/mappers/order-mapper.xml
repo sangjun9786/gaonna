@@ -19,5 +19,17 @@
 	    SELECT * FROM ORDERS
 	    WHERE ORDER_NO = #{orderNo}
 	</select>
+	
+	<update id="updateOrderSuccess">
+    UPDATE ORDERS
+    SET STATUS = 'DONE'
+    WHERE ORDER_NO = #{orderNo}
+	</update>
+	
+	<update id="increasePoint">
+    UPDATE MEMBER
+    SET POINT = POINT + #{usedPoint}
+    WHERE USER_NO = #{sellerId}
+	</update>
 		
 </mapper>

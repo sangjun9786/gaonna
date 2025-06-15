@@ -95,31 +95,33 @@ public class OrderController {
 	}
 	
 	
-//	//판매확정
-//	@PostMapping("/OrderSuccess")
-//	public String confirmAndRedirect(HttpSession session, Model model) {
-//		
-//		Member m = (Member) session.getAttribute("loginUser");
-//
-//	    if (m == null) {
-//	        model.addAttribute("msg", "로그인이 필요합니다.");
-//	        return "common/errorPage";
-//	    }
-//	    // 구매확정된 주문만 가져옴
-//	    List<Order> confirmedOrders = service.selectBuyerConfirmedOrders(loginUser.getUserNo());
-//	    
-//	    // 1. 상태값 변경
-//	    int result = orderService.confirmOrder(orderNo);  // order_status → 'Done'
-//
-//	    // 2. 데이터 조회해서 모델에 담기
-//	    Order order = orderService.selectOrderByNo(orderNo);
-//	    Product product = productService.selectProductByNo(order.getProductNo());
-//
-//	    model.addAttribute("order", order);
-//	    model.addAttribute("product", product);
-//
-//	    // 3. 성공 안내 페이지로 이동
-//	    return "product/productPaySuccess";
-//	}
-	
+	//판매확정
+	@PostMapping("/OrderSuccess")
+	public String orderSuccess(@RequestParam("orderNo") int orderNo,
+	                          HttpSession session,
+	                          Model model) {
+
+	    Member m = (Member) session.getAttribute("loginUser");
+	    if (m == null) {
+	        model.addAttribute("msg", "로그인이 필요합니다.");
+	        return "common/errorPage";
+	    }
+
+	    // 주문 정보 조회 (판매자 ID, 상품 ID, 가격 필요)
+	    Order o = service.selectOrder(orderNo);
+	    if (o == null || !"BUYER_OK".equals(o.getStatus())) {
+	        model.addAttribute("msg", "잘못된 요청입니다. 구매확정 상태가 아닙니다.");
+	        return "common/errorPage";
+	    }
+
+	    int result = service.orderSuccess(o);  // 핵심 트랜잭션 처리
+
+	    if (result > 0) {
+	        session.setAttribute("alertMsg", "판매 확정이 완료되었습니다.");
+	        return "redirect:/board.co"; // 또는 판매자 거래내역
+	    } else {
+	        model.addAttribute("msg", "판매 확정 처리에 실패했습니다.");
+	        return "common/errorPage";
+	    }
+	}
 }

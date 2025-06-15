@@ -229,6 +229,11 @@
         WHERE PRODUCT_NO = #{productNo}
     </delete>
     
+    <update id="updateProductStatusY">
+    UPDATE PRODUCT_BOARD
+    SET STATUS = 'Y'
+    WHERE PRODUCT_NO = #{productNo}
+	</update>
     
 	
     <!-- 상품 ResultMap -->

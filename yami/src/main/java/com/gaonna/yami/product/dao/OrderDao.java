@@ -26,5 +26,27 @@ public class OrderDao {
 		// TODO Auto-generated method stub
 		return sqlSession.selectOne("orderMapper.selectOrder",orderNo);
 	}
+	
+	//거래완료
+	public int updateOrderSuccess(SqlSessionTemplate sqlSession, int orderNo) {
+		// TODO Auto-generated method stub
+		return sqlSession.update("orderMapper.updateOrderSuccess", orderNo);
+	}
+	
+	//포인트정산
+	public int increasePoint(SqlSessionTemplate sqlSession, int sellerId, int usedPoint) {
+		// TODO Auto-generated method stub
+		Map<String, Object> map = new HashMap<>();
+	    map.put("sellerId", sellerId);
+	    map.put("usedPoint", usedPoint);
+	    return sqlSession.update("orderMapper.increasePoint", map);
+	}
+	
+	//판매게시판 상태값 Y
+	public int updateProductStatus(SqlSessionTemplate sqlSession, int productNo) {
+		// TODO Auto-generated method stub
+	    return sqlSession.update("productMapper.updateProductStatusY", productNo);
+
+	}
 
 }
