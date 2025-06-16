@@ -42,4 +42,9 @@ public class EventDao {
 		return sqlSession.update("eventMapper.point500", loginUser);
 	}
 
+	public int rating(SqlSessionTemplate sqlSession, int productNo, int memberNo, int score) {
+		int num = sqlSession.selectOne("eventMapper.search", memberNo);
+		return 0;
+	}
+
 }

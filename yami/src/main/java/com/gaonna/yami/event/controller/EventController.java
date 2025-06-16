@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.gaonna.yami.event.model.service.EventService;
 import com.gaonna.yami.event.model.vo.Event;
@@ -103,6 +104,12 @@ public class EventController {
 	@RequestMapping("doTest.me")
 	public String doTest() {
 		return "event/perchasedBoard";
+	}
+	
+	@ResponseBody
+	@RequestMapping(value = "rating", produces = "text/html;charset=UTF-8")
+	public int rating(int productNo, int memberNo, int score) {
+		return service.rating(productNo, memberNo, score);
 	}
 	
 }

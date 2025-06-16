@@ -74,30 +74,7 @@
     </div>
   </div>
 </div>
-<!-- The Modal -->
-        <div class="modal" id="ratingModal">
-          <div class="modal-dialog">
-            <div class="modal-content">
-            
-              <!-- Modal Header -->
-              <div class="modal-header">
-                <h4 class="modal-title">모달창입니다.</h4>
-                <!-- <button type="button" class="close" data-dismiss="modal">&times;</button> -->
-              </div>
-              
-              <!-- Modal body -->
-              <div class="modal-body">
-                Modal body..
-              </div>
-              
-              <!-- Modal footer -->
-              <div class="modal-footer">
-                <button type="button" class="btn btn-danger" data-dismiss="modal">Close</button>
-              </div>
-              
-            </div>
-          </div>
-        </div>
+
 <script>
 $(function(){
   // 카테고리 옵션 동적 추가
@@ -176,7 +153,7 @@ $(function(){
       // 제목 10글자, 내용 30글자 제한
       let title = board.productTitle.length > 10 ? board.productTitle.substring(0,10) + '...' : board.productTitle;
       let content = board.productContent.length > 30 ? board.productContent.substring(0,30) + '...' : board.productContent;
-      let scoreStatusText = board.score2 === 'Y' ? '평점 등록 완료' : '평점 미등록';
+      let scoreStatusText = board.score2 === 'Y' ? '등록' : '미등록';
       // 카드 HTML
       let cardHtml = `
         <div class="col">
@@ -194,14 +171,98 @@ $(function(){
               <span class="ms-2">\${scoreStatusText}</span>
               <span class="ms-2">\${board.status}</span>
             </div>
-            <a href="#" class="stretched-link" data-bs-toggle="modal" data-bs-target="#ratingModal"></a>
-          </div>
-        </div>
-      `;
-      $boardList.append(cardHtml);
-    });
-  }
+            `;
 
+            // 평점 등록 조건: score2가 'N' (미등록)이고 status가 'DONE' (거래 완료)일 때만 링크 활성화
+            if (board.score2 === 'N' && board.status === 'DONE') {
+                cardHtml += `
+                    <a href="#" class="stretched-link rate-product"
+                       data-product-no="${board.productNo}"
+                       data-member-no="${board.memberNo}"
+                       data-score-status="${board.score2}"
+                       data-trade-status="${board.status}">
+                    </a>
+                `;
+            } else {
+                // 평점 등록이 불가능한 경우 (클릭 시 알림)
+                cardHtml += `
+                    <a href="#" class="stretched-link disabled-rate-product"
+                       data-score-status="${board.score2}"
+                       data-trade-status="${board.status}">
+                    </a>
+                `;
+            }
+
+            cardHtml += `
+                </div>
+              </div>
+            `;
+            $boardList.append(cardHtml);
+          });
+  }
+//동적으로 생성된 .rate-product 링크에 이벤트 리스너 추가 (평점 등록 가능)
+  $('.rate-product').off('click').on('click', function(e){ // .off('click')을 추가하여 중복 바인딩 방지
+      e.preventDefault(); // 기본 링크 동작 방지
+
+      const productNo = $(this).data('product-no');
+      const memberNo = $(this).data('member-no');
+      
+      let score = null;
+      let isValidScore = false;
+
+      while (!isValidScore) {
+          const input = prompt("1점부터 5점 사이의 정수를 입력해주세요:");
+          if (input === null) { // 사용자가 취소를 눌렀을 경우
+              alert("평점 입력이 취소되었습니다.");
+              return;
+          }
+
+          score = parseInt(input);
+
+          if (isNaN(score) || score < 1 || score > 5) {
+              alert("유효하지 않은 평점입니다. 1에서 5 사이의 정수를 입력해주세요.");
+          } else {
+              isValidScore = true;
+          }
+      }
+      
+      if (score !== null) {
+          submitRating(productNo, memberNo, score);
+      }
+  });
+
+  // 동적으로 생성된 .disabled-rate-product 링크에 이벤트 리스너 추가 (평점 등록 불가능)
+  $('.disabled-rate-product').off('click').on('click', function(e){ // .off('click')을 추가하여 중복 바인딩 방지
+      e.preventDefault(); // 기본 링크 동작 방지
+      const scoreStatus = $(this).data('score-status');
+      const tradeStatus = $(this).data('trade-status');
+
+      let message = "평점을 부여할 수 없습니다.";
+      if (scoreStatus === 'Y') {
+          message += " (이미 평점이 등록되었습니다.)";
+      } else if (tradeStatus !== 'DONE') {
+          message += " (거래가 완료된 상품만 평점을 등록할 수 있습니다.)";
+      }
+      alert(message);
+  });
+  function submitRating(productNo, memberNo, score) {
+	    $.ajax({
+	        url: '${root}/rating', // 평점 업데이트를 처리할 컨트롤러 URL
+	        method: 'POST',
+	        contentType: 'application/json',
+	        data: JSON.stringify({
+	            productNo: productNo,
+	            memberNo: memberNo,
+	            score: score
+	        }),
+	        success: function(response) {
+	            window.alert('평점 등록 완료');
+	        },
+	        error: function() {
+	            console.log('error');
+	        }
+	    });
+	}
   // 페이지네이션 렌더링
   function renderPagination(totalCount, currentPage, pageSize){
     const totalPage = Math.ceil(totalCount / pageSize);

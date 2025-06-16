@@ -89,7 +89,6 @@
 	                SELECT O.PRODUCT_NO
 	                FROM ORDERS O
 	                WHERE O.BUYER_ID = #{userNo}
-	                  AND O.STATUS = 'REQ'
 	            )
 				<choose>
 	                <!-- 검색 타입1이 'all'이 아닌 경우 -->
