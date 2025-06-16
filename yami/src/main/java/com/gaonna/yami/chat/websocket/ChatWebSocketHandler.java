@@ -1,10 +1,20 @@
 package com.gaonna.yami.chat.websocket;
 
-import org.springframework.web.socket.*;
-import org.springframework.web.socket.handler.TextWebSocketHandler;
-import java.util.*;
+import java.util.Collections;
+import com.gaonna.yami.chat.common.ApplicationContextProvider; 
+import com.gaonna.yami.chat.model.service.ChatService;         
+
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Set;
+
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
+import org.springframework.web.socket.CloseStatus;
+import org.springframework.web.socket.TextMessage;
+import org.springframework.web.socket.WebSocketSession;
+import org.springframework.web.socket.handler.TextWebSocketHandler;
 
 public class ChatWebSocketHandler extends TextWebSocketHandler {
 
@@ -12,7 +22,7 @@ public class ChatWebSocketHandler extends TextWebSocketHandler {
     private static Map<Integer, Set<WebSocketSession>> roomSessions = new HashMap<>();
 
     private int getRoomNoFromSession(WebSocketSession session) {
-        String query = session.getUri().getQuery(); // "roomNo=123&..."
+        String query = session.getUri().getQuery(); 
         if (query != null) {
             for (String param : query.split("&")) {
                 if (param.startsWith("roomNo=")) {
@@ -45,16 +55,29 @@ public class ChatWebSocketHandler extends TextWebSocketHandler {
     protected void handleTextMessage(WebSocketSession session, TextMessage message) throws Exception {
         String payload = message.getPayload();
 
-        // JSON 파싱 (json-simple)
         JSONParser parser = new JSONParser();
         JSONObject obj = (JSONObject) parser.parse(payload);
         int roomNo = Integer.parseInt(obj.get("roomNo").toString());
 
         Set<WebSocketSession> receivers = roomSessions.get(roomNo);
         if (receivers != null) {
-            for (WebSocketSession s : receivers) {
-                if (s.isOpen()) s.sendMessage(new TextMessage(payload));
+            // 1. 채팅 메시지 broadcast
+            if ("chat".equals(obj.get("type"))) {
+                for (WebSocketSession s : receivers) {
+                    if (s.isOpen()) s.sendMessage(new TextMessage(payload));
+                }
+            }
+            // 2. 읽음 신호 broadcast	
+            else if ("read".equals(obj.get("type"))) {
+            	int userNo = Integer.parseInt(obj.get("userNo").toString());
+            	ChatService chatService = ApplicationContextProvider.getBean(ChatService.class);
+            	chatService.readAllMessages(roomNo, userNo);
+            	
+                for (WebSocketSession s : receivers) {
+                    if (s.isOpen()) s.sendMessage(new TextMessage(payload));
+                }
             }
         }
     }
+
 }

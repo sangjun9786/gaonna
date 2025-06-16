@@ -19,6 +19,8 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.multipart.MultipartFile;
 
+import com.gaonna.yami.alarm.model.service.AlarmService;
+import com.gaonna.yami.alarm.model.vo.Alarm;
 import com.gaonna.yami.chat.model.service.ChatService;
 import com.gaonna.yami.chat.model.vo.ChatRoom;
 import com.gaonna.yami.common.PageInfo;
@@ -47,6 +49,9 @@ public class ProductController {
     
     @Autowired
     private ChatService chatService;
+    
+    @Autowired
+    private AlarmService alarmService;
 
 	//test 리스트 
     @RequestMapping("productList2.pro")
@@ -109,6 +114,10 @@ public class ProductController {
         
      // 로그인유저 체크
         Member loginUser = (Member) session.getAttribute("loginUser");
+        
+        if (loginUser != null) {
+            alarmService.deleteReplyAlarmsByProduct(loginUser.getUserNo(), productNo);
+        }
      // 로그인한 경우만 채팅 방 여부 확인 (6/15 상준 에러 수정)
         if (loginUser != null) {
             if (loginUser.getUserNo() != product.getUserNo()) {
@@ -170,6 +179,17 @@ public class ProductController {
         }
         r.setUserId(loginUser.getUserId());
         int result = replyService.insertReply(r);
+        
+        Product product = service.selectProductDetail(r.getProductNo());
+        if (product != null && product.getUserNo() != loginUser.getUserNo()) {
+            Alarm alarm = new Alarm();
+            alarm.setUserNo(product.getUserNo());      // 게시글 작성자
+            alarm.setType("reply");
+            alarm.setRefNo(r.getProductNo());          // 게시글 번호(참조)
+            alarm.setContent(loginUser.getUserName() + "님이 댓글을 남겼습니다.");
+            alarmService.insertAlarm(alarm);
+        }
+
         return result > 0 ? "success" : "fail";
     }
 
@@ -502,5 +522,4 @@ public class ProductController {
     
     
 }
-
 

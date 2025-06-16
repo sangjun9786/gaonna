@@ -43,10 +43,6 @@ public class ChatServiceImpl implements ChatService {
         return chatDao.selectLatestMessage(roomNo, userNo, content);
     }
 
-    @Override
-    public List<ChatRoom> getMyRooms(int userNo) {
-        return chatDao.selectMyRooms(userNo);
-    }
 
     @Override
     public List<ChatMessage> getMessages(int roomNo) {
@@ -76,6 +72,11 @@ public class ChatServiceImpl implements ChatService {
     @Override
     public List<ChatListView> getChatListByUser(int userNo) {
         return chatDao.findChatListByUser(userNo);
+    }
+    
+    @Override
+    public ChatRoom findRoomByRoomNo(int roomNo) {
+        return chatDao.findRoomByRoomNo(roomNo);
     }
 
     

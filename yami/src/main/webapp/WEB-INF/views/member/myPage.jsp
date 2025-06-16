@@ -119,7 +119,7 @@
 					      <a href='${root}/chat/list' class="btn btn-outline-primary w-100 d-flex align-items-center justify-content-center">
 					        <i class="bi bi-shield-x me-2"></i>채팅
 					      </a>
-					    </div>
+					    </div>	
 					    <div class="col">
 					      <a href='${root}/board.co' class="btn btn-outline-primary w-100 d-flex align-items-center justify-content-center">
 					        <i class="bi bi-file-text me-2"></i>게시글
