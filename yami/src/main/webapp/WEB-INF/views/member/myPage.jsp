@@ -4,6 +4,7 @@
 <html>
 <head>
 <script src="https://cdn.jsdelivr.net/npm/lodash@4.17.21/lodash.min.js"></script>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
 <meta charset="UTF-8">
 <title>마이페이지</title>
 </head>
@@ -16,7 +17,7 @@
 				<!-- 사용자 정보 헤더 -->
 				<div class="text-center mb-4">
 					<h2 class="text-secondary fw-bold">${pageScope.loginUser.userName}님의 YAMI</h2>
-					<p class="text-muted">YAMI!</p>
+					<p class="text-muted" id="ratingArea">YAMI!</p>
 				</div>
 				
 				<!-- 사용자 설정 카드 -->
@@ -163,25 +164,45 @@
 
 <script type="text/javascript">
 //평점 조회
+// 평점 조회 및 표시
 $.ajax({
     url: `${root}/selectRatingScore.me`,
     method: 'POST',
     data: {},
     success: function(res) {
-    	
+        const ratingArea = document.getElementById('ratingArea');
+        let html = '';
+        if (res == -1) {
+            html = `<span class="text-danger"><i class="bi bi-x-octagon me-1"></i>평점 정보를 불러올 수 없습니다</span>`;
+        } else if (res == 0) {
+            html = `<span class="text-secondary"><i class="bi bi-question-circle me-1"></i>아직 평점이 충분하지 않아요</span>`;
+        } else {
+            const score = parseFloat(res).toFixed(1);
+            let icon = '';
+            let color = '';
+            // 평점별 아이콘 및 색상 지정
+            if (score < 2) {
+                icon = '<i class="bi bi-emoji-frown-fill me-1"></i>';
+                color = 'text-danger';
+            } else if (score < 3) {
+                icon = '<i class="bi bi-emoji-expressionless-fill me-1"></i>';
+                color = 'text-warning';
+            } else if (score < 4) {
+                icon = '<i class="bi bi-emoji-smile-fill me-1"></i>';
+                color = 'text-primary';
+            } else {
+                icon = '<i class="bi bi-emoji-heart-eyes-fill me-1"></i>';
+                color = 'text-success';
+            }
+            html = `<span class="\${color}">\${icon}평점 \${score} / 5.0</span>`;
+        }
+        ratingArea.innerHTML = html;
     },
     error: function() {
-    	
+        document.getElementById('ratingArea').innerHTML =
+          `<span class="text-danger"><i class="bi bi-x-octagon me-1"></i>평점 정보를 불러올 수 없습니다</span>`;
     }
 });
-
-
-
-
-
-
-
-
 
 //전역 변수
 let isPasswordValid = false;

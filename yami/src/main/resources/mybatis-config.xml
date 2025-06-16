@@ -34,5 +34,6 @@
     	<typeAlias type="com.gaonna.yami.chat.model.vo.ChatListView" alias="chatListView"/>
     	<typeAlias type="com.gaonna.yami.alarm.model.vo.Alarm" alias="alarm"/>
     	<typeAlias type="com.gaonna.yami.product.vo.Order" alias="Order"/>
+    	<typeAlias type="com.gaonna.yami.rating.model.vo.Rating" alias="Rating"/>
 	</typeAliases>
 </configuration>
