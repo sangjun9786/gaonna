@@ -229,7 +229,7 @@
 	    JOIN CATEGORY c ON pb.CATEGORY_NO = c.CATEGORY_NO
 	    <where>
 	    	pb.STATUS = 'N'
-	    	<if test="location != '0'">
+	    	<if test="location != 'all'">
 			    AND REGEXP_SUBSTR(TRIM(COORD_ADDRESS), '[^ ]+$') = #{location}
 			</if>
 	    	<if test="category != 0">
@@ -329,7 +329,6 @@
 				    GROUP BY PRODUCT_NO
 				    HAVING COUNT(*) > 0
 				)
-			    ORDER BY (w.WISH_COUNT / pb.PRODUCT_COUNT) DESC
 		)
 		WHERE ROWNUM &lt;= 12
 	</select>
