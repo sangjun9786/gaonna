@@ -1,5 +1,7 @@
 package com.gaonna.yami.rating.model.dao;
 
+import java.util.List;
+
 import org.apache.ibatis.session.SqlSession;
 import org.mybatis.spring.SqlSessionTemplate;
 
@@ -10,5 +12,5 @@ public interface RatingDao {
     int insertRating(Rating rating);
     int updateAvgScore(int productNo);
 	int rating(SqlSessionTemplate sqlSession, String userNo, int score);
-	int countRatingMember(SqlSessionTemplate sqlSession, Member m);
+	List<Rating> countRatingMember(SqlSessionTemplate sqlSession, Member m);
 }
