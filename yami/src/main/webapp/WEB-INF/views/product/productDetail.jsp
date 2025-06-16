@@ -380,7 +380,13 @@ function selectReplyList() {
                 const txt = r.replyText || "";
                 const dt = r.replyDate ? new Date(r.replyDate).toLocaleString('ko-KR') : "";
                 str += '<div class="comment-box">';
-                str += '<b>' + uid + '</b>: <span class="reply-text">' + txt + '</span>';
+                
+                if(uid==currUserId){
+                    str += '<b style="color: #ff6600;">작성자</b>: <span class="reply-text">' + txt + '</span>';
+                }else{
+	                str += '<b>' + uid + '</b>: <span class="reply-text">' + txt + '</span>';
+                }
+                
                 str += ' <span style="color:gray;">[' + dt + ']</span>';
                 if (isNotManager || currUserId == r.userId) {
                     str += '<div class="btn-group ms-2">';
