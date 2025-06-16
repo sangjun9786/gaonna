@@ -160,10 +160,7 @@
     </div>
 
 	<!-- 서비스 카드: 아이콘 + 링크 (회원 카드 포함) -->
-	<div
-		class="row row-cols-2 row-cols-md-4 g-3 mb-4 justify-content-center"
-		style="max-width: 800px;">
-		<!-- 1행 -->
+	<div class="row row-cols-3 g-3 mb-4 justify-content-center" style="max-width: 800px;">
 		<div class="col">
 			<a href="${root}/filter.bo"
 				class="card text-center h-100 shadow-sm text-decoration-none">
@@ -173,37 +170,6 @@
 				</div>
 			</a>
 		</div>
-		<div class="col">
-		    <c:choose>
-		        <c:when test="${empty loginUser || loginUser.mainCoord == 0}">
-		            <a href="${root}/dongne.me" 
-		               class="text-decoration-none disabled-location-card"
-		               style="pointer-events:auto;">
-		                <div class="card text-center h-100 shadow-sm bg-secondary bg-opacity-25"
-		                     style="cursor:pointer;">
-		                    <div class="card-body position-relative"
-		                         data-bs-toggle="tooltip" 
-		                         data-bs-placement="top" 
-		                         title="먼저 대표동네를 설정해 주세요">
-		                        <i class="bi bi-geo-alt fs-1 text-secondary"></i>
-		                        <h6 class="card-title mt-2 mb-0 text-secondary">Location</h6>
-		                    </div>
-		                </div>
-		            </a>
-		        </c:when>
-		        <c:otherwise>
-		            <a href="${root}/dongneMain.dn" class="text-decoration-none">
-		                <div class="card text-center h-100 shadow-sm">
-		                    <div class="card-body">
-		                        <i class="bi bi-geo-alt fs-1 text-success"></i>
-		                        <h6 class="card-title mt-2 mb-0">Location</h6>
-		                    </div>
-		                </div>
-		            </a>
-		        </c:otherwise>
-		    </c:choose>
-		</div>
-
 		<div class="col">
 			<a href="${root }/recommend.bo" class="text-decoration-none">
 				<div class="card text-center h-100 shadow-sm">
@@ -254,8 +220,36 @@
 				</div>
 			</div>
 		</div>
-
-		<!-- 2행 -->
+				<div class="col">
+		    <c:choose>
+		        <c:when test="${empty loginUser || loginUser.mainCoord == 0}">
+		            <a href="${root}/dongne.me" 
+		               class="text-decoration-none disabled-location-card"
+		               style="pointer-events:auto;">
+		                <div class="card text-center h-100 shadow-sm bg-secondary bg-opacity-25"
+		                     style="cursor:pointer;">
+		                    <div class="card-body position-relative"
+		                         data-bs-toggle="tooltip" 
+		                         data-bs-placement="top" 
+		                         title="먼저 대표동네를 설정해 주세요">
+		                        <i class="bi bi-geo-alt fs-1 text-secondary"></i>
+		                        <h6 class="card-title mt-2 mb-0 text-secondary">Location</h6>
+		                    </div>
+		                </div>
+		            </a>
+		        </c:when>
+		        <c:otherwise>
+		            <a href="${root}/dongneMain.dn" class="text-decoration-none">
+		                <div class="card text-center h-100 shadow-sm">
+		                    <div class="card-body">
+		                        <i class="bi bi-geo-alt fs-1 text-success"></i>
+		                        <h6 class="card-title mt-2 mb-0">Location</h6>
+		                    </div>
+		                </div>
+		            </a>
+		        </c:otherwise>
+		    </c:choose>
+		</div>
 		<div class="col">
 			<a href="${root}/event.ev" class="text-decoration-none">
 				<div class="card text-center h-100 shadow-sm">
@@ -272,26 +266,6 @@
 					<div class="card-body">
 						<i class="bi bi-megaphone fs-1 text-danger"></i>
 						<h6 class="card-title mt-2 mb-0">Notice</h6>
-					</div>
-				</div>
-			</a>
-		</div>
-		<div class="col">
-			<a href="${root }/doTest.me" class="text-decoration-none">
-				<div class="card text-center h-100 shadow-sm">
-					<div class="card-body">
-						<i class="bi bi-question-circle fs-1 text-info"></i>
-						<h6 class="card-title mt-2 mb-0">QnA</h6>
-					</div>
-				</div>
-			</a>
-		</div>
-		<div class="col">
-			<a href="#" class="text-decoration-none">
-				<div class="card text-center h-100 shadow-sm">
-					<div class="card-body">
-						<i class="bi bi-exclamation-triangle fs-1 text-warning"></i>
-						<h6 class="card-title mt-2 mb-0">Report</h6>
 					</div>
 				</div>
 			</a>
