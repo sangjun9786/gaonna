@@ -28,8 +28,10 @@
           <form id="searchForm" class="row g-3 align-items-center" autocomplete="off">
             <div class="col-md-3">
               <select class="form-select" id="searchType1" name="searchType1" required>
-                <option value="all">전체 판매 게시판</option>
-                <!-- AJAX로 카테고리 옵션 추가됨 -->
+                <option value="all">전체</option>
+                <option value="sell">판매 중</option>
+                <option value="selling">거래 중</option>
+                <option value="selled">거래 완료</option>
               </select>
             </div>
             <div class="col-md-2">
@@ -80,24 +82,6 @@
 
 <script>
 $(function(){
-  // 카테고리 옵션 동적 추가
-  $.ajax({
-    url: '${root}/selectCategory.co',
-    method: 'GET',
-    dataType: "json",
-    success: function(result) {
-		let $allOption = $('#searchType1 option[value="all"]');
-      $.each(result, function(idx, category){
-        $('<option>', {
-          value: category.categoryNo,
-          text: category.categoryName
-        }).insertAfter($allOption);
-      });
-    },
-    error: function() {
-      alert('카테고리 정보를 불러오지 못했습니다.');
-    }
-  });
 
   // 검색 폼 제출
   $('#searchForm').on('submit', function(e){
@@ -162,47 +146,47 @@ $(function(){
 	let status = board.orderStatus || 'ONSALE'; // ← null, undefined 모두 대응
 	if (status === 'ONSALE') {
 		  statusDisplay = '<span class="text-success fw-bold">판매중</span>';
-		} else if (status === 'REQ') {
-		  statusDisplay = '<span class="text-warning fw-bold">거래중</span>';
-		} else if (status === 'BUYER_OK') {
-			console.log("선택된 board:", board);
-			console.log("orderStatus:", board.orderStatus);
-			console.log("orderNo:", board.orderNo);
-			statusDisplay = `
-				  <span class="text-primary fw-bold buyer-ok clickable-status">
-			    구매확정
-			  </span>
-			  `;
-		} else if (status === 'DONE') {
-		  statusDisplay = '<span class="text-secondary fw-bold">거래완료</span>';
-		}
+	} else if (status === 'REQ') {
+	  statusDisplay = '<span class="text-warning fw-bold">거래중</span>';
+	} else if (status === 'BUYER_OK') {
+		console.log("선택된 board:", board);
+		console.log("orderStatus:", board.orderStatus);
+		console.log("orderNo:", board.orderNo);
+		statusDisplay = `
+			  <span class="text-primary fw-bold buyer-ok clickable-status">
+		    구매확정
+		  </span>
+		  `;
+	} else if (status === 'DONE') {
+	  statusDisplay = '<span class="text-secondary fw-bold">거래완료</span>';
+	}
       
-      // 카드 HTML 6/15 by상준 수정
-      let cardHtml = `
-        <div class="col">
-          <div class="card h-100 shadow-sm position-relative">
-          	
-          <input type="hidden" class="hidden-order-no" value="\${board.orderNo}" />
-          
-            <div class="card-body">
-              <div class="d-flex justify-content-between align-items-center mb-2">
-                <h5 class="card-title mb-0 text-truncate" style="max-width: 70%;">\${title}</h5>
-                <span class="badge bg-secondary ms-2">\${board.price.toLocaleString()}원</span>
-              </div>
-              <p class="card-text text-truncate" style="max-width: 100%;">\${content}</p>
+    // 카드 HTML 6/15 by상준 수정
+    let cardHtml = `
+      <div class="col">
+        <div class="card h-100 shadow-sm position-relative">
+        	
+        <input type="hidden" class="hidden-order-no" value="\${board.orderNo}" />
+        
+          <div class="card-body">
+            <div class="d-flex justify-content-between align-items-center mb-2">
+              <h5 class="card-title mb-0 text-truncate" style="max-width: 70%;">\${title}</h5>
+              <span class="badge bg-secondary ms-2">\${board.price.toLocaleString()}원</span>
             </div>
-            <div class="card-footer small text-muted d-flex justify-content-between align-items-center">
-              <span>\${board.categoryName ? board.categoryName : '-'}</span>
-              <span>\${board.uploadDateStr}</span>
-              <span class="ms-2">` + statusDisplay + `</span>
-            </div>
-       
-            <a href="${root}/productDetail.pro?productNo=\${board.productNo}" class="stretched-link"></a>
+            <p class="card-text text-truncate" style="max-width: 100%;">\${content}</p>
           </div>
-          
+          <div class="card-footer small text-muted d-flex justify-content-between align-items-center">
+            <span>\${board.categoryName ? board.categoryName : '-'}</span>
+            <span>\${board.uploadDateStr}</span>
+            <span class="ms-2">` + statusDisplay + `</span>
+          </div>
+     
+          <a href="${root}/productDetail.pro?productNo=\${board.productNo}" class="stretched-link"></a>
         </div>
-      `;
-      $boardList.append(cardHtml);
+        
+      </div>
+    `;
+    $boardList.append(cardHtml);
     });
   }
 

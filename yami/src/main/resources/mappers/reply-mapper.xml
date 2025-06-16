@@ -12,7 +12,7 @@
           REPLY_DATE AS replyDate
         FROM REPLY
         WHERE PRODUCT_NO = #{productNo}
-        ORDER BY REPLY_DATE DESC
+        ORDER BY REPLY_DATE ASC
     </select>
 
     <insert id="insertReply" parameterType="Reply">
