@@ -23,9 +23,7 @@
             <div class="col-md-3">
               <select class="form-select" id="searchType1" name="searchType1" required>
                 <option value="all">전체 판매 게시판</option>
-                <!-- AJAX로 카테고리 옵션 추가됨 -->
                 <option value="dongne">우리동네 빵집 게시판</option>
-                
               </select>
             </div>
             <div class="col-md-2">
@@ -66,25 +64,6 @@
 
 <script>
 $(function(){
-  // 카테고리 옵션 동적 추가
-  $.ajax({
-    url: '${root}/selectCategory.co',
-    method: 'GET',
-    dataType: "json",
-    success: function(result) {
-    	let $allOption = $('#searchType1 option[value="all"]');
-      $.each(result, function(idx, category){
-        $('<option>', {
-          value: category.categoryNo,
-          text: category.categoryName
-        }).insertAfter($allOption);
-      });
-    },
-    error: function() {
-      alert('카테고리 정보를 불러오지 못했습니다.');
-    }
-  });
-
   // 검색 폼 제출
   $('#searchForm').on('submit', function(e){
     e.preventDefault();
