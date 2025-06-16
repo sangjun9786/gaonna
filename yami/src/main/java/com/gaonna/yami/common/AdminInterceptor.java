@@ -15,7 +15,6 @@ public class AdminInterceptor implements HandlerInterceptor{
 	public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler)
 			throws Exception {
 		
-		
 		//관리자가 아니면 넌 모찌나간다
 		HttpSession session = request.getSession();
 		Member loginUser = (Member)session.getAttribute("loginUser");
@@ -25,7 +24,7 @@ public class AdminInterceptor implements HandlerInterceptor{
 			System.out.println("인터셉터 발동 : 관리자 아니면 가세요라");
 			session.setAttribute("alertMsg", "접근 권한이 없습니다.");
 			response.sendRedirect(request.getContextPath());
-			return false;
+			return true;
 		}
 		return HandlerInterceptor.super.preHandle(request, response, handler);
 	}

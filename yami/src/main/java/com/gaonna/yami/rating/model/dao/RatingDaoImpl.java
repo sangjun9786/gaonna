@@ -1,6 +1,7 @@
 package com.gaonna.yami.rating.model.dao;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import org.apache.ibatis.session.SqlSession;
@@ -57,7 +58,7 @@ public class RatingDaoImpl implements RatingDao {
 	}
 	
 	@Override
-	public int countRatingMember(SqlSessionTemplate sqlSession, Member m) {
-		return 0;
+	public List<Rating> countRatingMember(SqlSessionTemplate sqlSession, Member m) {
+		return sqlSession.selectList("ratingMapper.countRatingMember",m);
 	}
 }

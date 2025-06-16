@@ -1,5 +1,7 @@
 package com.gaonna.yami.rating.model.service;
 
+import java.util.List;
+
 import org.mybatis.spring.SqlSessionTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -43,10 +45,23 @@ public class RatingServiceImpl implements RatingService {
     public double selectRatingScore(Member m) {
     	double result=0;
     	
-    	int count = ratingDao.countRatingMember(sqlSession,m);
+    	List<Rating> ratings = ratingDao.countRatingMember(sqlSession,m);
+    	int count = ratings.size();
     	
+    	//평점이 적으면 0 반환
+    	if(count<3) {
+    		return 0;
+    	}
     	
+    	//평균 구하기
+    	double addAllRating=0;
+    	for(Rating r : ratings) {
+    		addAllRating +=r.getScore();
+    	}
+    	result = addAllRating/count;
     	
+    	//평균 반올림
+    	result = Math.round(result * 10) / 10.0;
     	
     	return result;
     }

@@ -603,13 +603,10 @@ public class MemberController {
 	public String selectRatingScore(HttpSession session) {
 		try {
 			Member m = (Member)session.getAttribute("loginUser");
-			double score = ratingService.selectRatingScore(m);
-			
-			
-			return "";
+			return ""+ratingService.selectRatingScore(m);
 		} catch (Exception e) {
 			e.printStackTrace();
-			return "";
+			return "-1"; // 조회 불가
 		}
 	}
 	
