@@ -70,7 +70,7 @@
 									</tr>
 									<tr>
 										<td class="fw-bold text-secondary">
-											<i class="bi bi-point me-2"></i>포인트
+											<i class="bi bi-coin me-2"></i>포인트
 										</td>
 										<td class="border-start ps-3">${pageScope.loginUser.point}</td>
 									</tr>
