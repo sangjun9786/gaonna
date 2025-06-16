@@ -83,12 +83,7 @@
 
 <c:if test="${not empty alertMsg}">
 <script>
-<<<<<<< HEAD
-    var msg="${alertMsg}";
-    if(msg!="") { alert(msg); }
-</script>
-<c:remove var="alertMsg"/>
-=======
+
 	  var msg="${alertMsg}";
 			
 	  if(msg!="") {
@@ -113,13 +108,13 @@
           <a class="nav-link" href="${root }/filter.bo">Resell</a>
         </li>
         <li class="nav-item">
-          <a class="nav-link" href="#">Location</a>
+          <a class="nav-link" href="${root}/dongneMain.dn">Location</a>
         </li>
         <li class="nav-item">
           <a class="nav-link" href="${root }/recommend.bo">Recommend</a>
         </li>
         <li class="nav-item">
-          <a class="nav-link" href="${root }/doTest.me">QnA</a>
+          <a class="nav-link" href="${root }/doTest.me">Purchase</a>
         </li>
         <li class="nav-item">
           <a class="nav-link" href="${pageContext.request.contextPath}/notice/list">Notice</a>
@@ -174,6 +169,9 @@
         <div class="mt-1 small text-muted">
           ${loginUser.userName}님 안녕하세요
         </div>
+        <div class="mt-1 small text-muted">
+        	보유 포인트: <span class="fw-bold">${loginUser.point}</span>P
+    	</div>
       </c:if>
     </div>
   </div>

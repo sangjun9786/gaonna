@@ -183,6 +183,16 @@ $(function(){
       // 제목 10글자, 내용 30글자 제한
       let title = board.productTitle.length > 10 ? board.productTitle.substring(0,10) + '...' : board.productTitle;
       let content = board.productContent.length > 30 ? board.productContent.substring(0,30) + '...' : board.productContent;
+      let statusDisplay = '';
+      if (board.status === 'REQ') {
+        statusDisplay = '<span class="text-warning fw-bold">구매요청</span>';
+      } else if (board.status === 'BUYER_OK') {
+        statusDisplay = '<span class="text-primary fw-bold">구매확정</span>';
+      } else if (board.status === 'DONE') {
+        statusDisplay = '<span class="text-secondary fw-bold">거래완료</span>';
+      } else {
+        statusDisplay = '<span class="text-muted">-</span>';
+      }
       let scoreStatusText = board.score2 === 'Y' ? '등록됨' : '미등록';
       // 카드 HTML
       let cardHtml = `
@@ -199,7 +209,7 @@ $(function(){
               <span>\${board.categoryName ? board.categoryName : '-'}</span>
               <span>\${board.userId}</span>
               <span class="ms-2">\${scoreStatusText}</span>
-              <span class="ms-2">\${board.status}</span>
+              <span class="ms-2">\${statusDisplay}</span>
             </div>
             `;
 
@@ -254,7 +264,7 @@ $(function(){
   let selectedProductNo = null;
   let selectedUserNo = null;
   let selectedScore = null;
-
+  
   // 카드 클릭 시 모달 표시
   $('#boardList').on('click', '.rating-trigger', function(e){
     e.preventDefault();

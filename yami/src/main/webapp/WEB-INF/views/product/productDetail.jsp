@@ -177,7 +177,7 @@
 
             <!-- 좋아요 -->
             <div class="like-area">
-                채팅 0 · 조회 ${product.productCount}
+                 조회 ${product.productCount}
                 <form id="wishForm" style="display:inline;">
                     <input type="hidden" id="productNo" value="${product.productNo}" />
                     <button type="button" onclick="wishProduct();" class="like-btn">
@@ -231,10 +231,10 @@
             <strong>${product.userId}</strong><br>
             ${product.coordAddress}
         </div>
-        <div class="score">
-            ★ <fmt:formatNumber value="${product.score}" pattern="#.0" /> / 5.0<br>
-            <span style="font-size: 12px; color: #666;">판매자 평점</span>
-        </div>
+<!--         <div class="score"> -->
+<%--             ★ <fmt:formatNumber value="${product.score}" pattern="#.0" /> / 5.0<br> --%>
+<!--             <span style="font-size: 12px; color: #666;">판매자 평점</span> -->
+<!--         </div> -->
     </div>
 
     <!-- 댓글 -->
