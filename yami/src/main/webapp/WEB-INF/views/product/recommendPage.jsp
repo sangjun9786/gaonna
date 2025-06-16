@@ -4,7 +4,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>상품 리스트</title>
+    <title>추천 게시판</title>
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
     <style>
         body {
@@ -127,7 +127,7 @@
 		<div class="content">
         <h2>📸 가온나 인기 회원의 상품</h2>
         <div class="photo-grid">
-            <c:forEach var="product" items="${list}">
+            <c:forEach var="product" items="${list2}">
                 <div class="photo-item"
                      onclick="location.href='${pageContext.request.contextPath}/productDetail.pro?productNo=${product.productNo}'">
 

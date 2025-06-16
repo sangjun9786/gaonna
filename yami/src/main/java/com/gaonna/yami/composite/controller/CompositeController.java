@@ -61,7 +61,7 @@ public class CompositeController {
 		}
 	}
 	
-	//ajax - 게시글 조회
+	//ajax - 내 게시글 조회
 	@ResponseBody
 	@GetMapping("searchMyBoard.co")
 	public Map<String, Object> searchMyBoard(HttpSession session,Model model

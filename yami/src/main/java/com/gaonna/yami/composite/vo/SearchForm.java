@@ -53,6 +53,9 @@ public class SearchForm {
 			switch(this.searchType1) {
 			case "all" :
 			case "dongne" :
+			case "sell" :
+			case "selling" :
+			case "selled" :
 			case "0" :
 			case "1" :
 			case "2" :

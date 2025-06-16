@@ -19,6 +19,7 @@ import org.mybatis.spring.SqlSessionTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.util.HtmlUtils;
 
 import com.gaonna.yami.location.dao.LocationDao;
 import com.gaonna.yami.location.vo.Bakery;
@@ -513,10 +514,17 @@ public class LocationServiceImpl implements LocationService{
 	//대댓글 넣기
 	@Override
 	public int insertBakeryRecomment(Map<String, Object> map) {
-		//유효성 검사
-		if(((String)map.get("commentContent")).length() > 100) {
+		String comment = ((String)map.get("commentContent"));
+		
+		//길이 유효성 검사
+		if(comment.length() > 100) {
 			return 0;
 		}
+		
+		//html태그 이스케이프
+		comment = HtmlUtils.htmlEscape(comment);
+		map.put("commentContent", comment);
+		
 		return dao.insertBakeryRecomment(sqlSession,map);
 	}
 	

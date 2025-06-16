@@ -188,7 +188,7 @@
 
             <!-- 일반 유저만 -->
             <c:if test="${not empty loginUser and loginUser.roleType != 'superAdmin' and loginUser.roleType != 'admin' and loginUser.roleType != 'viewer'}">
-	            <c:if test="${loginUser.userNo ne product.userNo and not alreadyChatted}">
+	           <c:if test="${loginUser.userNo ne product.userNo and not alreadyChatted}">
 	                <form action="${pageContext.request.contextPath}/chat/room" method="get" style="margin-bottom: 10px;">
 					    <input type="hidden" name="productNo" value="${product.productNo}" />
 					    <input type="hidden" name="sellerNo" value="${product.userNo}" />
@@ -273,7 +273,7 @@
 let detailImages = [];
 let currentIndex = 0;
 
-let isNotManager = ${loginUser.roleType != "N"};
+let isManager = ${loginUser.roleType != "N"};
 let currUserId = "${loginUser.userId}";
 
 $(function () {
@@ -380,9 +380,17 @@ function selectReplyList() {
                 const txt = r.replyText || "";
                 const dt = r.replyDate ? new Date(r.replyDate).toLocaleString('ko-KR') : "";
                 str += '<div class="comment-box">';
-                str += '<b>' + uid + '</b>: <span class="reply-text">' + txt + '</span>';
+                
+                if(uid==currUserId){
+                    str += '<b style="color: #ff6600;">나</b>: <span class="reply-text">' + txt + '</span>';
+                }else if(uid =="${product.userId}"){
+                    str += '<b style="color: #ff6600;">작성자</b>: <span class="reply-text">' + txt + '</span>';
+                }else{
+	                str += '<b>' + uid + '</b>: <span class="reply-text">' + txt + '</span>';
+                }
+                
                 str += ' <span style="color:gray;">[' + dt + ']</span>';
-                if (isNotManager || currUserId == r.userId) {
+                if (isManager || currUserId == r.userId) {
                     str += '<div class="btn-group ms-2">';
                     str += '<button class="edit-btn btn btn-outline-primary btn-sm" data-id="' + r.replyNo + '">수정</button>';
                     str += '<button class="delete-btn btn btn-outline-danger btn-sm" data-id="' + r.replyNo + '">삭제</button>';

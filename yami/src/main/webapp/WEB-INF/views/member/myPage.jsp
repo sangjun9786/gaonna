@@ -4,6 +4,7 @@
 <html>
 <head>
 <script src="https://cdn.jsdelivr.net/npm/lodash@4.17.21/lodash.min.js"></script>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
 <meta charset="UTF-8">
 <title>마이페이지</title>
 </head>
@@ -16,7 +17,7 @@
 				<!-- 사용자 정보 헤더 -->
 				<div class="text-center mb-4">
 					<h2 class="text-secondary fw-bold">${pageScope.loginUser.userName}님의 YAMI</h2>
-					<p class="text-muted">YAMI!</p>
+					<p class="text-muted" id="ratingArea">YAMI!</p>
 				</div>
 				
 				<!-- 사용자 설정 카드 -->
@@ -69,7 +70,7 @@
 									</tr>
 									<tr>
 										<td class="fw-bold text-secondary">
-											<i class="bi bi-point me-2"></i>포인트
+											<i class="bi bi-coin me-2"></i>포인트
 										</td>
 										<td class="border-start ps-3">${pageScope.loginUser.point}</td>
 									</tr>
@@ -111,23 +112,28 @@
 					<div class="card-body">
 					  <div class="row row-cols-2 g-3">
 					    <div class="col">
+					      <a href='${root}/board.co' class="btn btn-outline-primary w-100 d-flex align-items-center justify-content-center">
+					        <i class="bi bi-journal-text me-2"></i>판매 목록
+					      </a>
+					    </div>
+					    <div class="col">
+					      <a href='${root}/doTest.me' class="btn btn-outline-primary w-100 d-flex align-items-center justify-content-center">
+					        <i class="bi bi-cart-check me-2"></i>구매 목록
+					      </a>
+					    </div>
+					    <div class="col">
 					      <a href='${root}/wishlist.co' class="btn btn-outline-primary w-100 d-flex align-items-center justify-content-center">
-					        <i class="bi bi-file-text me-2"></i>좋아요
+					        <i class="bi bi-heart-fill me-2"></i>좋아요
 					      </a>
 					    </div>
 					    <div class="col">
 					      <a href='${root}/chat/list' class="btn btn-outline-primary w-100 d-flex align-items-center justify-content-center">
-					        <i class="bi bi-shield-x me-2"></i>채팅
-					      </a>
-					    </div>
-					    <div class="col">
-					      <a href='${root}/board.co' class="btn btn-outline-primary w-100 d-flex align-items-center justify-content-center">
-					        <i class="bi bi-file-text me-2"></i>게시글
+					        <i class="bi bi-chat-dots-fill me-2"></i>채팅
 					      </a>
 					    </div>
 					    <div class="col">
 					      <a href='${root}/reply.co' class="btn btn-outline-primary w-100 d-flex align-items-center justify-content-center">
-					        <i class="bi bi-chat-dots me-2"></i>댓글
+					        <i class="bi bi-chat-left-dots-fill me-2"></i>댓글
 					      </a>
 					    </div>
 					  </div>
@@ -163,25 +169,45 @@
 
 <script type="text/javascript">
 //평점 조회
+// 평점 조회 및 표시
 $.ajax({
     url: `${root}/selectRatingScore.me`,
     method: 'POST',
     data: {},
     success: function(res) {
-    	
+        const ratingArea = document.getElementById('ratingArea');
+        let html = '';
+        if (res == -1) {
+            html = `<span class="text-danger"><i class="bi bi-x-octagon me-1"></i>평점 정보를 불러올 수 없습니다</span>`;
+        } else if (res == 0) {
+            html = `<span class="text-secondary"><i class="bi bi-question-circle me-1"></i>아직 평점이 충분하지 않아요</span>`;
+        } else {
+            const score = parseFloat(res).toFixed(1);
+            let icon = '';
+            let color = '';
+            // 평점별 아이콘 및 색상 지정
+            if (score < 2) {
+                icon = '<i class="bi bi-emoji-frown-fill me-1"></i>';
+                color = 'text-danger';
+            } else if (score < 3) {
+                icon = '<i class="bi bi-emoji-expressionless-fill me-1"></i>';
+                color = 'text-warning';
+            } else if (score < 4) {
+                icon = '<i class="bi bi-emoji-smile-fill me-1"></i>';
+                color = 'text-primary';
+            } else {
+                icon = '<i class="bi bi-emoji-heart-eyes-fill me-1"></i>';
+                color = 'text-success';
+            }
+            html = `<span class="\${color}">\${icon}평점 \${score} / 5.0</span>`;
+        }
+        ratingArea.innerHTML = html;
     },
     error: function() {
-    	
+        document.getElementById('ratingArea').innerHTML =
+          `<span class="text-danger"><i class="bi bi-x-octagon me-1"></i>평점 정보를 불러올 수 없습니다</span>`;
     }
 });
-
-
-
-
-
-
-
-
 
 //전역 변수
 let isPasswordValid = false;
