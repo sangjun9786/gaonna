@@ -119,6 +119,9 @@
 	        LAST_SENT_AT DESC NULLS LAST
 	</select>
 
+	<select id="findRoomByRoomNo" resultType="chatRoom">
+	    SELECT * FROM CHAT_ROOM WHERE ROOM_NO = #{roomNo}
+	</select>
 
     
 </mapper>

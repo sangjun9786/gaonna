@@ -1,5 +1,6 @@
 package com.gaonna.yami.member.email.controller;
 
+import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -11,6 +12,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 
+import com.gaonna.yami.cookie.service.CookieService;
 import com.gaonna.yami.member.common.TokenGenerator;
 import com.gaonna.yami.member.email.service.EmailService;
 import com.gaonna.yami.member.email.vo.Email;
@@ -24,6 +26,8 @@ public class EmailController {
     private EmailService service;
 	@Autowired
 	public TokenGenerator tokenGenerator;
+	@Autowired
+	public CookieService cookieService;
 	@Autowired
 	public MemberService memberService;
 	@Autowired
@@ -179,7 +183,8 @@ public class EmailController {
     
     //마이페이지에서 이메일 변경
     @GetMapping("updateEmail.me")
-    public String updateEmailMypage(HttpSession session, Model model, String userId, String domain) {
+    public String updateEmailMypage(HttpServletResponse response
+    		,HttpSession session, Model model, String userId, String domain) {
     	try {
     		Member m = (Member)session.getAttribute("loginUser");
     		
@@ -215,8 +220,14 @@ public class EmailController {
     		if(result>0) {
     			session.setAttribute("alertMsg", "이메일을 확인해 주세요.");
     			
+    			//자동로그인 쿠키 지우기
+    			cookieService.deleteAutoLogin(response,session);
+    			
     			//로그아웃
     			session.invalidate();
+    			
+    			
+    			
     			return "redirect:/";
     		}else {
     			model.addAttribute("errorMsg","이메일 송신이 실패하였습니다.");
@@ -278,21 +289,25 @@ public class EmailController {
     
 	//비밀번호 찾기 - 비밀번호 수정
 	@PostMapping("updatePwd.email")
-	public String updatePwd(HttpSession session, Model model
-			,String newPwd) {
+	public String updatePwd(HttpServletResponse response,
+			HttpSession session, Model model,String newPwd) {
 		try {
 			
 			//session에서 해당 유저 추출하기
 			Member m = (Member)session.getAttribute("findPwdUser");
 			
-			//세션 날리기
-			session.invalidate();
 			
 			if(!newPwd.matches("^[a-zA-Z0-9]{4,30}$")) {
 				//유효성 확인
 				model.addAttribute("errorMsg","비밀번호를 확인해주세요.");
 				return "common/errorPage";
 			}
+			
+			
+			//자동로그인 쿠키 지우기
+			cookieService.deleteAutoLogin(response,session);
+			//세션 날리기
+			session.invalidate();
 			
 			//비밀번호 암호화
 			m.setUserPwd(bcrypt.encode(newPwd));
