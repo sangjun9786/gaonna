@@ -23,8 +23,8 @@ public class RecommendServiceImpl implements RecommendService {
 		return dao.recommendProduct(sqlSession);
 	}
 	
-//	@Override
-//	public ArrayList<Product> recommendMember() {
-//		return dao.recommendMember(sqlSession);
-//	}
+	@Override
+	public ArrayList<Product> recommendMember() {
+		return dao.recommendMember(sqlSession);
+	}
 }
