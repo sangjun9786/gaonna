@@ -1,5 +1,8 @@
 package com.gaonna.yami.event.model.dao;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import org.mybatis.spring.SqlSessionTemplate;
 import org.springframework.stereotype.Repository;
 
@@ -40,6 +43,20 @@ public class EventDao {
 	
 	public int point500(SqlSessionTemplate sqlSession, Member loginUser) {
 		return sqlSession.update("eventMapper.point500", loginUser);
+	}
+
+	public int rating(SqlSessionTemplate sqlSession, int productNo, int userNo, int score) {
+		int num = sqlSession.selectOne("eventMapper.search", userNo);
+		Map<String, Object> map = new HashMap<>();
+    	map.put("userNo", userNo);
+    	map.put("score", score);
+		if(num == 1) {
+			sqlSession.update("eventMapper.rating", map);
+			return sqlSession.update("eventMapper.updateS", productNo);
+		}else {
+			sqlSession.insert("eventMapper.insert", map);
+			return sqlSession.update("eventMapper.updateS", productNo);
+		}
 	}
 
 }

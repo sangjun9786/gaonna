@@ -150,8 +150,6 @@
                     <option value="resell">Resell</option>
                     <option value="location">Location</option>
                     <option value="notice">Notice</option>
-                    <option value="qna">QnA</option>
-                    <option value="report">Report</option>
                 </select>
                 <input type="text" class="form-control" id="keyword" placeholder="제목 또는 내용으로 검색" aria-label="Search">
                 <button class="btn btn-primary" type="submit" id="searchBtn">
@@ -338,10 +336,6 @@ $(function () {
         	url = '${root}/dongneMain.dn?keyword=' + encodedKeyword + '&condition=' + condition;
 		} else if (condition == 'notice') {
 			url = '${root}/notice/list?keyword=' + encodedKeyword + '&condition=' + condition;
-        } else if (condition == 'qna') {
-            url = '${root}/qnaSearch?keyword=' + encodedKeyword;
-        } else if (condition == 'report') {
-            url = '${root}/reportSearch?keyword=' + encodedKeyword;
         }
         if (url) {
             location.href = url;
