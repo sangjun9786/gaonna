@@ -43,7 +43,7 @@ public class EventServiceImpl implements EventService {
 	}
 	
 	@Override
-	public int rating(int productNo, int memberNo, int score) {
-		return dao.rating(sqlSession, productNo, memberNo, score);
+	public int rating(int productNo, int userNo, int score) {
+		return dao.rating(sqlSession, productNo, userNo, score);
 	}
 }

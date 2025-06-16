@@ -15,6 +15,6 @@ public interface EventService {
 
 	int point500(Member loginUser);
 
-	int rating(int productNo, int memberNo, int score);
+	int rating(int productNo, int userNo, int score);
 
 }

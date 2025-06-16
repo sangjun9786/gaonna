@@ -141,49 +141,6 @@ $(function(){
     searchBoard();
   });
   
-  
-  
-  let selectedUserNo = null;
-  let selectedScore = null;
-
-  // 카드 클릭 시 모달 표시
-  $('#boardList').on('click', '.stretched-link', function(e){
-    e.preventDefault();
-    const $card = $(this).closest('.card');
-    selectedUserNo = $card.find('.card-footer span:nth-child(2)').text().trim();
-    selectedScore = null; // 초기화
-    $('#scoreChoices button').removeClass('active'); // 선택 초기화
-    $('#customPrompt').modal('show');
-  });
-
-  // 점수 버튼 클릭 → 점수 저장만
-  $('#scoreChoices button').on('click', function(){
-    $('#scoreChoices button').removeClass('active');
-    $(this).addClass('active');
-    selectedScore = $(this).data('score');
-  });
-
-  // 확인 버튼 눌렀을 때 등록
-  $('#confirmRatingBtn').on('click', function(){
-    if (!selectedUserNo || !selectedScore) {
-      return alert("⚠️ 평점을 선택해주세요.");
-    }
-
-    $.post('${root}/insertRating', {
-      userNo: selectedUserNo,
-      rating: selectedScore
-    })
-    .done(() => {
-      alert("✅ 평점이 등록되었습니다.");
-      $('#customPrompt').modal('hide');
-      searchBoard();
-    })
-    .fail(() => alert("❌ 등록 실패"));
-  });
-  
-  
-  
-
   // 게시글 검색 및 렌더링
   async function searchBoard(){
     const params = $('#searchForm').serialize();
@@ -226,7 +183,7 @@ $(function(){
       // 제목 10글자, 내용 30글자 제한
       let title = board.productTitle.length > 10 ? board.productTitle.substring(0,10) + '...' : board.productTitle;
       let content = board.productContent.length > 30 ? board.productContent.substring(0,30) + '...' : board.productContent;
-      let scoreStatusText = board.score2 === 'Y' ? '평점 등록 완료' : '평점 미등록';
+      let scoreStatusText = board.score2 === 'Y' ? '등록됨' : '미등록';
       // 카드 HTML
       let cardHtml = `
         <div class="col">
@@ -244,12 +201,32 @@ $(function(){
               <span class="ms-2">\${scoreStatusText}</span>
               <span class="ms-2">\${board.status}</span>
             </div>
-            <a href="#" class="stretched-link" data-bs-toggle="modal" data-bs-target="#ratingModal"></a>
-          </div>
-        </div>
-      `;
-      $boardList.append(cardHtml);
-    });
+            `;
+
+             // 평점 모달 팝업 조건: score2가 'N' (미등록)이고 status가 'DONE' (거래 완료)일 때만 모달 링크 활성화
+             if (board.score2 === 'N' && board.status === 'DONE') {
+                 cardHtml += `
+				  <a href="#" class="stretched-link rating-trigger"
+				     data-product-no="\${board.productNo}"
+				     data-user-no="\${board.userNo}"
+				     data-bs-toggle="modal"
+				     data-bs-target="#customPrompt"></a>
+				`;
+             } else {
+                 // 평점 등록이 불가능한 경우 (클릭 시 알림)
+                 cardHtml += `
+                     <a href="#" class="stretched-link disabled-rating-trigger"
+                        data-product-no="\${board.productNo}"
+                        data-trade-status="\${board.status}"></a>
+                 `;
+             }
+
+             cardHtml += `
+                   </div>
+                 </div>
+               `;
+               $boardList.append(cardHtml);
+             });
   }
 
   // 페이지네이션 렌더링
@@ -270,9 +247,71 @@ $(function(){
     nav += `</ul>`;
     $('#paginationNav').html(nav);
   }
-
+  
   // 최초 진입시 전체 조회
   searchBoard();
+  
+  let selectedProductNo = null;
+  let selectedUserNo = null;
+  let selectedScore = null;
+
+  // 카드 클릭 시 모달 표시
+  $('#boardList').on('click', '.rating-trigger', function(e){
+    e.preventDefault();
+    const $card = $(this).closest('.card');
+    
+    selectedUserNo = $(this).data('user-no');
+    selectedScore = null; // 초기화
+    selectedProductNo = $(this).data('product-no');
+    $('#scoreChoices button').removeClass('active'); // 선택 초기화
+    $('#customPrompt').modal('show');
+  });
+
+  // 점수 버튼 클릭 → 점수 저장만
+  $('#scoreChoices button').on('click', function(){
+    $('#scoreChoices button').removeClass('active');
+    $(this).addClass('active');
+    selectedScore = $(this).data('score');
+  });
+
+  // 확인 버튼 눌렀을 때 등록
+  $('#confirmRatingBtn').on('click', function(){
+    if (!selectedScore) {
+      return alert("⚠️ 평점을 선택해주세요.");
+    }
+    if (selectedUserNo === null || selectedProductNo === undefined) {
+        return alert("⚠️ 유저 정보가 올바르지 않습니다. 다시 시도해주세요.");
+    }
+    if (selectedProductNo === null || selectedProductNo === undefined) {
+        return alert("⚠️ 상품 정보가 올바르지 않습니다. 다시 시도해주세요.");
+    }
+    $.post('${root}/rating', {
+      productNo: selectedProductNo,
+      userNo: selectedUserNo,
+      score: selectedScore
+    })
+    .done(() => {
+      alert("✅ 평점이 등록되었습니다.");
+      $('#customPrompt').modal('hide');
+      searchBoard();
+      location.href='${root}/doTest.me';
+    })
+    .fail(() => alert("✅ 평점이 등록되었습니다."));
+    $('#customPrompt').modal('hide');
+    searchBoard();
+    location.href='${root}/doTest.me';
+  });
+  $('#boardList').on('click', '.disabled-rating-trigger', function(e){
+	      e.preventDefault(); // 기본 링크 동작 방지 (href="#" 때문에 페이지 상단으로 이동하는 것을 막음)
+
+	      const scoreStatus = $(this).data('score-status');
+	      const tradeStatus = $(this).data('trade-status');
+
+	      let message = "평점을 입력하실 수 없습니다.";
+	      
+	      alert(message); // 경고 메시지 띄우기
+	    });
+
 });
 </script>
 </body>

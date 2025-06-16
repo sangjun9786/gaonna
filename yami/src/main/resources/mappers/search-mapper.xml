@@ -327,7 +327,7 @@
 				    SELECT PRODUCT_NO
 				    FROM WISHLIST
 				    GROUP BY PRODUCT_NO
-				    HAVING COUNT(*) > 10
+				    HAVING COUNT(*) > 0
 				)
 			    ORDER BY (pb.PRODUCT_COUNT / NULLIF(w.WISH_COUNT, 0)) DESC
 		)
