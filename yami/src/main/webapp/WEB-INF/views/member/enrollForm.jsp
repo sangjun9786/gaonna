@@ -158,12 +158,12 @@
 			      data: {userId : userId, domain : domain},
 			      success: function(result) {
 					if(result == "pass"){
-    					document.getElementById("checkIdResult").innerHTML = "'"+userId+"@"+domain+"'라는 기합찬 아이디는 통과해도 좋다";
+    					document.getElementById("checkIdResult").innerHTML = "'"+userId+"@"+domain+"'는 사용 가능한 아이디입니다.";
     					document.getElementById('checkIdResult').className = "valid-feedback d-block";
     					idPass = true;
     					toggleSubmit();
 					}else if(result == 'noPass'){
-						document.getElementById("checkIdResult").innerHTML = "'"+userId+"@"+domain+"'라는 기열찐빠 아이디는 이미 누군가가 쓰는군";
+						document.getElementById("checkIdResult").innerHTML = "'"+userId+"@"+domain+"'라는 아이디는 사용중입니다.";
 						document.getElementById('checkIdResult').className = "invalid-feedback d-block";
 						idPass = false;
 						toggleSubmit();
