@@ -74,30 +74,37 @@
     </div>
   </div>
 </div>
-<!-- The Modal -->
-        <div class="modal" id="ratingModal">
-          <div class="modal-dialog">
-            <div class="modal-content">
-            
-              <!-- Modal Header -->
-              <div class="modal-header">
-                <h4 class="modal-title">모달창입니다.</h4>
-                <!-- <button type="button" class="close" data-dismiss="modal">&times;</button> -->
-              </div>
-              
-              <!-- Modal body -->
-              <div class="modal-body">
-                Modal body..
-              </div>
-              
-              <!-- Modal footer -->
-              <div class="modal-footer">
-                <button type="button" class="btn btn-danger" data-dismiss="modal">Close</button>
-              </div>
-              
-            </div>
-          </div>
+
+        
+        <!-- 평점 선택 모달 -->
+<div class="modal fade" id="customPrompt" tabindex="-1">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">평점을 선택하세요</h5>
+      </div>
+      <div class="modal-body text-center">
+        <div id="scoreChoices" class="btn-group" role="group">
+          <button type="button" class="btn btn-outline-warning" data-score="1">1</button>
+          <button type="button" class="btn btn-outline-warning" data-score="2">2</button>
+          <button type="button" class="btn btn-outline-warning" data-score="3">3</button>
+          <button type="button" class="btn btn-outline-warning" data-score="4">4</button>
+          <button type="button" class="btn btn-outline-warning" data-score="5">5</button>
         </div>
+      </div>
+    <!-- 모달 footer -->
+<div class="modal-footer">
+  <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">취소</button>
+  <button id="confirmRatingBtn" type="button" class="btn btn-primary">확인</button>
+</div>
+    </div>
+  </div>
+</div>
+        
+        
+        
+        
+        
 <script>
 $(function(){
   // 카테고리 옵션 동적 추가
@@ -133,6 +140,49 @@ $(function(){
     $('#page').val(page);
     searchBoard();
   });
+  
+  
+  
+  let selectedUserNo = null;
+  let selectedScore = null;
+
+  // 카드 클릭 시 모달 표시
+  $('#boardList').on('click', '.stretched-link', function(e){
+    e.preventDefault();
+    const $card = $(this).closest('.card');
+    selectedUserNo = $card.find('.card-footer span:nth-child(2)').text().trim();
+    selectedScore = null; // 초기화
+    $('#scoreChoices button').removeClass('active'); // 선택 초기화
+    $('#customPrompt').modal('show');
+  });
+
+  // 점수 버튼 클릭 → 점수 저장만
+  $('#scoreChoices button').on('click', function(){
+    $('#scoreChoices button').removeClass('active');
+    $(this).addClass('active');
+    selectedScore = $(this).data('score');
+  });
+
+  // 확인 버튼 눌렀을 때 등록
+  $('#confirmRatingBtn').on('click', function(){
+    if (!selectedUserNo || !selectedScore) {
+      return alert("⚠️ 평점을 선택해주세요.");
+    }
+
+    $.post('${root}/insertRating', {
+      userNo: selectedUserNo,
+      rating: selectedScore
+    })
+    .done(() => {
+      alert("✅ 평점이 등록되었습니다.");
+      $('#customPrompt').modal('hide');
+      searchBoard();
+    })
+    .fail(() => alert("❌ 등록 실패"));
+  });
+  
+  
+  
 
   // 게시글 검색 및 렌더링
   async function searchBoard(){
