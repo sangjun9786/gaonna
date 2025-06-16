@@ -229,7 +229,7 @@
 	    JOIN CATEGORY c ON pb.CATEGORY_NO = c.CATEGORY_NO
 	    <where>
 	    	pb.STATUS = 'N'
-	    	<if test="location != 'all'">
+	    	<if test="location != '0'">
 			    AND REGEXP_SUBSTR(TRIM(COORD_ADDRESS), '[^ ]+$') = #{location}
 			</if>
 	    	<if test="category != 0">
