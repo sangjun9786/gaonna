@@ -143,11 +143,14 @@
         <div class="section-title">거래 진행 안내</div>
         <div class="info-box">
             <p>
-                <b>아래 정보로 판매자와 만나 직거래를 진행해주세요.</b><br>
-                현장에서 <span class="highlight">
-                    <fmt:formatNumber value="${order.price - order.usedPoint}" pattern="#,###"/>원
-                </span>
-                을 직접 결제해야 합니다.<br>
+               <b>아래 정보로 판매자와 만나 직거래를 진행해주세요.</b><br>
+				<span class="highlight">
+				거래 장소: ${mainLocation.roadAddress} ${mainLocation.detailAddress}
+				</span><br>
+				현장에서 <span class="highlight">
+				    <fmt:formatNumber value="${order.price - order.usedPoint}" pattern="#,###"/>원
+				</span>
+				을 직접 결제해야 합니다.<br>
                 <span style="color:#888; font-size:14px;">※ 포인트 사용분 <fmt:formatNumber value="${order.usedPoint}" pattern="#,###"/>P는 이미 차감되었습니다.</span>
             </p>
         </div>
@@ -207,10 +210,11 @@
                 <td class="label">판매자 연락처</td>
                 <td>${product.userPhone}</td>
             </tr>
-            <tr>
-                <td class="label">만날 장소</td>
-                <td><b>${product.coordAddress}</b></td>
-            </tr>
+			    <tr>
+			        <td class="label">만날 장소</td>
+			        <td><b>${mainLocation.roadAddress} ${mainLocation.detailAddress}</b></td>
+			    </tr>
+			    
             <tr>
                 <td class="label">거래 요청 메시지</td>
                 <td>${order.message}</td>

@@ -25,6 +25,7 @@ import com.gaonna.yami.chat.model.service.ChatService;
 import com.gaonna.yami.chat.model.vo.ChatRoom;
 import com.gaonna.yami.common.PageInfo;
 import com.gaonna.yami.common.Pagination;
+import com.gaonna.yami.location.vo.Location;
 import com.gaonna.yami.member.model.vo.Member;
 import com.gaonna.yami.product.service.ProductService;
 import com.gaonna.yami.product.service.ReplyService;
@@ -193,13 +194,28 @@ public class ProductController {
         return result > 0 ? "success" : "fail";
     }
 
-	//등록 이동
-	@GetMapping("productEnrollForm.pr")
-	public String ProductEnroll(Model model) {
-		ArrayList<Category> categoryList = service.selectCategoryList(); // DB 또는 서비스에서 가져오기
-		model.addAttribute("categoryList", categoryList);
-		return "product/productEnrollForm";
-	}
+    // 등록 이동
+    @GetMapping("productEnrollForm.pr")
+    public String productEnroll(Model model, HttpSession session) {
+        // 카테고리 리스트
+        ArrayList<Category> categoryList = service.selectCategoryList();
+        model.addAttribute("categoryList", categoryList);
+
+        // 로그인 유저 정보
+        Member loginUser = (Member) session.getAttribute("loginUser");
+        if (loginUser != null) {
+            int userNo = loginUser.getUserNo();
+
+            // 메인 위치 정보 조회
+            Location mainLocation = service.selectMainLocationByUserNo(userNo);
+
+            if (mainLocation != null) {
+                model.addAttribute("mainLocation", mainLocation); // JSP에서 사용 가능
+            }
+        }
+
+        return "product/productEnrollForm";
+    }
 	
 	//등록 
 	@PostMapping("productEnrollForm.pr")
@@ -208,7 +224,7 @@ public class ProductController {
             					,@RequestParam(value = "uploadFiles", required = false)ArrayList<MultipartFile> uploadFiles
 								,HttpSession session) {
 		
-		ArrayList<Attachment> atList = new ArrayList<>(); //천부파일 정보들 등록할 리스트
+		ArrayList<Attachment> atList = new ArrayList<>(); //첨부파일 정보들 등록할 리스트
 		
 		//대표 이미지
 	    if (!thumbnail.isEmpty()) {
@@ -475,14 +491,21 @@ public class ProductController {
 	    Product product = service.selectProductDetail(productNo);
 	    ArrayList<Attachment> atList = service.selectProductAttachments(productNo);
 	    product.setAtList(atList);
-	
+	    
 	    // 2. (옵션) 로그인 유저 정보 (세션에서 꺼낼 수 있음)
 	    Member m = (Member) session.getAttribute("loginUser");
+	    
+	    // 3. 판매자의 mainLocation 조회
+	    Location mainLocation = null;
+	    if (product != null && product.getUserNo() > 0) {
+	        mainLocation = service.selectMainLocationByUserNo(product.getUserNo());
+	    }
 	
 	    // 3. 모델에 상품/유저/거래 정보 담기
 	    model.addAttribute("order", o);
 	    model.addAttribute("product", product);
 	    model.addAttribute("loginUser", m);
+	    model.addAttribute("mainLocation", mainLocation); 
 	    // 4. 구매 폼 페이지로 이동
 	    return "product/productBuy";
 	}
@@ -508,14 +531,18 @@ public class ProductController {
         int result = service.productOrder(o,m);
         
         if(result>0) {
+        	Location mainLocation = service.selectMainLocationByUserNo(product.getUserNo());
         	model.addAttribute("product", product);
             model.addAttribute("order", o);        
             model.addAttribute("loginUser", m);
+            model.addAttribute("mainLocation", mainLocation);
             return "product/productOrder";
         } else {
         	model.addAttribute("msg", "결제 처리에 실패했습니다. 다시 시도해주세요.");
         	return "common/errorPage";
         }
+        
+        
     }
     
     

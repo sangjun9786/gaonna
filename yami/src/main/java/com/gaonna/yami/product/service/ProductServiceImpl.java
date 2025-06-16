@@ -1,7 +1,6 @@
 package com.gaonna.yami.product.service;
 
 import java.util.ArrayList;
-import java.util.List;
 
 import org.mybatis.spring.SqlSessionTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -9,9 +8,10 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.gaonna.yami.common.PageInfo;
+import com.gaonna.yami.location.dao.LocationDao;
+import com.gaonna.yami.location.vo.Location;
 import com.gaonna.yami.member.model.vo.Member;
 import com.gaonna.yami.product.dao.ProductDao;
-import com.gaonna.yami.product.model.ProductDTO;
 import com.gaonna.yami.product.vo.Attachment;
 import com.gaonna.yami.product.vo.Category;
 import com.gaonna.yami.product.vo.Order;
@@ -28,6 +28,10 @@ public class ProductServiceImpl implements ProductService {
     
     @Autowired
     private ProductDao dao;
+    
+    @Autowired
+    private LocationDao locationDao;
+
     
     //게시글 리스트 카운트
     @Override
@@ -167,7 +171,11 @@ public class ProductServiceImpl implements ProductService {
 	    return result * result2 * result3 ;  // 셋 다 성공해야 1 반환
 	}
 	
-
+	@Override
+		public Location selectMainLocationByUserNo(int userNo) {
+			// TODO Auto-generated method stub
+			return dao.selectMainLocationByUserNo(sqlSession, userNo);
+		}
 
 }
 
