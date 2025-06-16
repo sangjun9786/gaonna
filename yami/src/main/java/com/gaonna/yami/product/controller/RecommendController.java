@@ -23,7 +23,7 @@ public class RecommendController {
 		//회원 평점 기준 추천 목록
 		ArrayList<Product> list2 = service.recommendMember();
 		
-		for(Product p : list2) {
+		for(Product p : list) {
 			System.out.println(p);
 		}
 		if(list.isEmpty()) {
