@@ -149,17 +149,15 @@
                 <input type="text" name="sellerPhone" class="form-control" value="${product.userPhone}" readonly />
 
                 <div class="form-label">판매자의 거래 동네</div>
-                <input type="text" name="meetLocation" class="form-control" value="${mainLocation.roadAddress} ${mainLocation.detailAddress}" readonly />
+                <input type="text" name="meetLocation" class="form-control" value="${product.coordAddress}" readonly />
 
                 <div class="buy-summary">
                     <b>※ 구매 요청시 판매자에게 알림이 전송됩니다.<br>
                     거래 완료 후에는 마이페이지에서 내역 확인 및 리뷰 작성이 가능합니다.</b>
                 </div>
 
-                <div style="display: flex; gap: 10px; margin-top: 10px;">
-				    <button type="submit" class="action-btn" style="width: 50%;">구매 요청하기</button>
-				    <button type="button" class="cancel-btn" style="width: 50%;" onclick="history.back();">취소</button>
-				</div>
+                <button type="submit" class="action-btn">구매 요청하기</button>
+                <button type="button" class="cancel-btn" onclick="history.back();">취소</button>
             </form>
         </div>
     </div>

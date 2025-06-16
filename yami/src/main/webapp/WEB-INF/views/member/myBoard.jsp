@@ -149,6 +149,9 @@ $(function(){
 	} else if (status === 'REQ') {
 	  statusDisplay = '<span class="text-warning fw-bold">거래중</span>';
 	} else if (status === 'BUYER_OK') {
+		console.log("선택된 board:", board);
+		console.log("orderStatus:", board.orderStatus);
+		console.log("orderNo:", board.orderNo);
 		statusDisplay = `
 			  <span class="text-primary fw-bold buyer-ok clickable-status">
 		    구매확정

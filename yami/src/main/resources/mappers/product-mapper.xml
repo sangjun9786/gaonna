@@ -112,7 +112,6 @@
             pb.STATUS AS PB_STATUS,
             m.USER_ID,
             m.USER_NAME,
-            m.PHONE AS USER_PHONE,
             m.MAIN_COORD,
             c.COORD_ADDRESS,
             at.FILE_NO,
@@ -236,16 +235,6 @@
     WHERE PRODUCT_NO = #{productNo}
 	</update>
     
-    <!-- 거래 희망장소 -->
-    <select id="selectMainLocationByUserNo" parameterType="int" resultType="Location">
-    SELECT 
-        L.ROAD_ADDRESS, 
-        L.DETAIL_ADDRESS
-    FROM MEMBER M
-    JOIN LOCATION L ON M.MAIN_LOCATION = L.LOCATION_NO
-    WHERE M.USER_NO = #{userNo}
-	</select>
-    
 	
     <!-- 상품 ResultMap -->
     <resultMap id="productResultMap" type="Product">
@@ -281,7 +270,6 @@
         <result property="userName" column="USER_NAME"/>
         <result property="categoryName" column="CATEGORY_NAME"/>
         <result property="wishCount" column="WISH_COUNT"/>
-        <result property="userPhone" column="USER_PHONE"/>
         
         <collection property="atList" ofType="Attachment" notNullColumn="FILE_NO">
             <id property="fileNo" column="FILE_NO"/>
