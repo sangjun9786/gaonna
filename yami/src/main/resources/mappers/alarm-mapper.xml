@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="alarmMapper">
+
+    <insert id="insertAlarm" parameterType="alarm">
+        INSERT INTO ALARM
+          (ALARM_NO, USER_NO, TYPE, REF_NO, CONTENT, IS_READ, CREATED_AT)
+        VALUES
+          (SEQ_ALARM.NEXTVAL, #{userNo}, #{type}, #{refNo}, #{content}, 'N', DEFAULT)
+    </insert>
+
+    <select id="selectAlarmList" resultType="alarm">
+        SELECT
+            ALARM_NO,
+            USER_NO,
+            TYPE,
+            REF_NO,
+            CONTENT,
+            IS_READ,
+            CREATED_AT
+        FROM ALARM
+        WHERE USER_NO = #{userNo}
+        ORDER BY CREATED_AT DESC
+    </select>
+
+    <update id="updateAllAlarmRead" parameterType="int">
+        UPDATE ALARM
+        SET IS_READ = 'Y'
+        WHERE USER_NO = #{userNo}
+          AND IS_READ = 'N'
+    </update>
+
+    <delete id="deleteAlarm" parameterType="int">
+        DELETE FROM ALARM WHERE ALARM_NO = #{alarmNo}
+    </delete>
+
+    <delete id="deleteAllAlarm" parameterType="int">
+        DELETE FROM ALARM WHERE USER_NO = #{userNo}
+    </delete>
+    
+    <select id="selectUnreadAlarmCount" parameterType="int" resultType="int">
+	    SELECT COUNT(*) FROM ALARM WHERE USER_NO = #{userNo} AND IS_READ = 'N'		
+	</select>
+	
+	<delete id="deleteChatAlarmsByRoom">
+	    DELETE FROM ALARM
+	    WHERE USER_NO = #{userNo}
+	      AND TYPE = 'chat'
+	      AND REF_NO = #{roomNo}
+	</delete>
+	
+	<update id="markAsRead" parameterType="int">
+	    UPDATE ALARM
+	    SET IS_READ = 'Y'
+	    WHERE ALARM_NO = #{alarmNo}
+	</update>
+	
+	
+	<update id="markReplyAlarmsAsRead">
+	    UPDATE ALARM
+	    SET IS_READ = 'Y'
+	    WHERE USER_NO = #{userNo}
+	      AND TYPE = 'reply'
+	      AND REF_NO = #{productNo}
+	      AND IS_READ = 'N'
+	</update>
+	
+	
+	<delete id="deleteReplyAlarmsByProduct">
+	    DELETE FROM ALARM
+	    WHERE USER_NO = #{userNo}
+	      AND TYPE = 'reply'
+	      AND REF_NO = #{productNo}
+	</delete>
+	
+		
+		
+
+</mapper>

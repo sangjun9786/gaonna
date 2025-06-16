@@ -17,7 +17,7 @@ public class ChatDao {
     @Autowired
     private SqlSession sqlSession;
 
-    
+    	
 
     //방 조회
     public ChatRoom findRoomByUsersAndProduct(int sellerNo, int buyerNo, int productNo) {
@@ -34,10 +34,6 @@ public class ChatDao {
     }
 
 
-    // 내 채팅방 목록 (userNo 기준)
-    public List<ChatRoom> selectMyRooms(int userNo) {
-        return sqlSession.selectList("chatMapper.selectMyRooms", userNo);
-    }
 
     // 채팅방 메시지 목록
     public List<ChatMessage> selectMessagesByRoomNo(int roomNo) {
@@ -78,6 +74,9 @@ public class ChatDao {
         return sqlSession.selectList("chatMapper.findChatListByUser", userNo);
     }
     
+    public ChatRoom findRoomByRoomNo(int roomNo) {
+        return sqlSession.selectOne("chatMapper.findRoomByRoomNo", roomNo);
+    }
     
     
     

@@ -188,7 +188,7 @@
 
             <!-- 일반 유저만 -->
             <c:if test="${not empty loginUser and loginUser.roleType != 'superAdmin' and loginUser.roleType != 'admin' and loginUser.roleType != 'viewer'}">
-	            <c:if test="${loginUser.userNo ne product.userNo and not alreadyChatted}">
+	           <c:if test="${loginUser.userNo ne product.userNo and not alreadyChatted}">
 	                <form action="${pageContext.request.contextPath}/chat/room" method="get" style="margin-bottom: 10px;">
 					    <input type="hidden" name="productNo" value="${product.productNo}" />
 					    <input type="hidden" name="sellerNo" value="${product.userNo}" />
