@@ -12,7 +12,6 @@ public interface ChatService {
     //입장
 	ChatRoom findRoomByUsersAndProduct(int sellerNo, int buyerNo, int productNo);
 
-    List<ChatRoom> getMyRooms(int userNo);
 
     List<ChatMessage> getMessages(int roomNo);
 
@@ -27,5 +26,9 @@ public interface ChatService {
     String getUserNameByNo(int userNo);
     
     List<ChatListView> getChatListByUser(int userNo);
+    
+    ChatRoom findRoomByRoomNo(int roomNo);
+    
+    
 
 }
