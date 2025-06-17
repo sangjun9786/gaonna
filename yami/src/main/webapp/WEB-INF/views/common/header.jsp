@@ -83,14 +83,12 @@
 
 <c:if test="${not empty alertMsg}">
 <script>
+    var msg="${alertMsg}";
+    if(msg!="") { alert(msg); }
+</script>
+<c:remove var="alertMsg"/>
 
-	  var msg="${alertMsg}";
-			
-	  if(msg!="") {
-		alert(msg);
-	  }
-	</script>
-	<c:remove var="alertMsg" scope="session"/>
+
 	</c:if>
 <nav class="navbar navbar-expand-lg custom-navbar position-relative">
   <div class="container-fluid">

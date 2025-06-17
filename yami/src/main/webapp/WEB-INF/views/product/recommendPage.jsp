@@ -98,9 +98,9 @@
     
 
     <div class="content">
-        <h2>📸 가온나 최고 인기 상품</h2>
+        <h2>📸 가온나 인기 회원의 상품</h2>
         <div class="photo-grid">
-            <c:forEach var="product" items="${list}">
+            <c:forEach var="product" items="${list2}">
                 <div class="photo-item"
                      onclick="location.href='${pageContext.request.contextPath}/productDetail.pro?productNo=${product.productNo}'">
 
@@ -125,9 +125,9 @@
         <br>
         <br>
 		<div class="content">
-        <h2>📸 가온나 인기 회원의 상품</h2>
+        <h2>📸 가온나 최고 인기 상품</h2>
         <div class="photo-grid">
-            <c:forEach var="product" items="${list2}">
+            <c:forEach var="product" items="${list}">
                 <div class="photo-item"
                      onclick="location.href='${pageContext.request.contextPath}/productDetail.pro?productNo=${product.productNo}'">
 
