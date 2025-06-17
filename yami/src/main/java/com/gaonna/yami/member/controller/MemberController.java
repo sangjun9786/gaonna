@@ -17,6 +17,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.gaonna.yami.admin.service.AdminService;
+import com.gaonna.yami.composite.service.CompositeService;
 import com.gaonna.yami.cookie.service.CookieService;
 import com.gaonna.yami.location.service.LocationService;
 import com.gaonna.yami.location.vo.Coord;
@@ -41,6 +42,8 @@ public class MemberController {
 	public AdminService adminService;
 	@Autowired
 	public RatingService ratingService;
+	@Autowired
+	public CompositeService compositeService;
 	@Autowired
 	private BCryptPasswordEncoder bcrypt;
 	@Autowired
@@ -193,13 +196,12 @@ public class MemberController {
 			Member loginUser = service.loginMember(userId, domain, userPwd);
 			if(loginUser != null) {
 				
-				// 1. 신고 누적 로그인 차단
 			    int reportCount = reportService.countHandledReportsByUser(loginUser.getUserNo());
 			    if (reportCount >= 5) {
-			        model.addAttribute("errorMsg", "신고 누적으로 로그인 차단된 계정입니다.");
+			        model.addAttribute("errorMsg", "이용이 제한된 회원입니다.");
 			        return "common/errorPage";
 			    }
-				
+			    
 				switch(loginUser.getStatus()) {
 				//유저 꼬라지에 따라 작동
 				
@@ -207,6 +209,12 @@ public class MemberController {
 					Member resendEmailUser = loginUser;
 					session.setAttribute("resendEmailUser",resendEmailUser);
 					return "member/resendEmailMe";
+				case "N" : //정지된 회원일 경우
+					session.setAttribute("alertMsg","이용이 제한된 회원입니다.");
+					return "redirect:/";
+				case "E" : //탈퇴된 회원일 경우
+					session.setAttribute("alertMsg","탈퇴된 회원입니다.");
+					return "redirect:/";
 				}
 				
 				//비밀번호 지우기
@@ -306,7 +314,6 @@ public class MemberController {
 			if(service.updatePwd(m)>0) {
 				//수정 성공하면 로그인 세션 지우기
 				session.invalidate();
-				model.addAttribute("alertMsg", "비밀번호가 변경되었습니다. 다시 로그인 해 주세요.");
 				return "redirect:/";
 			}else {
 				return errorPage(model,"500 err");
@@ -618,6 +625,67 @@ public class MemberController {
 		}
 	}
 	
+	//회원탈퇴 페이지로
+	@GetMapping("deleteUser.me")
+	public String goDeleteUser() {
+		return "member/deleteUser";
+	}
+	
+	
+	//ajax - 아이디/비밀번호 확인
+	@PostMapping("confirmIdPwd.me")
+	@ResponseBody
+	public String confirmIdPwd(HttpSession session
+			,String userId, String userPwd) {
+		try {
+			Member m = (Member)session.getAttribute("loginUser");
+			
+			if(service.confirmIdPwd(m,userId,userPwd)>0){
+				return "pass";
+			}else {
+				return "noPass";
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+			return "noPass";
+		}
+	}
+	
+	//회원 탈퇴
+	@PostMapping("deleteUser.me")
+	public String deleteUser(HttpSession session,
+			HttpServletRequest request
+			,HttpServletResponse response, Model model
+			,String userId, String userPwd) {
+		try {
+			int result=0;
+			Member m = (Member)session.getAttribute("loginUser");
+			
+			//한번 더 유효성 확인
+			if(service.confirmIdPwd(m,userId,userPwd)>0) {
+				result = service.deleteUser(m);
+			}else {
+				return errorPage(model,"아이디와 비밀번호를 확인해 주세요.");
+			}
+			
+			if(result>0) {
+				//로그아웃 처리
+				cookieService.deleteAutoLogin(response,session);
+				session.invalidate();
+				
+				//새로운 세션 생성
+			    HttpSession newSession = request.getSession(true);
+			    newSession.setAttribute("alertMsg","탈퇴가 완료되었습니다.");
+				return "redirect:/";
+			}else {
+				return errorPage(model,"500 err");
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+			return errorPage(model,"500 err");
+		}
+	}
+
 	
 	//유저 식별번호로 유저 아이디 조회
 	public String selectUserId(int userNo) {

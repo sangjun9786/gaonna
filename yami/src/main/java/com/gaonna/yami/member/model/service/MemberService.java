@@ -48,5 +48,11 @@ public interface MemberService {
 
 	//유저 번호로 비밀번호 조회
 	String selectUserPwd(int userNo);
+
+	//유저 아이디/비밀번호 확인
+	int confirmIdPwd(Member m, String userId, String userPwd);
+
+	//회원 탈퇴
+	int deleteUser(Member m);
 	
 }

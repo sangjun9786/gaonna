@@ -198,4 +198,28 @@ public class MemberServiceImpl implements MemberService{
 	public String selectUserPwd(int userNo) {
 		return dao.selectUserPwd(sqlSession,userNo);
 	}
+	
+	//ajax - 아이디/비밀번호 확인
+	@Override
+	public int confirmIdPwd(Member m,String userId, String userPwd) {
+		
+		//아이디 확인
+		if(!userId.equals(m.getUserId())) {
+			return 0;
+		}
+		
+		//비밀번호 조회
+		m.setUserPwd(dao.selectUserPwd(sqlSession,m.getUserNo()));
+		
+		//비밀번호 확인
+		if(!bcrypt.matches(userPwd,m.getUserPwd())) {
+			return 0;
+		}
+		return 1;
+	}
+	
+	@Override
+	public int deleteUser(Member m) {
+		return dao.deleteUser(sqlSession,m);
+	}	
 }

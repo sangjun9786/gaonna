@@ -162,6 +162,12 @@
 						</div>
 					</div>
 				</div>
+				<!-- 회원탈퇴 -->
+				<div class="d-flex justify-content-end mt-3">
+				  <a href='${root}/deleteUser.me' class="btn btn-danger">
+				    <i class="bi bi-person-x me-1"></i>탈퇴하기
+				  </a>
+				</div>
 			</div>
 		</div>
 	</div>
