@@ -23,9 +23,6 @@ public class RecommendController {
 		//회원 평점 기준 추천 목록
 		ArrayList<Product> list2 = service.recommendMember();
 		
-		for(Product p : list) {
-			System.out.println(p);
-		}
 		if(list.isEmpty()) {
 			model.addAttribute("errorMsg", "추천 게시판 목록 조회 실패!");
 			
