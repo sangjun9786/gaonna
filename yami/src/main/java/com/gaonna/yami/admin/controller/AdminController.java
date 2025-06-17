@@ -34,7 +34,7 @@ public class AdminController {
 	@Autowired
 	public MemberService memberService;
 	
-	//콘솔창 명령
+	//콘솔창 명령!
 	@PostMapping("console")
 	public String console(HttpServletRequest request
 			, HttpServletResponse response, String command) {
