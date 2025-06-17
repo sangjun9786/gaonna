@@ -1,0 +1,127 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="reportMapper">
+
+    <!-- 1. 신고 등록 -->
+    <insert id="insertReport" parameterType="report">
+        INSERT INTO REPORT (
+            REPORT_NO,
+            REPORT_TYPE,
+            TARGET_NO,
+            REPORTER_NO,
+            REASON,
+            CONTENT,
+            STATUS,
+            CREATED_AT
+        ) VALUES (
+            SEQ_REPORT.NEXTVAL,
+            #{reportType},
+            #{targetNo},
+            #{reporterNo},
+            #{reason},
+            #{content},
+            'P',        -- 처리대기 기본값
+            SYSDATE
+        )
+    </insert>
+
+    <!-- 2. 신고 목록 조회 -->
+    <select id="selectReportList" parameterType="map" resultType="report">
+        SELECT *
+        FROM REPORT
+        <where>
+            <if test="status != null and status != ''">
+                AND STATUS = #{status}
+            </if>
+            <if test="reportType != null and reportType != ''">
+                AND REPORT_TYPE = #{reportType}
+            </if>
+        </where>
+        ORDER BY CREATED_AT DESC
+    </select>
+
+    <!-- 3. 신고 상세 조회 -->
+    <select id="selectReportByNo" parameterType="int" resultType="report">
+        SELECT *
+        FROM REPORT
+        WHERE REPORT_NO = #{reportNo}
+    </select>
+
+    <!-- 4. 신고 상태 변경 -->
+   <update id="updateReportStatus" parameterType="map">
+	    UPDATE REPORT
+	    SET STATUS = #{status},
+	        HANDLED_AT = 
+	            <choose>
+	                <when test='"Y".equals(status)'>
+	                    SYSDATE
+	                </when>
+	                <otherwise>
+	                    NULL
+	                </otherwise>
+	            </choose>
+	    WHERE REPORT_NO = #{reportNo}
+	</update>
+
+    <!-- 5. 신고 카운트(페이징 등) -->
+    <select id="countReport" parameterType="map" resultType="int">
+        SELECT COUNT(*)
+        FROM REPORT
+        <where>
+            <if test="status != null and status != ''">
+                AND STATUS = #{status}
+            </if>
+            <if test="reportType != null and reportType != ''">
+                AND REPORT_TYPE = #{reportType}
+            </if>
+        </where>
+    </select>
+
+    <!-- 6. 게시글 작성자 번호(신고자==작성자 차단용) -->
+    <select id="findProductWriterNo" parameterType="int" resultType="int">
+        SELECT USER_NO
+        FROM PRODUCT_BOARD
+        WHERE PRODUCT_NO = #{productNo}
+    </select>
+
+    <!-- 7. 댓글 작성자 번호 -->
+    <select id="findReplyWriterNo" parameterType="int" resultType="int">
+        SELECT USER_NO
+        FROM REPLY
+        WHERE REPLY_NO = #{replyNo}
+    </select>
+
+    <!-- 8. 채팅 메시지 작성자 번호 -->
+    <select id="findChatWriterNo" parameterType="int" resultType="int">
+        SELECT SENDER_NO
+        FROM CHAT_MESSAGE
+        WHERE MESSAGE_NO = #{messageNo}
+    </select>
+    
+	
+	<select id="countHandledReportsByUser" parameterType="int" resultType="int">
+	    SELECT COUNT(*)
+	    FROM REPORT R
+	    WHERE R.STATUS = 'Y'
+	      AND (
+	        (R.REPORT_TYPE = 'post' AND EXISTS (
+	            SELECT 1 FROM PRODUCT_BOARD P
+	            WHERE R.TARGET_NO = P.PRODUCT_NO
+	              AND P.USER_NO = #{userNo}
+	        ))
+	        OR
+	        (R.REPORT_TYPE = 'chat' AND EXISTS (
+	            SELECT 1 FROM CHAT_MESSAGE CM
+	            WHERE R.TARGET_NO = CM.MESSAGE_NO
+	              AND CM.SENDER_NO = #{userNo}
+	        ))
+	      )
+	</select>
+
+
+
+
+</mapper>
