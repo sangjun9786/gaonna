@@ -4,82 +4,57 @@
 <%@ include file="/WEB-INF/views/common/header.jsp" %>
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" />
 
-<style>
-    .container { max-width: 1100px; }
-    h2 { font-weight: 700; color: #222; }
-    .table th, .table td { vertical-align: middle; }
-    .table td, .table th { font-size: 16px; }
-    .badge.bg-warning { background: #ffe08a !important; color: #ad7b00 !important; }
-    .badge.bg-success { background: #54c689 !important; }
-    .badge.bg-secondary { background: #c6c6c6 !important; }
-    @media (max-width: 900px) {
-        .container { max-width: 99%; }
-        .table th, .table td { font-size: 15px; }
-    }
-</style>
-
 <div class="container py-5">
-    <h2 class="mb-4">신고 목록</h2>
+    <h2 class="mb-4">대기 신고 목록</h2>
+    <div class="btn-group mb-3">
+        <a href="${pageContext.request.contextPath}/report/list" class="btn btn-outline-warning active">대기 신고</a>
+        <a href="${pageContext.request.contextPath}/report/archived" class="btn btn-secondary">처리/반려 신고</a>
+    </div>
     <div class="table-responsive">
         <table class="table table-bordered align-middle text-center shadow-sm bg-white">
             <thead class="table-light">
                 <tr>
-                    <th style="width: 6%;">번호</th>
-                    <th style="width: 9%;">유형</th>
-                    <th style="width: 11%;">대상번호</th>
-                    <th style="width: 10%;">신고자</th>
-                    <th style="width: 16%;">사유</th>
-                    <th style="width: 9%;">상태</th>
-                    <th style="width: 15%;">신고일시</th>
-                    <th style="width: 15%;">처리일시</th>
-                    <th style="width: 9%;">상세</th>
+                    <th>번호</th>
+                    <th>유형</th>
+                    <th>대상번호</th>
+                    <th>신고자</th>
+                    <th>사유</th>
+                    <th>상태</th>
+                    <th>신고일시</th>
+                    <th>상세</th>
                 </tr>
             </thead>
             <tbody>
-            <c:forEach var="report" items="${reportList}" varStatus="status">
-                <tr>
-                    <td>${status.index + 1}</td>
-                    <td>
-                        <c:choose>
-                            <c:when test="${report.reportType eq 'product'}">게시글</c:when>
-                            <c:when test="${report.reportType eq 'reply'}">댓글</c:when>
-                            <c:when test="${report.reportType eq 'chat'}">채팅</c:when>
-                            <c:otherwise>${report.reportType}</c:otherwise>
-                        </c:choose>
-                    </td>
-                    <td>${report.targetNo}</td>
-                    <td>${report.reporterNo}</td>
-                    <td>${report.reason}</td>
-                    <td>
-                        <c:choose>
-                            <c:when test="${report.status eq 'P'}">
-                                <span class="badge bg-warning text-dark">대기</span>
-                            </c:when>
-                            <c:when test="${report.status eq 'Y'}">
-                                <span class="badge bg-success">처리</span>
-                            </c:when>
-                            <c:when test="${report.status eq 'N'}">
-                                <span class="badge bg-secondary">반려</span>
-                            </c:when>
-                            <c:otherwise>${report.status}</c:otherwise>
-                        </c:choose>
-                    </td>
-                    <td>
-                        <fmt:formatDate value="${report.createdAt}" pattern="yyyy년 M월 d일" />
-                    </td>
-                    <td>
-                        <c:choose>
-                            <c:when test="${report.status eq 'Y' or report.status eq 'N'}">
-                                <fmt:formatDate value="${report.handledAt}" pattern="yyyy년 M월 d일" />
-                            </c:when>
-                            <c:otherwise>-</c:otherwise>
-                        </c:choose>
-                    </td>
-                    <td>
-                        <a href="${pageContext.request.contextPath}/report/detail?reportNo=${report.reportNo}" class="btn btn-outline-dark btn-sm px-3">상세</a>
-                    </td>
-                </tr>
-            </c:forEach>
+                <c:choose>
+                    <c:when test="${empty reportList}">
+                        <tr><td colspan="8" class="text-muted">대기 중인 신고가 없습니다.</td></tr>
+                    </c:when>
+                    <c:otherwise>
+                        <c:forEach var="report" items="${reportList}" varStatus="status">
+                            <c:if test="${report.STATUS eq 'P'}">
+                                <tr>
+                                    <td>${status.index + 1}</td>
+                                    <td>
+                                        <c:choose>
+                                            <c:when test="${report.REPORT_TYPE eq 'product'}">게시글</c:when>
+                                            <c:when test="${report.REPORT_TYPE eq 'reply'}">댓글</c:when>
+                                            <c:when test="${report.REPORT_TYPE eq 'chat'}">채팅</c:when>
+                                            <c:otherwise>${report.REPORT_TYPE}</c:otherwise>
+                                        </c:choose>
+                                    </td>
+                                    <td>${report.TARGET_NO}</td>
+                                    <td>${report.REPORTERNAME}</td>
+                                    <td>${report.REASON}</td>
+                                    <td><span class="badge bg-warning text-dark">대기</span></td>
+                                    <td><fmt:formatDate value="${report.CREATED_AT}" pattern="yyyy년 M월 d일" /></td>
+                                    <td>
+                                        <a href="${pageContext.request.contextPath}/report/detail?reportNo=${report.REPORT_NO}" class="btn btn-outline-dark btn-sm">상세</a>
+                                    </td>	
+                                </tr>
+                            </c:if>
+                        </c:forEach>
+                    </c:otherwise>
+                </c:choose>
             </tbody>
         </table>
     </div>

@@ -27,8 +27,8 @@ public class StaticMapController {
                 + "&markers=type:d|size:mid|pos:" + lng + " " + lat;
 
         HttpHeaders headers = new HttpHeaders();
-        headers.set("X-NCP-APIGW-API-KEY-ID", "85oq183idp");
-        headers.set("X-NCP-APIGW-API-KEY", "TYQrxCnbp5YP5tLC289l2g6wOg3Iq7TlB9k1tj0c");
+        headers.set("X-NCP-APIGW-API-KEY-ID", "8kgutlqkto");
+        headers.set("X-NCP-APIGW-API-KEY", "EStqTF8yoXtmrFseIeHEaQVeEAp0dGhcw9Kowvsj");
 
         HttpEntity<String> request = new HttpEntity<>(headers);
 
@@ -38,7 +38,5 @@ public class StaticMapController {
                 .ok()
                 .contentType(MediaType.IMAGE_PNG)
                 .body(response.getBody());
-        
-
     }
 }

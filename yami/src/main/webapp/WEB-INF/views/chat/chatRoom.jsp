@@ -100,7 +100,7 @@
 <script>
 var roomNo = "${chatRoom.roomNo}";
 var senderNo = "${sessionScope.loginUser.userNo}";
-var socket = new WebSocket("ws://192.168.150.51:8888/yami/ws/chat?roomNo=" + roomNo);
+var socket = new WebSocket("ws://192.168.195.20:8888/yami/ws/chat?roomNo=" + roomNo);
 var chatArea = document.getElementById("chat-area");
 
 function formatKoreanTime(dateString) {
