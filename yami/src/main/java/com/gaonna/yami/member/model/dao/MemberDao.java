@@ -63,4 +63,8 @@ public class MemberDao {
 	public String selectUserPwd(SqlSessionTemplate sqlSession, int userNo) {
 		return sqlSession.selectOne("memberMapper.selectUserPwd",userNo);
 	}
+
+	public int deleteUser(SqlSessionTemplate sqlSession, Member m) {
+		return sqlSession.update("memberMapper.deleteUser",m);
+	}
 }
