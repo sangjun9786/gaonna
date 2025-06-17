@@ -50,12 +50,26 @@ public class ProductServiceImpl implements ProductService {
 		// TODO Auto-generated method stub
 		return dao.increaseCount(sqlSession,productNo);
 	}
-    
-    //상세보기
+	
+	//리스트 조회
 	@Override
-	public Product selectProductDetail(int productNo) {
+	public ArrayList<Product> selectProductList(PageInfo pi) {
 		// TODO Auto-generated method stub
-		return dao.selectProductDetail(sqlSession,productNo);
+		return dao.selectProductList(sqlSession,pi);
+	}
+	
+	//카테고리 목록
+	@Override
+	public ArrayList<Category> selectCategoryList() {
+		// TODO Auto-generated method stub
+		return dao.selectCategoryList(sqlSession);
+	}
+		
+	//거래장소
+	@Override
+	public Location selectMainLocationByUserNo(int userNo) {
+		// TODO Auto-generated method stub
+		return dao.selectMainLocationByUserNo(sqlSession, userNo);
 	}
 	
 	//상품 게시물 등록
@@ -87,26 +101,21 @@ public class ProductServiceImpl implements ProductService {
 		}
 			
 	}
-	
+
+	//상세보기
 	@Override
-	public ArrayList<Product> selectProductList(PageInfo pi) {
+	public Product selectProductDetail(int productNo) {
 		// TODO Auto-generated method stub
-		return dao.selectProductList(sqlSession,pi);
+		return dao.selectProductDetail(sqlSession,productNo);
 	}
 	
+	//상세페이지 사진
 	@Override
 	public ArrayList<Attachment> selectProductAttachments(int productNo) {
 		// TODO Auto-generated method stub
 		return dao.selectProductAttachments(sqlSession,productNo);
 	}
     
-	//카테고리 목록
-	@Override
-	public ArrayList<Category> selectCategoryList() {
-		// TODO Auto-generated method stub
-		return dao.selectCategoryList(sqlSession);
-	}
-	
 	//삭제
 	@Override
 	public int deleteProduct(int productNo) {
@@ -171,11 +180,7 @@ public class ProductServiceImpl implements ProductService {
 	    return result * result2 * result3 ;  // 셋 다 성공해야 1 반환
 	}
 	
-	@Override
-		public Location selectMainLocationByUserNo(int userNo) {
-			// TODO Auto-generated method stub
-			return dao.selectMainLocationByUserNo(sqlSession, userNo);
-		}
+
 
 }
 
