@@ -1,0 +1,344 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="locationMapper">
+
+	<resultMap type="Location" id="locationResultMap">
+		<result column="LOCATION_NO" property="locationNo"/>
+		<result column="LOCATION_DATE" property="locationDate"/>
+		<result column="ROAD_ADDRESS" property="roadAddress"/>
+		<result column="JIBUN_ADDRESS" property="jibunAddress"/>
+		<result column="DETAIL_ADDRESS" property="detailAddress"/>
+		<result column="ZIP_CODE" property="zipCode"/>
+	</resultMap>
+	
+	<resultMap type="Coord" id="coordResultMap">
+		<result column="COORD_NO" property="coordNo"/>
+		<result column="COORD_ADDRESS" property="coordAddress"/>
+		<result column="COORD_DATE" property="coordDate"/>
+	</resultMap>
+	
+	<resultMap type="Bakery" id="bakeryResultMap">
+		<result column="BAKERY_NO" property="bakeryNo"/>
+		<result column="OPEN_DATE" property="openDate"/>
+		<result column="ROAD_ADDRESS" property="roadAddress"/>
+		<result column="JIBUN_ADDRESS" property="jibunAddress"/>
+		<result column="BAKERY_NAME" property="bakeryName"/>
+		<result column="LIKE_COUNT" property="likeCount"/>
+		<result column="DISLIKE_COUNT" property="dislikeCount"/>
+	</resultMap>
+	
+	<resultMap type="BakeryComment" id="bakeryCommentResultMap">
+		<result column="COMMENT_NO" property="commentNo"/>
+		<result column="PARENT_COMMENT_NO" property="parentCommentNo"/>
+		<result column="COMMENT_CONTENT" property="commentContent"/>
+		<result column="COMMENT_TYPE" property="commentType"/>
+		<result column="BAKERY_NO" property="bakeryNo"/>
+		<result column="USER_NO" property="userNo"/>
+		<result column="USER_NAME" property="userName"/>
+		<result column="COMMENT_DATE" property="commentDate"/>
+		<result column="BAKERY_LIKE" property="bakeryLike"/>
+	</resultMap>
+	
+	<select id="selectUserDongne" parameterType="int" resultMap="coordResultMap">
+		select c.coord_no, 
+			c.latitude,
+			c.longitude,
+			c.coord_address,
+			c.coord_date
+		from coords c
+		left join member_coords mc
+			on (c.coord_no = mc.coord_no)
+		left join member m
+			on(mc.user_no = m.user_no)
+		where m.user_no = #{userNo}
+	</select>
+	
+	<insert id="insertDongne" parameterType="Coord">
+		<selectKey keyProperty="coordNo" resultType="int" order="BEFORE">
+	        SELECT seq_coords.nextval FROM dual
+	    </selectKey>
+	    insert into coords(COORD_NO,LATITUDE,LONGITUDE,COORD_ADDRESS,COORD_DATE)
+	    values(#{coordNo}, #{latitude}, #{longitude}, #{coordAddress}, SYSDATE)
+	</insert>
+	
+	<insert id="insertMemberCoords" parameterType="map">
+	    insert into member_coords(USER_NO, COORD_NO)
+	    values(#{userNo}, #{coordNo})
+	</insert>
+	
+	<delete id="deleteCoord" parameterType="int">
+		delete from coords
+		where coord_no = #{coordNo}
+	</delete>
+	
+	<select id="selectLocation" parameterType="int" resultMap="locationResultMap">
+		select l.LOCATION_NO
+			,l.LOCATION_DATE
+			,l.ROAD_ADDRESS
+			,l.JIBUN_ADDRESS
+			,l.DETAIL_ADDRESS
+			,l.ZIP_CODE
+		from location l
+		left join member_location ml on(l.LOCATION_NO = ml.LOCATION_NO	)
+		left join member m on(m.user_no = ml.user_no)
+		where m.user_no = #{userNo}
+	</select>
+	
+	<delete id="deleteLocation" parameterType="int">
+		delete from location
+		where location_no = #{locationNo}
+	</delete>
+	
+	<insert id="insertLocationMe" parameterType="Location">
+		<selectKey keyProperty="locationNo" resultType="int" order="BEFORE">
+	        SELECT seq_location.nextval FROM dual
+	    </selectKey>
+		insert into location(
+					LOCATION_NO
+					,LOCATION_DATE
+					,ROAD_ADDRESS
+					,JIBUN_ADDRESS
+					,DETAIL_ADDRESS
+					,ZIP_CODE)
+		values(
+			#{locationNo}
+			,sysdate
+			,#{roadAddress}
+			,#{jibunAddress}
+			,#{detailAddress}
+			,#{zipCode})
+	</insert>
+	
+	<insert id="insertMemberLocation" parameterType="map">
+	    insert into member_location(USER_NO, LOCATION_NO)
+	    values(#{userNo}, #{locationNo})
+	</insert>
+	
+	
+	<!--             동네뽱집 나와바리              -->
+	
+	<select id="selectBakeries" parameterType="Coord" resultMap="bakeryResultMap">
+	SELECT
+	    b.bakery_no,
+	    b.open_date,
+	    b.phone,
+	    b.road_address,
+	    b.jibun_address,
+	    b.bakery_name,
+	    b.latitude,
+	    b.longitude,
+	    NVL(like_count, 0) AS like_count,
+	    NVL(dislike_count, 0) AS dislike_count
+	FROM (
+	    SELECT
+	        bakery_no,
+	        open_date,
+	        phone,
+	        road_address,
+	        jibun_address,
+	        bakery_name,
+	        latitude,
+	        longitude,
+	        (6371 * ACOS(
+	            (COS(RADIANS(#{latitude})) * COS(RADIANS(latitude)))
+	            * COS(RADIANS(longitude) - RADIANS(#{longitude}))
+	            + (SIN(RADIANS(#{latitude})) * SIN(RADIANS(latitude)))
+	        )) AS distance
+	    FROM bakery
+	    WHERE
+	        longitude BETWEEN #{longitude} - 0.009 AND #{longitude} + 0.009
+	        AND latitude BETWEEN #{latitude} - 0.009 AND #{latitude} + 0.009
+	) b
+	LEFT JOIN (
+	    SELECT
+	        bakery_no,
+	        COUNT(CASE WHEN bakery_like = 'L' AND status IN ('Y', 'M') THEN 1 END) AS like_count,
+	        COUNT(CASE WHEN bakery_like = 'D' AND status IN ('Y', 'M') THEN 1 END) AS dislike_count
+	    FROM BAKERY_COMMENT
+	    GROUP BY bakery_no
+	) c
+	ON b.bakery_no = c.bakery_no
+	WHERE b.distance &lt;= 1
+	ORDER BY b.distance ASC
+	</select>
+	
+	<select id="selectBakeryComment" parameterType="map" resultMap="bakeryCommentResultMap">
+	select *
+	from(
+		select 
+			COMMENT_NO
+			,PARENT_COMMENT_NO
+			,COMMENT_CONTENT
+			,COMMENT_TYPE
+			,BAKERY_NO
+			,USER_NO
+			,USER_NAME
+			,COMMENT_DATE
+			,BAKERY_LIKE
+			,status
+			,rownum as rn
+		from (select
+				bc.COMMENT_NO
+				,bc.PARENT_COMMENT_NO
+				,bc.COMMENT_CONTENT
+				,bc.COMMENT_TYPE
+				,bc.BAKERY_NO
+				,bc.USER_NO
+				,m.USER_NAME
+				,bc.COMMENT_DATE
+				,bc.BAKERY_LIKE
+				,bc.status
+			from BAKERY_COMMENT bc
+			join member m on(m.user_no = bc.user_no)
+			where BAKERY_NO = #{bakeryNo}
+			and bc.status in('Y', 'M')
+			and COMMENT_TYPE = 'COMMENT'
+			order by bc.COMMENT_DATE desc
+			)
+		where rownum &lt;= #{endRow}
+		)
+	where rn &gt;= #{startRow}
+	</select>
+	
+	<select id="selectBakeryRecomment" parameterType="map" resultMap="bakeryCommentResultMap">
+	select *
+	from(
+		select 
+			COMMENT_NO
+			,PARENT_COMMENT_NO
+			,COMMENT_CONTENT
+			,COMMENT_TYPE
+			,BAKERY_NO
+			,USER_NO
+			,USER_NAME
+			,COMMENT_DATE
+			,BAKERY_LIKE
+			,status
+			,rownum as rn
+		from (select
+				bc.COMMENT_NO
+				,bc.PARENT_COMMENT_NO
+				,bc.COMMENT_CONTENT
+				,bc.COMMENT_TYPE
+				,bc.BAKERY_NO
+				,bc.USER_NO
+				,m.USER_NAME
+				,bc.COMMENT_DATE
+				,bc.BAKERY_LIKE
+				,bc.status
+			from BAKERY_COMMENT bc
+			join member m on(m.user_no = bc.user_no)
+			where BAKERY_NO = #{bakeryNo}
+			and bc.status in('Y', 'M')
+			and COMMENT_TYPE = 'RECOMMENT'
+			and PARENT_COMMENT_NO = #{parentCommentNo}
+			order by bc.COMMENT_DATE ASC
+			)
+		where rownum &lt;= #{endRow}
+		)
+	where rn &gt;= #{startRow}
+	</select>
+	
+	<insert id="insertBakeryComment" parameterType="map">
+		insert into BAKERY_COMMENT(
+			COMMENT_NO
+			,COMMENT_CONTENT
+			,COMMENT_TYPE
+			,BAKERY_NO
+			,USER_NO
+			,COMMENT_DATE
+			,BAKERY_LIKE
+			,STATUS
+			)
+		values(
+			seq_bakery_comment.nextval
+			,#{commentContent}
+			,'COMMENT'
+			,#{bakeryNo}
+			,#{userNo}
+			,SYSDATE
+			,#{bakeryLike}
+			,'Y'
+			)
+	</insert>
+	
+	<insert id="insertBakeryRecomment" parameterType="map">
+		insert into BAKERY_COMMENT(
+			COMMENT_NO
+			,PARENT_COMMENT_NO
+			,COMMENT_CONTENT
+			,COMMENT_TYPE
+			,BAKERY_NO
+			,USER_NO
+			,COMMENT_DATE
+			,BAKERY_LIKE
+			,STATUS
+			)
+		values(
+			seq_bakery_comment.nextval
+			,#{parentCommentNo}
+			,#{commentContent}
+			,'RECOMMENT'
+			,#{bakeryNo}
+			,#{userNo}
+			,SYSDATE
+			,'P'
+			,'Y'
+			)
+	</insert>
+
+	<update id="updateBakeryComment" parameterType="map">
+		update BAKERY_COMMENT
+		set comment_content = #{commentContent},
+		    bakery_like = #{bakeryLike},
+		    status = 'M'
+		where comment_no = #{commentNo}
+	</update>
+
+	<delete id="deleteBakeryComment" parameterType="int">
+		update BAKERY_COMMENT
+		set status = 'N'
+		where comment_no = #{commentNo}
+	</delete>
+	
+	<select id="selectBakeryInfo" parameterType="string" resultMap="bakeryResultMap">
+	SELECT
+	    b.bakery_no,
+	    b.open_date,
+	    b.phone,
+	    b.road_address,
+	    b.jibun_address,
+	    b.bakery_name,
+	    b.latitude,
+	    b.longitude,
+	    NVL(like_count, 0) AS like_count,
+	    NVL(dislike_count, 0) AS dislike_count
+	FROM (
+	    SELECT
+	        bakery_no,
+	        open_date,
+	        phone,
+	        road_address,
+	        jibun_address,
+	        bakery_name,
+	        latitude,
+	        longitude
+	    FROM bakery
+		where BAKERY_NO = #{bakeryNo}
+	) b
+	LEFT JOIN (
+	    SELECT
+	        bakery_no,
+	        COUNT(CASE WHEN bakery_like = 'L' AND status IN ('Y', 'M') THEN 1 END) AS like_count,
+	        COUNT(CASE WHEN bakery_like = 'D' AND status IN ('Y', 'M') THEN 1 END) AS dislike_count
+	    FROM BAKERY_COMMENT
+	    GROUP BY bakery_no
+	) c
+	ON b.bakery_no = c.bakery_no
+	
+	</select>
+	
+</mapper>
