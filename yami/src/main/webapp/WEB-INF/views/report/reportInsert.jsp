@@ -39,6 +39,13 @@
     .back-link:hover { color: #ff8a00; text-decoration: underline; }
 </style>
 
+<!-- 성공/실패 시 alert 출력 -->
+<c:if test="${not empty alertMsg}">
+<script>
+    alert("${alertMsg}");
+</script>
+</c:if>
+
 <div class="report-form-container">
     <h3>🚩 신고하기</h3>
     <form action="${pageContext.request.contextPath}/report/insert" method="post" autocomplete="off">
@@ -66,7 +73,7 @@
                         <label class="form-check-label" for="reason4">사기/금전거래</label>
                     </div>
                 </c:when>
-                <c:when test="${reportType == 'post'}">
+                <c:when test="${reportType == 'product'}">
                     <div class="form-check form-check-inline">
                         <input class="form-check-input" type="radio" name="reason" value="음란물" id="reason5" required>
                         <label class="form-check-label" for="reason5">음란물</label>

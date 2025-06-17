@@ -163,7 +163,7 @@
         <!-- 정보 -->
         <div class="info-area">
         	<c:if test="${not empty loginUser && loginUser.userNo != product.userNo}">
-		        <a href="${contextPath}/report/insertForm?reportType=post&targetNo=${product.productNo}" 
+		        <a href="${contextPath}/report/insertForm?reportType=product&targetNo=${product.productNo}" 
 		           title="이 게시글 신고"
 		           style="position:absolute; top:10px; right:10px; color:#bbb; font-size:22px; text-decoration:none;"
 		           onmouseover="this.style.color='#ff5252'" 
@@ -412,6 +412,16 @@ function selectReplyList() {
                     str += '<button class="delete-btn btn btn-outline-danger btn-sm" data-id="' + r.replyNo + '">삭제</button>';
                     str += '</div>';
                 }
+                
+                if (currUserId !== uid) {
+                    str += '<a href="${contextPath}/report/insertForm?reportType=reply&targetNo=' + r.replyNo + '"'
+                        + ' title="이 댓글 신고"'
+                        + ' style="margin-left:8px; color:#bbb; font-size:15px; text-decoration:none; vertical-align:middle;"'
+                        + ' onmouseover="this.style.color=\'#ff5252\'"'
+                        + ' onmouseout="this.style.color=\'#bbb\'">'
+                        + '🚩</a>';
+                }
+                
                 str += '</div>';
             }
             $("#replyArea").html(str);
