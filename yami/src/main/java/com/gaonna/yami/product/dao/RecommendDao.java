@@ -11,7 +11,9 @@ import com.gaonna.yami.product.vo.Product;
 public class RecommendDao {
 
 	public ArrayList<Product> recommendProduct(SqlSessionTemplate sqlSession) {
-		return (ArrayList)sqlSession.selectList("searchMapper.recommendProduct");
+		ArrayList<Product> list = (ArrayList)sqlSession.selectList("searchMapper.recommendProduct");
+		System.out.println(list);
+		return list;
 	}
 
 	public ArrayList<Product> recommendMember(SqlSessionTemplate sqlSession) {
