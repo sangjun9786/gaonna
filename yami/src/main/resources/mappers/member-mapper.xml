@@ -137,4 +137,10 @@
 		from member
 		where user_no = #{userNo}
 	</select>
+	
+	<update id="deleteUser" parameterType="Member">
+		update member
+		set status = 'E'
+		where user_no = #{userNo}
+	</update>
 </mapper>

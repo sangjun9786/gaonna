@@ -129,8 +129,17 @@
 </style>
 </head>
 <body>
-	<c:set var="root" value="${pageContext.request.contextPath}" />
-	<c:set var="loginUser" value="${sessionScope.loginUser}" />
+<c:set var="root" value="${pageContext.request.contextPath}" />
+<c:set var="loginUser" value="${sessionScope.loginUser}" />
+
+<c:set var="alertMsg" value="${alertMsg}"/>
+<c:if test="${not empty alertMsg}">
+	<script>
+	    var msg="${alertMsg}";
+	    if(msg!="") { alert(msg); }
+	</script>
+	<c:remove var="alertMsg"/>
+</c:if>
 
 <div class="container mx-auto" style="max-width: 700px;">
     <!-- 1행: 로고 -->

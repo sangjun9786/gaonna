@@ -85,7 +85,7 @@ COMMENT ON COLUMN member.phone IS '전화번호';
 COMMENT ON COLUMN member.point IS '포인트';
 COMMENT ON COLUMN member.enrolldate IS '가입일';
 COMMENT ON COLUMN member.modifydate IS '수정일';
-COMMENT ON COLUMN member.status IS '회원 상태 (Y:정상, N:탈퇴, E:휴면, U:이메일 미인증)';
+COMMENT ON COLUMN member.status IS '회원 상태 (Y:정상, N:정지, E:탈퇴, U:이메일 미인증)';
 COMMENT ON COLUMN member.MAIN_COORD IS '대표 좌표';
 COMMENT ON COLUMN member.MAIN_LOCATION IS '대표 위치';
 
