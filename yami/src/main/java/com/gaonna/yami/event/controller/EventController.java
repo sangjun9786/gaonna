@@ -58,6 +58,9 @@ public class EventController {
 				if(resultReset > 0) {
 					int resultP = point1000(loginUser);
 					if(resultP > 0) {
+						int point = loginUser.getPoint() + 1000;
+						loginUser.setPoint(point);
+						session.setAttribute("loginUser", loginUser);
 						session.setAttribute("alertMsg", "출석 완료!!! 및 1000포인트 지급");
 					}else {
 						model.addAttribute("errorMsg", "포인트 지급 실패!!!");
@@ -70,6 +73,9 @@ public class EventController {
 			}else if(ecount % 10 == 0) {
 				int resultP = point1000(loginUser);
 				if(resultP > 0) {
+					int point = loginUser.getPoint() + 1000;
+					loginUser.setPoint(point);
+					session.setAttribute("loginUser", loginUser);
 					session.setAttribute("alertMsg", "출석 완료!!! 및 1000포인트 지급");
 				}else {
 					model.addAttribute("errorMsg", "포인트 지급 실패!!!");
@@ -78,6 +84,9 @@ public class EventController {
 			}else if(ecount % 5 == 0) {
 				int resultP = point500(loginUser);
 				if(resultP > 0) {
+					int point = loginUser.getPoint() + 500;
+					loginUser.setPoint(point);
+					session.setAttribute("loginUser", loginUser);
 					session.setAttribute("alertMsg", "출석 완료!!! 및 500포인트 지급");
 				}else {
 					model.addAttribute("errorMsg", "포인트 지급 실패!!!");
