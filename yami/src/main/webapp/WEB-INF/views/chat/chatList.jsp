@@ -171,7 +171,7 @@ setInterval(function() {
             $("#chatListArea").html($(data).find("#chatListArea").html());
         }
     });
-}, 1000); 
+}, 3000); 
 </script>
 <%@ include file="/WEB-INF/views/common/footer.jsp" %>
 </body>
