@@ -268,6 +268,7 @@
 		<result property="userId" column="USER_ID"/>
 		<result property="userName" column="USER_NAME"/>
 		<result property="categoryName" column="CATEGORY_NAME"/>
+		<result property="wishCount" column="WISH_COUNT"/>
 	
 	    <!-- 첨부파일 atList 필드 매핑 -->
 	    <collection property="atList" ofType="Attachment">
@@ -309,19 +310,15 @@
 			    at.UPLOAD_DATE AS AT_UPLOAD_DATE,
 			    at.FILE_LEVEL,
 			    at.STATUS AS AT_STATUS,
-			    NVL(wl.WISH_COUNT, 0) AS WISH_COUNT
+			    L.LIKE_COUNT AS WISH_COUNT
 			FROM PRODUCT_BOARD pb
 			JOIN MEMBER m ON pb.USER_NO = m.USER_NO
 			LEFT JOIN COORDS c ON m.MAIN_COORD = c.COORD_NO
 			LEFT JOIN ATTATCHMENT at ON pb.PRODUCT_NO = at.PRODUCT_NO AND at.FILE_LEVEL = 1 AND at.STATUS = 'Y'
 			JOIN CATEGORY ct ON pb.CATEGORY_NO = ct.CATEGORY_NO
-			LEFT JOIN (
-			    SELECT PRODUCT_NO, COUNT(*) AS WISH_COUNT
-			    FROM WISHLIST
-			    GROUP BY PRODUCT_NO
-			) wl ON pb.PRODUCT_NO = wl.PRODUCT_NO
+			JOIN LIKED L ON pb.PRODUCT_NO = L.PRODUCT_NO
 			WHERE pb.STATUS = 'N'
-			ORDER BY wl.WISH_COUNT DESC, pb.UPLOAD_DATE DESC
+			ORDER BY WISH_COUNT DESC, pb.UPLOAD_DATE DESC
 		)
 		WHERE ROWNUM &lt;= 8
 	</select>
@@ -367,7 +364,7 @@
 			    JOIN CATEGORY ct ON pb.CATEGORY_NO = ct.CATEGORY_NO
 			    JOIN SCORE s ON m.USER_NO = s.USER_NO
 			    WHERE pb.STATUS = 'N'
-			    ORDER BY s.AVG_RATING DESC
+			    ORDER BY s.AVG_RATING DESC, pb.UPLOAD_DATE DESC
 		)
 		WHERE ROWNUM &lt;= 8
 	</select>
