@@ -95,6 +95,118 @@ public class ProductController {
 	    
 	}
     
+    // 파일 업로드
+    public String saveFile(
+    		MultipartFile uploadFile, 
+    		HttpSession session) {
+    	//1.원본 파일명 추출
+    	String originName = uploadFile.getOriginalFilename();
+    	
+    	//2.시간 형식 문자열로 추출
+    	String currentTime = new SimpleDateFormat("yyyyMMddHHmmss").format(new Date());
+    	
+    	//3.랜덤값 5자리 추출
+    	int ranNum = (int) (Math.random() * 90000 + 10000);
+    	//4.원본파일에서 확장자 추출
+    	String ext = originName.substring(originName.lastIndexOf("."));
+    	
+    	//5.합치기
+    	String changeName = currentTime + ranNum + ext;
+    	
+    	//6. 서버에 업로드 처리할때 물리적인 경로 추출하기
+    	String savePath = session.getServletContext().getRealPath("/resources/uploadFiles/");
+    	
+    	//7.경로와 변경된 이름을 이용하여 파일 업로드 처리 메소드 수행
+    	//MultipartFile 의 transferTo() 메소드 이용
+    	
+    	try {
+    		uploadFile.transferTo(new File(savePath + changeName));
+    		return changeName;
+    	} catch (IllegalStateException | IOException e) {
+    		// TODO Auto-generated catch block
+    		e.printStackTrace();
+    		return null; //저장 실패 시 null 반환
+    	}
+    	
+    }
+    
+    // 등록 이동
+    @GetMapping("productEnrollForm.pr")
+    public String productEnroll(Model model, HttpSession session) {
+    	// 카테고리 리스트
+    	ArrayList<Category> categoryList = service.selectCategoryList();
+    	model.addAttribute("categoryList", categoryList);
+    	
+    	// 로그인 유저 정보
+    	Member loginUser = (Member) session.getAttribute("loginUser");
+    	if (loginUser != null) {
+    		int userNo = loginUser.getUserNo();
+    		
+    		// 메인 위치 정보 조회
+    		Location mainLocation = service.selectMainLocationByUserNo(userNo);
+    		
+    		if (mainLocation != null) {
+    			model.addAttribute("mainLocation", mainLocation); // JSP에서 사용 가능
+    		}
+    	}
+    	
+    	return "product/productEnrollForm";
+    }
+    
+    //등록 
+    @PostMapping("productEnrollForm.pr")
+    public String insertProduct(Product p
+    		,@RequestParam("thumbnail") MultipartFile thumbnail
+    		,@RequestParam(value = "uploadFiles", required = false)ArrayList<MultipartFile> uploadFiles
+    		,HttpSession session) {
+    	
+    	ArrayList<Attachment> atList = new ArrayList<>(); //첨부파일 정보들 등록할 리스트
+    	
+    	//대표 이미지
+    	if (!thumbnail.isEmpty()) {
+    		String changeName = saveFile(thumbnail, session);
+    		if (changeName == null) {
+    			session.setAttribute("alertMsg", "대표 이미지 저장 실패!");
+    			return "common/errorPage";
+    		}
+    		Attachment at = new Attachment();
+    		at.setChangeName(changeName);
+    		at.setOriginName(thumbnail.getOriginalFilename());
+    		at.setFilePath("/resources/uploadFiles/");
+    		at.setFileLevel(1); // 대표
+    		atList.add(at);
+    	}
+    	
+    	
+    	//상세 이미지
+    	if(uploadFiles != null && !uploadFiles.isEmpty()) {
+    		for (MultipartFile file :  uploadFiles) {
+    			if (file == null || file.isEmpty()) continue;
+    			String changeName = saveFile(file, session);
+    			if (changeName == null) continue;
+    			Attachment at = new Attachment();
+    			at.setChangeName(changeName);
+    			at.setOriginName(file.getOriginalFilename());
+    			at.setFilePath("/resources/uploadFiles/");
+    			at.setFileLevel(2); // 상세
+    			atList.add(at);
+    			System.out.println("파일명: " + file.getOriginalFilename());
+    		}
+    	}
+    	//서비스에 요청
+    	int result = service.insertProduct(p,atList);
+    	
+    	if(result>0) { //등록 성공
+    		session.setAttribute("alertMsg", "상품 등록이 성공적으로 처리 되었습니다.");
+//			return "redirect:/productList2.pro";
+//			return "redirect:/productList2.pro?currentPage=1&selectedLocation=0&selectedCategory=0";
+    		return "redirect:/filter.bo?currentPage=1&location=all&category=0";
+    	}else {
+    		session.setAttribute("alertMsg", "상품 등록이 실패!!");
+    		return "common/errorPage";
+    	}	
+    }
+    
     // 상세 페이지
     @GetMapping("/productDetail.pro")
     public String productDetail(@RequestParam("productNo") int productNo, Model model, HttpSession session) {
@@ -134,146 +246,7 @@ public class ProductController {
         model.addAttribute("product", product);
         return "product/productDetail";
     }
-
-    // 파일 업로드
- 	public String saveFile(
- 						   MultipartFile uploadFile, 
- 						   HttpSession session) {
- 		//1.원본 파일명 추출
- 		String originName = uploadFile.getOriginalFilename();
- 		
- 		//2.시간 형식 문자열로 추출
- 		String currentTime = new SimpleDateFormat("yyyyMMddHHmmss").format(new Date());
-
- 		//3.랜덤값 5자리 추출
- 		int ranNum = (int) (Math.random() * 90000 + 10000);
- 		//4.원본파일에서 확장자 추출
- 		String ext = originName.substring(originName.lastIndexOf("."));
-
- 		//5.합치기
- 		String changeName = currentTime + ranNum + ext;
-
- 		//6. 서버에 업로드 처리할때 물리적인 경로 추출하기
- 		String savePath = session.getServletContext().getRealPath("/resources/uploadFiles/");
- 		
- 		//7.경로와 변경된 이름을 이용하여 파일 업로드 처리 메소드 수행
- 		//MultipartFile 의 transferTo() 메소드 이용
-
- 		try {
- 			uploadFile.transferTo(new File(savePath + changeName));
- 			return changeName;
- 		} catch (IllegalStateException | IOException e) {
- 			// TODO Auto-generated catch block
- 			e.printStackTrace();
- 			return null; //저장 실패 시 null 반환
- 		}
-
- 	}
-
-    // 댓글 등록
-    @PostMapping("/insertReply")
-    @ResponseBody
-    public String insertReply(Reply r, HttpSession session) {
-        Member loginUser = (Member) session.getAttribute("loginUser");
-        if (loginUser == null) {
-            return "fail";
-        }
-        r.setUserId(loginUser.getUserId());
-        int result = replyService.insertReply(r);
-        
-        Product product = service.selectProductDetail(r.getProductNo());
-        if (product != null && product.getUserNo() != loginUser.getUserNo()) {
-            Alarm alarm = new Alarm();
-            alarm.setUserNo(product.getUserNo());      // 게시글 작성자
-            alarm.setType("reply");
-            alarm.setRefNo(r.getProductNo());          // 게시글 번호(참조)
-            alarm.setContent(loginUser.getUserName() + "님이 댓글을 남겼습니다.");
-            alarmService.insertAlarm(alarm);
-        }
-
-        return result > 0 ? "success" : "fail";
-    }
-
-    // 등록 이동
-    @GetMapping("productEnrollForm.pr")
-    public String productEnroll(Model model, HttpSession session) {
-        // 카테고리 리스트
-        ArrayList<Category> categoryList = service.selectCategoryList();
-        model.addAttribute("categoryList", categoryList);
-
-        // 로그인 유저 정보
-        Member loginUser = (Member) session.getAttribute("loginUser");
-        if (loginUser != null) {
-            int userNo = loginUser.getUserNo();
-
-            // 메인 위치 정보 조회
-            Location mainLocation = service.selectMainLocationByUserNo(userNo);
-
-            if (mainLocation != null) {
-                model.addAttribute("mainLocation", mainLocation); // JSP에서 사용 가능
-            }
-        }
-
-        return "product/productEnrollForm";
-    }
-	
-	//등록 
-	@PostMapping("productEnrollForm.pr")
-	public String insertProduct(Product p
-            					,@RequestParam("thumbnail") MultipartFile thumbnail
-            					,@RequestParam(value = "uploadFiles", required = false)ArrayList<MultipartFile> uploadFiles
-								,HttpSession session) {
-		
-		ArrayList<Attachment> atList = new ArrayList<>(); //첨부파일 정보들 등록할 리스트
-		
-		//대표 이미지
-	    if (!thumbnail.isEmpty()) {
-	        String changeName = saveFile(thumbnail, session);
-	        if (changeName == null) {
-	            session.setAttribute("alertMsg", "대표 이미지 저장 실패!");
-	            return "common/errorPage";
-	        }
-	        Attachment at = new Attachment();
-	        at.setChangeName(changeName);
-	        at.setOriginName(thumbnail.getOriginalFilename());
-	        at.setFilePath("/resources/uploadFiles/");
-	        at.setFileLevel(1); // 대표
-	        atList.add(at);
-	    }
-	    
-
-	    //상세 이미지
-	    if(uploadFiles != null && !uploadFiles.isEmpty()) {
-	    	for (MultipartFile file :  uploadFiles) {
-		        if (file == null || file.isEmpty()) continue;
-		        String changeName = saveFile(file, session);
-		        if (changeName == null) continue;
-		        Attachment at = new Attachment();
-		        at.setChangeName(changeName);
-		        at.setOriginName(file.getOriginalFilename());
-		        at.setFilePath("/resources/uploadFiles/");
-		        at.setFileLevel(2); // 상세
-		        atList.add(at);
-		    	System.out.println("파일명: " + file.getOriginalFilename());
-		    }
-	    }
-		//서비스에 요청
-		int result = service.insertProduct(p,atList);
-		
-		if(result>0) { //등록 성공
-			session.setAttribute("alertMsg", "상품 등록이 성공적으로 처리 되었습니다.");
-//			return "redirect:/productList2.pro";
-//			return "redirect:/productList2.pro?currentPage=1&selectedLocation=0&selectedCategory=0";
-			return "redirect:/filter.bo?currentPage=1&location=all&category=0";
-		}else {
-			session.setAttribute("alertMsg", "상품 등록이 실패!!");
-			return "common/errorPage";
-		}
-		
-
-	}
-	
-	
+    
 	//게시글 삭제
 	@RequestMapping("delete.pro")
 	public String deleteProduct(int productNo
@@ -395,6 +368,122 @@ public class ProductController {
 
 	    return "redirect:/filter.bo?currentPage=1&location=all&category=0";
 	}
+
+
+    // 댓글 등록
+    @PostMapping("/insertReply")
+    @ResponseBody
+    public String insertReply(Reply r, HttpSession session) {
+        Member loginUser = (Member) session.getAttribute("loginUser");
+        if (loginUser == null) {
+            return "fail";
+        }
+        r.setUserId(loginUser.getUserId());
+        int result = replyService.insertReply(r);
+        
+        Product product = service.selectProductDetail(r.getProductNo());
+        if (product != null && product.getUserNo() != loginUser.getUserNo()) {
+            Alarm alarm = new Alarm();
+            alarm.setUserNo(product.getUserNo());      // 게시글 작성자
+            alarm.setType("reply");
+            alarm.setRefNo(r.getProductNo());          // 게시글 번호(참조)
+            alarm.setContent(loginUser.getUserName() + "님이 댓글을 남겼습니다.");
+            alarmService.insertAlarm(alarm);
+        }
+
+        return result > 0 ? "success" : "fail";
+    }
+    
+    // 구매하기 (구매자 정보 및 메시지 전달)
+ 	@GetMapping("/buyProduct")
+ 	public String buyProduct(@RequestParam("productNo") 
+ 							  int productNo
+ 							  ,Order o
+ 							  ,Model model
+ 							  ,HttpSession session) {
+ 	    // 1. 상품 정보 조회
+ 	    Product product = service.selectProductDetail(productNo);
+ 	    ArrayList<Attachment> atList = service.selectProductAttachments(productNo);
+ 	    product.setAtList(atList);
+ 	    
+ 	    // 2. (옵션) 로그인 유저 정보 (세션에서 꺼낼 수 있음)
+ 	    Member m = (Member) session.getAttribute("loginUser");
+ 	    
+ 	    // 3. 판매자의 mainLocation 조회
+ 	    Location mainLocation = null;
+ 	    if (product != null && product.getUserNo() > 0) {
+ 	        mainLocation = service.selectMainLocationByUserNo(product.getUserNo());
+ 	    }
+ 	
+ 	    // 3. 모델에 상품/유저/거래 정보 담기
+ 	    model.addAttribute("order", o);
+ 	    model.addAttribute("product", product);
+ 	    model.addAttribute("loginUser", m);
+ 	    model.addAttribute("mainLocation", mainLocation); 
+ 	    // 4. 구매 폼 페이지로 이동
+ 	    return "product/productBuy";
+ 	}
+    
+    
+    
+    //예상 금액 페이지 (포인트, 거래 넘기기)
+    @PostMapping("/productPay")
+    public String productPay(
+					         @RequestParam("productNo") int productNo
+					        ,Order o
+					        ,Model model
+					        ,HttpSession session){
+    	
+        // 1. 상품 정보 불러오기
+        Product product = service.selectProductDetail(productNo);
+        ArrayList<Attachment> atList = service.selectProductAttachments(productNo);
+        product.setAtList(atList);
+        
+        // 2. 로그인 유저 정보도 model에 담기
+        Member m = (Member) session.getAttribute("loginUser");
+        model.addAttribute("loginUser", m);
+        model.addAttribute("product", product);
+        model.addAttribute("order", o);
+        model.addAttribute("product", product);
+        return "product/productPay";
+
+    }
+	
+    //거래 진행 페이지(주문 요약, 구매 확정 , 취소)
+    @PostMapping("/productOrder")
+    public String productOrder(@RequestParam("productNo") int productNo
+            				   ,Order o             
+            				   ,Model model
+            				   ,HttpSession session
+    						   ){
+        // 1. 상품 정보 불러오기
+        Product product = service.selectProductDetail(productNo);
+        ArrayList<Attachment> atList = service.selectProductAttachments(productNo);
+        product.setAtList(atList);
+
+        // 2. 로그인 유저 정보
+        Member m = (Member) session.getAttribute("loginUser");
+        // 3. 값 담기 
+        o.setStatus("REQ"); // 거래중
+        
+        int result = service.productOrder(o,m);
+        
+        if(result>0) {
+        	Location mainLocation = service.selectMainLocationByUserNo(product.getUserNo());
+        	model.addAttribute("product", product);
+            model.addAttribute("order", o);        
+            model.addAttribute("loginUser", m);
+            model.addAttribute("mainLocation", mainLocation);
+            return "product/productOrder";
+        } else {
+        	model.addAttribute("msg", "결제 처리에 실패했습니다. 다시 시도해주세요.");
+        	return "common/errorPage";
+        }
+        
+        
+    }
+	
+
 	
 	
     // 댓글 목록
@@ -431,29 +520,6 @@ public class ProductController {
 		}
     }
     
-    //예상 금액 페이지 (포인트, 거래 넘기기)
-    @PostMapping("/productPay")
-    public String productPay(
-					         @RequestParam("productNo") int productNo
-					        ,Order o
-					        ,Model model
-					        ,HttpSession session){
-    	
-        // 1. 상품 정보 불러오기
-        Product product = service.selectProductDetail(productNo);
-        ArrayList<Attachment> atList = service.selectProductAttachments(productNo);
-        product.setAtList(atList);
-        
-        // 2. 로그인 유저 정보도 model에 담기
-        Member m = (Member) session.getAttribute("loginUser");
-        model.addAttribute("loginUser", m);
-        model.addAttribute("product", product);
-        model.addAttribute("order", o);
-        model.addAttribute("product", product);
-        return "product/productPay";
-
-    }
-    
     //댓글 삭제
     @PostMapping("deleteReply")
     @ResponseBody
@@ -479,74 +545,6 @@ public class ProductController {
 			return "fail";
 		}
     }
-    
-	// 구매하기 (구매자 정보 및 메시지 전달)
-	@GetMapping("/buyProduct")
-	public String buyProduct(@RequestParam("productNo") 
-							  int productNo
-							  ,Order o
-							  ,Model model
-							  ,HttpSession session) {
-	    // 1. 상품 정보 조회
-	    Product product = service.selectProductDetail(productNo);
-	    ArrayList<Attachment> atList = service.selectProductAttachments(productNo);
-	    product.setAtList(atList);
-	    
-	    // 2. (옵션) 로그인 유저 정보 (세션에서 꺼낼 수 있음)
-	    Member m = (Member) session.getAttribute("loginUser");
-	    
-	    // 3. 판매자의 mainLocation 조회
-	    Location mainLocation = null;
-	    if (product != null && product.getUserNo() > 0) {
-	        mainLocation = service.selectMainLocationByUserNo(product.getUserNo());
-	    }
-	
-	    // 3. 모델에 상품/유저/거래 정보 담기
-	    model.addAttribute("order", o);
-	    model.addAttribute("product", product);
-	    model.addAttribute("loginUser", m);
-	    model.addAttribute("mainLocation", mainLocation); 
-	    // 4. 구매 폼 페이지로 이동
-	    return "product/productBuy";
-	}
-    
-	    //거래 진행 페이지(주문 요약, 구매 확정 , 취소)
-    
-    @PostMapping("/productOrder")
-    public String productOrder(@RequestParam("productNo") int productNo
-            				   ,Order o             
-            				   ,Model model
-            				   ,HttpSession session
-    						   ){
-        // 1. 상품 정보 불러오기
-        Product product = service.selectProductDetail(productNo);
-        ArrayList<Attachment> atList = service.selectProductAttachments(productNo);
-        product.setAtList(atList);
-
-        // 2. 로그인 유저 정보
-        Member m = (Member) session.getAttribute("loginUser");
-        // 3. 값 담기 
-        o.setStatus("REQ"); // 거래중
-        
-        int result = service.productOrder(o,m);
-        
-        if(result>0) {
-        	Location mainLocation = service.selectMainLocationByUserNo(product.getUserNo());
-        	model.addAttribute("product", product);
-            model.addAttribute("order", o);        
-            model.addAttribute("loginUser", m);
-            model.addAttribute("mainLocation", mainLocation);
-            return "product/productOrder";
-        } else {
-        	model.addAttribute("msg", "결제 처리에 실패했습니다. 다시 시도해주세요.");
-        	return "common/errorPage";
-        }
-        
-        
-    }
-    
-    
-    
     
 }
 
