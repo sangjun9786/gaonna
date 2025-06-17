@@ -224,7 +224,7 @@ public class ProductController {
             					,@RequestParam(value = "uploadFiles", required = false)ArrayList<MultipartFile> uploadFiles
 								,HttpSession session) {
 		
-		ArrayList<Attachment> atList = new ArrayList<>(); //천부파일 정보들 등록할 리스트
+		ArrayList<Attachment> atList = new ArrayList<>(); //첨부파일 정보들 등록할 리스트
 		
 		//대표 이미지
 	    if (!thumbnail.isEmpty()) {
