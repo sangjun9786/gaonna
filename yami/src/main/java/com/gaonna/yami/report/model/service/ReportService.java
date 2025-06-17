@@ -23,4 +23,8 @@ public interface ReportService {
 
     // (추가) 신고 대상의 실제 작성자 회원번호 반환 (본인 신고 차단 용)
     int findTargetWriterNo(String reportType, int targetNo);
+    
+    
+    int countHandledReportsByUser(int userNo);
+
 }

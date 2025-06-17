@@ -191,7 +191,7 @@ function fetchAlarmCount() {
 }
 $(document).ready(function(){
     fetchAlarmCount();
-    setInterval(fetchAlarmCount, 500);
+    setInterval(fetchAlarmCount, 2000);
 });
 </c:if>
 </script>

@@ -51,11 +51,20 @@
     </select>
 
     <!-- 4. 신고 상태 변경 -->
-    <update id="updateReportStatus" parameterType="map">
-        UPDATE REPORT
-        SET STATUS = #{status}
-        WHERE REPORT_NO = #{reportNo}
-    </update>
+   <update id="updateReportStatus" parameterType="map">
+	    UPDATE REPORT
+	    SET STATUS = #{status},
+	        HANDLED_AT = 
+	            <choose>
+	                <when test='"Y".equals(status)'>
+	                    SYSDATE
+	                </when>
+	                <otherwise>
+	                    NULL
+	                </otherwise>
+	            </choose>
+	    WHERE REPORT_NO = #{reportNo}
+	</update>
 
     <!-- 5. 신고 카운트(페이징 등) -->
     <select id="countReport" parameterType="map" resultType="int">
@@ -91,5 +100,28 @@
         FROM CHAT_MESSAGE
         WHERE MESSAGE_NO = #{messageNo}
     </select>
+    
+	
+	<select id="countHandledReportsByUser" parameterType="int" resultType="int">
+	    SELECT COUNT(*)
+	    FROM REPORT R
+	    WHERE R.STATUS = 'Y'
+	      AND (
+	        (R.REPORT_TYPE = 'post' AND EXISTS (
+	            SELECT 1 FROM PRODUCT_BOARD P
+	            WHERE R.TARGET_NO = P.PRODUCT_NO
+	              AND P.USER_NO = #{userNo}
+	        ))
+	        OR
+	        (R.REPORT_TYPE = 'chat' AND EXISTS (
+	            SELECT 1 FROM CHAT_MESSAGE CM
+	            WHERE R.TARGET_NO = CM.MESSAGE_NO
+	              AND CM.SENDER_NO = #{userNo}
+	        ))
+	      )
+	</select>
+
+
+
 
 </mapper>

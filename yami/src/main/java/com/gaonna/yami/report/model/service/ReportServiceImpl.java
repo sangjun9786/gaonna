@@ -54,4 +54,11 @@ public class ReportServiceImpl implements ReportService {
             return 0; // 없는 타입 방지
         }
     }
+    
+    
+    @Override
+    public int countHandledReportsByUser(int userNo) {
+        return reportDao.countHandledReportsByUser(userNo);
+    }
+
 }

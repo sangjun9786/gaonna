@@ -54,4 +54,10 @@ public class ReportDao {
     public int findChatWriterNo(int messageNo) {
         return sqlSession.selectOne("reportMapper.findChatWriterNo", messageNo);
     }
+    
+    
+    public int countHandledReportsByUser(int userNo) {
+        return sqlSession.selectOne("reportMapper.countHandledReportsByUser", userNo);
+    }
+
 }
