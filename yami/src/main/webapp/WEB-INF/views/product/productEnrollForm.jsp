@@ -115,7 +115,6 @@
 
 <c:if test="${not empty loginUser}">
 <div class="container-main">
-    <%@ include file="/WEB-INF/views/product/sidebar.jsp" %>
 
     <div class="form-container">
         <h2>상품 등록</h2>

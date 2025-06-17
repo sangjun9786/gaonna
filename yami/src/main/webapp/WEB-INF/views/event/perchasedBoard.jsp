@@ -5,6 +5,14 @@
 <head>
 <meta charset="UTF-8">
 <title>나의 게시글</title>
+  <style>
+    .clickable-status {
+      cursor: pointer;
+      text-decoration: underline;
+      position: relative;
+      z-index: 10;
+    }
+  </style>
 <!-- Latest compiled and minified CSS -->
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/css/bootstrap.min.css">   
 <!-- jQuery library -->
@@ -183,9 +191,13 @@ $(function(){
       // 제목 10글자, 내용 30글자 제한
       let title = board.productTitle.length > 10 ? board.productTitle.substring(0,10) + '...' : board.productTitle;
       let content = board.productContent.length > 30 ? board.productContent.substring(0,30) + '...' : board.productContent;
+      
+      //상태 표시 처리
       let statusDisplay = '';
       if (board.status === 'REQ') {
-        statusDisplay = '<span class="text-warning fw-bold">구매요청</span>';
+        statusDisplay = `<span class="text-warning fw-bold clickable-status-wrapper">
+            <span class="clickable-status" style="cursor:pointer;">구매요청</span>
+            </span>`;
       } else if (board.status === 'BUYER_OK') {
         statusDisplay = '<span class="text-primary fw-bold">구매확정</span>';
       } else if (board.status === 'DONE') {
@@ -198,21 +210,31 @@ $(function(){
       let cardHtml = `
         <div class="col">
           <div class="card h-100 shadow-sm position-relative">
-            <div class="card-body">
+          	<input type="hidden" class="hidden-order-no" value="\${board.orderNo}" />  
+          <div class="card-body">
               <div class="d-flex justify-content-between align-items-center mb-2">
                 <h5 class="card-title mb-0 text-truncate" style="max-width: 70%;">\${title}</h5>
                 <span class="badge bg-secondary ms-2">\${board.price.toLocaleString()}원</span>
               </div>
-              <p class="card-text text-truncate" style="max-width: 100%;">\${content}</p>
+              <p class="card-text text-truncate" style="max-width: 100%;">
+              \${content}</p>
             </div>
             <div class="card-footer small text-muted d-flex justify-content-between align-items-center">
               <span>\${board.categoryName ? board.categoryName : '-'}</span>
               <span>\${board.userId}</span>
               <span class="ms-2">\${scoreStatusText}</span>
-              <span class="ms-2">\${statusDisplay}</span>
+              <span class="ms-2">` + statusDisplay + `</span>
             </div>
             `;
-
+			 
+//             if (board.status === 'REQ') {
+// 			  cardHtml += `
+// 			    <div class="card-footer bg-light text-end px-3">
+// 			      <a href="${root}/order/productOrder?orderNo=${board.orderNo}" class="btn btn-sm btn-warning">구매확정하러 가기</a>
+// 			    </div>
+// 			  `;
+// 			}
+            
              // 평점 모달 팝업 조건: score2가 'N' (미등록)이고 status가 'DONE' (거래 완료)일 때만 모달 링크 활성화
              if (board.score2 === 'N' && board.status === 'DONE') {
                  cardHtml += `
@@ -261,9 +283,9 @@ $(function(){
   // 최초 진입시 전체 조회
   searchBoard();
   
-  let selectedProductNo = null;
-  let selectedUserNo = null;
-  let selectedScore = null;
+//   let selectedProductNo = null;
+//   let selectedUserNo = null;
+//   let selectedScore = null;
   
   // 카드 클릭 시 모달 표시
   $('#boardList').on('click', '.rating-trigger', function(e){
@@ -321,7 +343,19 @@ $(function(){
 	      
 	      alert(message); // 경고 메시지 띄우기
 	    });
+  
+  //구매확정페이지 가기
+  $('#boardList').on('click', '.clickable-status', function(e){
+	  e.stopPropagation(); // 카드 전체 클릭 막기
+	  e.preventDefault();
+	  e.stopImmediatePropagation();
 
+	  const orderNo = $(this).closest('.card').find('.hidden-order-no').val();
+
+	  if (confirm('구매요청(거래중) 입니다 구매확정 페이지로 이동하시겠습니까?')) {
+	    location.href = `${root}/order/productOrder?orderNo=\${orderNo}`;
+	  }
+	});
 });
 </script>
 </body>
