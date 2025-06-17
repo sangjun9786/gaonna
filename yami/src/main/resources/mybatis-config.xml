@@ -35,5 +35,6 @@
     	<typeAlias type="com.gaonna.yami.alarm.model.vo.Alarm" alias="alarm"/>
     	<typeAlias type="com.gaonna.yami.product.vo.Order" alias="Order"/>
     	<typeAlias type="com.gaonna.yami.rating.model.vo.Rating" alias="Rating"/>
+    	<typeAlias type="com.gaonna.yami.report.model.vo.Report" alias="Report"/>
 	</typeAliases>
 </configuration>
