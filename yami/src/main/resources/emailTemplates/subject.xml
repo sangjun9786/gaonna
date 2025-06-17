@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE properties SYSTEM "http://java.sun.com/dtd/properties.dtd">
+
+<!-- 이메일 제목 저장소 -->
+<properties>
+	<entry key="insertMeSubject">YAMI 회원가입</entry>
+	<entry key="updateIdSubject">YAMI 이메일 주소 변경</entry>
+	<entry key="findPwdSubject">YAMI 비밀번호 변경</entry>
+</properties>

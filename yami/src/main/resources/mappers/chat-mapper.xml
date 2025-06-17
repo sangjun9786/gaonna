@@ -1,0 +1,127 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="chatMapper">
+
+    <select id="findRoomByUsersAndProduct" resultType="chatRoom">
+        SELECT * FROM CHAT_ROOM
+        WHERE PRODUCT_NO = #{productNo}
+          AND USER1_NO = #{user1No}   
+          AND USER2_NO = #{user2No}   
+    </select>
+
+	<insert id="createRoom" parameterType="chatRoom">
+        INSERT INTO CHAT_ROOM
+        (ROOM_NO, USER1_NO, USER2_NO, PRODUCT_NO, CREATED_AT, STATUS)
+        VALUES (
+            SEQ_CHAT_ROOM.NEXTVAL,
+            #{user1No},
+            #{user2No},
+            #{productNo},
+            DEFAULT,
+            DEFAULT
+        )
+    </insert>
+
+    <select id="selectMyRooms" resultType="chatRoom">
+        SELECT * FROM CHAT_ROOM
+        WHERE USER1_NO = #{userNo} OR USER2_NO = #{userNo}
+        ORDER BY CREATED_AT DESC
+    </select>
+
+    <select id="selectMessagesByRoomNo" resultType="chatMessage">
+        SELECT * FROM CHAT_MESSAGE
+        WHERE ROOM_NO = #{roomNo}
+        ORDER BY SENT_AT ASC
+    </select>
+
+    <insert id="insertMessage" parameterType="chatMessage">
+        INSERT INTO CHAT_MESSAGE
+        (MESSAGE_NO, ROOM_NO, SENDER_NO, CONTENT, SENT_AT, IS_READ)
+        VALUES (
+            SEQ_CHAT_MESSAGE.NEXTVAL,
+            #{roomNo},
+            #{senderNo},
+            #{content},
+            DEFAULT,
+            DEFAULT
+        )
+    </insert>
+    
+    <select id="selectLatestMessage" resultType="chatMessage">
+    SELECT * FROM (
+        SELECT * FROM CHAT_MESSAGE
+        WHERE ROOM_NO = #{roomNo}
+          AND SENDER_NO = #{senderNo}
+          AND CONTENT = #{content}
+        ORDER BY MESSAGE_NO DESC
+    ) WHERE ROWNUM = 1
+	</select>
+	
+	
+	
+	
+
+    <update id="updateReadAll">
+        UPDATE CHAT_MESSAGE
+        SET IS_READ = 'Y'
+        WHERE ROOM_NO = #{roomNo}
+          AND SENDER_NO != #{userNo}
+          AND IS_READ = 'N'
+    </update>
+    
+    <delete id="deleteMessage">
+    DELETE FROM CHAT_MESSAGE
+    WHERE MESSAGE_NO = #{messageNo}
+	</delete>
+	
+	<select id="selectUserNameByNo" resultType="string">
+	  SELECT USER_NAME FROM MEMBER WHERE USER_NO = #{userNo}
+	</select>
+	
+	
+	<select id="findChatListByUser" resultType="chatListView" parameterType="int">
+	    SELECT
+	        CR.ROOM_NO,
+	        CR.PRODUCT_NO,
+	        CR.USER1_NO AS SELLER_NO,
+	        P.PRODUCT_TITLE,
+	        M.USER_NAME,
+	        CM.CONTENT AS LAST_MESSAGE,
+	        TO_CHAR(CM.SENT_AT, 'YYYY-MM-DD HH24:MI:SS') AS LAST_SENT_AT,
+	        (
+	            SELECT COUNT(*)
+	            FROM CHAT_MESSAGE MSG
+	            WHERE MSG.ROOM_NO = CR.ROOM_NO
+	              AND MSG.SENDER_NO != #{userNo}
+	              AND MSG.IS_READ = 'N'
+	        ) AS UNREAD_COUNT
+	    FROM
+	        CHAT_ROOM CR
+	        JOIN PRODUCT_BOARD P ON CR.PRODUCT_NO = P.PRODUCT_NO
+	        JOIN (
+	            SELECT ROOM_NO, CONTENT, SENT_AT
+	            FROM (
+	                SELECT ROOM_NO, CONTENT, SENT_AT,
+	                       ROW_NUMBER() OVER (PARTITION BY ROOM_NO ORDER BY SENT_AT DESC) AS RN
+	                FROM CHAT_MESSAGE
+	            )
+	            WHERE RN = 1
+	        ) CM ON CR.ROOM_NO = CM.ROOM_NO
+	        JOIN MEMBER M ON M.USER_NO = (
+	            CASE WHEN CR.USER1_NO = #{userNo} THEN CR.USER2_NO ELSE CR.USER1_NO END
+	        )
+	    WHERE
+	        CR.USER1_NO = #{userNo} OR CR.USER2_NO = #{userNo}
+	    ORDER BY
+	        LAST_SENT_AT DESC NULLS LAST
+	</select>
+
+	<select id="findRoomByRoomNo" resultType="chatRoom">
+	    SELECT * FROM CHAT_ROOM WHERE ROOM_NO = #{roomNo}
+	</select>
+
+    
+</mapper>

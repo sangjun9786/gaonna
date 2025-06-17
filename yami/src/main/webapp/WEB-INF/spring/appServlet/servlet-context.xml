@@ -1,0 +1,94 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xmlns:mvc="http://www.springframework.org/schema/mvc"
+       xsi:schemaLocation="
+           http://www.springframework.org/schema/beans https://www.springframework.org/schema/beans/spring-beans.xsd
+           http://www.springframework.org/schema/context https://www.springframework.org/schema/context/spring-context.xsd
+           http://www.springframework.org/schema/mvc https://www.springframework.org/schema/mvc/spring-mvc.xsd">
+	<!-- DispatcherServlet Context: defines this servlet's request-processing infrastructure -->
+	
+	<!-- Enables the Spring MVC @Controller programming model -->
+	<mvc:annotation-driven />
+
+	<!-- Handles HTTP GET requests for /resources/** by efficiently serving up static resources in the ${webappRoot}/resources directory -->
+	<mvc:resources mapping="/resources/**" location="/resources/" />
+	
+	<!-- 정적 리소스 매핑 (외부 업로드된 이미지 경로) -->
+    <mvc:resources mapping="/resources/uploadFiles/**" location="file:///C:/upload/" />
+
+	<!-- Resolves views selected for rendering by @Controllers to .jsp resources in the /WEB-INF/views directory -->
+	<bean class="org.springframework.web.servlet.view.InternalResourceViewResolver">
+		<property name="prefix" value="/WEB-INF/views/" />
+		<property name="suffix" value=".jsp" />
+	</bean>
+	
+	<!-- 인터셉터 -->
+	<mvc:interceptors>
+	    <mvc:interceptor>
+	        <mvc:mapping path="/*"/>
+    	    <mvc:exclude-mapping path="/login.me"/>
+    	    <mvc:exclude-mapping path="/logout.me"/>
+    	    <mvc:exclude-mapping path="/insert.me"/>
+	        <bean class="com.gaonna.yami.common.GlobalInterceptor"/>
+	    </mvc:interceptor>
+	    
+	    <mvc:interceptor>
+	    
+	        <!-- 적용할 패턴 -->
+	        <mvc:mapping path="/*.me"/>
+	        <mvc:mapping path="/*.lo"/>
+	        <mvc:mapping path="/*.co"/>
+	        
+	        <!-- 제외할 패턴 -->
+	        <mvc:exclude-mapping path="/insert.me"/>
+	        <mvc:exclude-mapping path="/checkUserId.me"/>
+	        <mvc:exclude-mapping path="/confirmEmailInsert.me"/>
+	        <mvc:exclude-mapping path="/login.me"/>
+	        <mvc:exclude-mapping path="/findPwd.me"/>
+	        <mvc:exclude-mapping path="/findPwdEmail.me"/>
+	        <mvc:exclude-mapping path="/resources/**"/> <!-- 이미지 경로 인터셉터 제외 -->
+	        
+	        <!-- 인터셉터 경로 -->
+	        <bean class="com.gaonna.yami.common.MemberInterceptor"/>
+	    </mvc:interceptor>
+	    
+	    
+	    <mvc:interceptor>
+	        <mvc:mapping path="/*.ad"/>
+	        <bean class="com.gaonna.yami.common.AdminInterceptor"/>
+	    </mvc:interceptor>
+	    
+	    <mvc:interceptor>
+	        <mvc:mapping path="/*.dn"/>
+	        <bean class="com.gaonna.yami.common.DongneInterceptor"/>
+	    </mvc:interceptor>
+	</mvc:interceptors>
+	
+	<!-- 파일 업로드 처리 MultipartResolver -->
+	 <bean class="org.springframework.web.multipart.commons.CommonsMultipartResolver" id="multipartResolver">
+		 <!-- 인코딩 설정 -->
+	 	<property name="defaultEncoding" value="UTF-8"/>
+	 	<!-- 용량제한 -->
+	 	<property name="maxUploadSize" value="100000000"/> <!-- 업로드 파일 용량 제한 -->
+	 	<property name="maxInMemorySize" value="100000000"/> <!-- 임시 메모리 보관 크기설정 -->
+	 </bean>
+	
+	<!-- 부트스트랩 설정 파일 -->
+
+    <!-- 어노테이션 기반 MVC 활성화 -->
+    <mvc:annotation-driven />
+
+    <!-- WebJars 정적 리소스 매핑 -->
+    <mvc:resources mapping="/webjars/**" location="classpath:/META-INF/resources/webjars/" />
+	
+	<!-- root-context에서 등록한 컴포넌트들은 제외시키기(중복충돌방지) -->
+	<context:component-scan base-package="com.gaonna.yami" >
+		<context:exclude-filter type="annotation" expression="org.springframework.stereotype.Service"/>
+		<context:exclude-filter type="annotation" expression="org.springframework.stereotype.Repository"/>
+		<context:exclude-filter type="annotation" expression="org.springframework.stereotype.Component"/>
+	</context:component-scan>
+	
+	<context:component-scan base-package="com.gaonna.yami"/>
+</beans>
