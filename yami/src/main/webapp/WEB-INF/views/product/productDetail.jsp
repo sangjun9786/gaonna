@@ -35,6 +35,7 @@
     .info-area {
         width: 50%;
         padding: 10px;
+        position: relative;
     }
     .info-area h2 { margin-top: 0; font-size: 24px; }
     .price {
@@ -161,6 +162,17 @@
 
         <!-- 정보 -->
         <div class="info-area">
+        	<c:if test="${not empty loginUser && loginUser.userNo != product.userNo}">
+		        <a href="${contextPath}/report/insertForm?reportType=post&targetNo=${product.productNo}" 
+		           title="이 게시글 신고"
+		           style="position:absolute; top:10px; right:10px; color:#bbb; font-size:22px; text-decoration:none;"
+		           onmouseover="this.style.color='#ff5252'" 
+		           onmouseout="this.style.color='#bbb'">
+		            🚩
+		        </a>
+		    </c:if>
+        
+        
             <div class="meta" style="font-weight:bold; color:#888;">
                 ${product.categoryName}
             </div>
@@ -208,6 +220,10 @@
 
 
             <!-- 수정  삭제 버튼 -->
+            
+            
+            
+            
             <c:if test="${loginUser.userId eq product.userId}">
                 <div style="margin-top: 15px; display: flex; justify-content: flex-end; gap: 10px;">
            	   <form method="get" action="${contextPath}/update.pro" style="display:inline;">
