@@ -14,8 +14,8 @@ public class RecommendDao {
 		return (ArrayList)sqlSession.selectList("searchMapper.recommendProduct");
 	}
 
-//	public ArrayList<Product> recommendMember(SqlSessionTemplate sqlSession) {
-//		return (ArrayList)sqlSession.selectList("searchMapper.recommendMember");
-//	}
+	public ArrayList<Product> recommendMember(SqlSessionTemplate sqlSession) {
+		return (ArrayList)sqlSession.selectList("searchMapper.recommendMember");
+	}
 
 }
