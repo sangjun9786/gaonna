@@ -7,7 +7,6 @@ import org.mybatis.spring.SqlSessionTemplate;
 import org.springframework.stereotype.Repository;
 
 import com.gaonna.yami.common.PageInfo;
-import com.gaonna.yami.location.vo.Location;
 import com.gaonna.yami.member.model.vo.Member;
 import com.gaonna.yami.product.vo.Attachment;
 import com.gaonna.yami.product.vo.Category;
@@ -130,10 +129,5 @@ public class ProductDao {
 		return sqlSession.update("productMapper.updateProduct", p);
 	}
 	
-	//거래 희망 장소
-	
-	public Location selectMainLocationByUserNo(SqlSessionTemplate sqlSession, int userNo) {
-	    return sqlSession.selectOne("productMapper.selectMainLocationByUserNo", userNo);
-	}
 
 }

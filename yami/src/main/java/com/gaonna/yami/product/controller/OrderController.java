@@ -12,7 +12,6 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
-import com.gaonna.yami.location.vo.Location;
 import com.gaonna.yami.member.model.vo.Member;
 import com.gaonna.yami.product.service.OrderService;
 import com.gaonna.yami.product.service.ProductService;
@@ -74,14 +73,11 @@ public class OrderController {
 	    ArrayList<Attachment> atList = pservice.selectProductAttachments(productNo);
 	    product.setAtList(atList);
 	    
-	    Location mainLocation = pservice.selectMainLocationByUserNo(product.getUserNo());
-	    
 	    Member loginUser = (Member) session.getAttribute("loginUser");
 	    
 	    model.addAttribute("order", o);
 	    model.addAttribute("product", product);
 	    model.addAttribute("loginUser", loginUser);
-	    model.addAttribute("mainLocation", mainLocation);
 	    
 	    return "product/productOrder"; 
 	}
