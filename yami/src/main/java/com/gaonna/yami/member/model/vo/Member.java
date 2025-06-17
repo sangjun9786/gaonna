@@ -32,7 +32,7 @@ public class Member {
 	 * 관리자 : admin
 	 * 뷰어 : viewer
 	 */
-	private String roleType;
+	private String roleType;	
 	
 	private int mainCoord; //0이면 대표 동네가 없다는 뜻
 	private int mainLocation;

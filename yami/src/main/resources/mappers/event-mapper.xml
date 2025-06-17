@@ -57,28 +57,4 @@
 		WHERE USER_NO = #{userNo}
 	</update>
 	
-	<select id="search" resultType="int">
-  	  SELECT COUNT(*)
-  	  FROM SCORE
-  	  WHERE USER_NO = #{memberNo}
-    </select>
-    
-    <update id="rating" parameterType="map">
-  	  UPDATE SCORE
-  	  SET COUNT = COUNT + 1,
-  	  RATING = RATING + #{score}
-  	  WHERE USER_NO = #{userNo}
-    </update>
-	
-	<insert id="insert" parameterType="map">
-      INSERT INTO SCORE(SCORE_NO, USER_NO, COUNT, RATING)
-      VALUES(SEQ_SNO.NEXTVAL, #{userNo}, 1, #{score})    
-    </insert>
-  
-    <update id="updateS" parameterType="int">
-    	UPDATE PRODUCT_BOARD
-    	SET SCORE2 = 'Y'
-    	WHERE PRODUCT_NO = #{productNo}
-    </update>
-  
 </mapper>

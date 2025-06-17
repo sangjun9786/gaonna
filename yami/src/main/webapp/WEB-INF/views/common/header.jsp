@@ -119,7 +119,7 @@
           <a class="nav-link" href="${root }/recommend.bo">Recommend</a>
         </li>
         <li class="nav-item">
-          <a class="nav-link" href="${root }/doTest.me">QnA</a>
+          <a class="nav-link" href="#">QnA</a>
         </li>
         <li class="nav-item">
           <a class="nav-link" href="${pageContext.request.contextPath}/notice/list">Notice</a>
@@ -191,7 +191,7 @@ function fetchAlarmCount() {
 }
 $(document).ready(function(){
     fetchAlarmCount();
-    setInterval(fetchAlarmCount, 500);
+    setInterval(fetchAlarmCount, 2000);
 });
 </c:if>
 </script>

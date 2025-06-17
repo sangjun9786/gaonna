@@ -160,7 +160,17 @@
         </div>
 
         <!-- 정보 -->
-        <div class="info-area">
+        <div class="info-area" style="position:relative;">
+            <c:if test="${not empty loginUser && loginUser.userNo != product.userNo}">
+		        <a href="${contextPath}/report/insertForm?reportType=post&targetNo=${product.productNo}" 
+				   title="이 게시글 신고"
+				   style="position:absolute; top:10px; right:10px; color:#bbb; font-size:22px; text-decoration:none;"
+				   onmouseover="this.style.color='#ff5252'" 
+				   onmouseout="this.style.color='#bbb'">
+				    🚩
+				</a>
+		    </c:if>
+            
             <div class="meta" style="font-weight:bold; color:#888;">
                 ${product.categoryName}
             </div>
@@ -390,6 +400,21 @@ function selectReplyList() {
                 }
                 
                 str += ' <span style="color:gray;">[' + dt + ']</span>';
+                
+                
+                
+                if(currUserId && currUserId != r.userId){
+                    str += `
+                   	<a href="${contextPath}/report/insertForm?reportType=reply&targetNo=${r.replyNo}"
+                       title="이 댓글 신고"
+                       style="color:#bbb; margin-left:7px; font-size:16px; text-decoration:none;"
+                       onmouseover="this.style.color='#ff5252'" 
+                       onmouseout="this.style.color='#bbb'">
+                       🚩
+                   	</a>
+                    `;
+                }
+                
                 if (isManager || currUserId == r.userId) {
                     str += '<div class="btn-group ms-2">';
                     str += '<button class="edit-btn btn btn-outline-primary btn-sm" data-id="' + r.replyNo + '">수정</button>';

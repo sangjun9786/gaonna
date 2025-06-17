@@ -94,6 +94,21 @@
 				        </div>
 				    </div>
 				</div>
+				
+				
+				<!-- 신고 관리-->
+				<c:if test="${loginUser.roleType == 'admin' || loginUser.roleType == 'superAdmin'}">
+				    <div class="card shadow-sm mb-4">
+				        <div class="card-header bg-danger text-white">
+				            <h4 class="mb-0"><i class="bi bi-flag-fill me-2"></i>신고 관리</h4>
+				        </div>
+				        <div class="card-body">
+				            <a href="${root}/report/list" class="btn btn-outline-danger w-100 d-flex align-items-center">
+				                <i class="bi bi-flag-fill me-2"></i>신고 목록 보기
+				            </a>
+				        </div>
+				    </div>
+				</c:if>
 
             </div>
         </div>

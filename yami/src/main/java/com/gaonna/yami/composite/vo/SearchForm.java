@@ -10,7 +10,7 @@ import lombok.NoArgsConstructor;
 public class SearchForm {
 	
 	private String searchType1; //검색할 게시판 유형
-	//CATEGORY_NO는 0부터 10까지만 유효성 검사됨
+	//CATEGORY_NO는 0부터 22까지만 유효성 검사됨
 	
 	private String searchType2; //전체/제목/내용
 	private String searchKeyword; //검색어
@@ -67,6 +67,18 @@ public class SearchForm {
 			case "8" :
 			case "9" :
 			case "10" :
+			case "11" :
+			case "12" :
+			case "13" :
+			case "14" :
+			case "15" :
+			case "16" :
+			case "17" :
+			case "18" :
+			case "19" :
+			case "20" :
+			case "21" :
+			case "22" :
 				break;
 			default : this.searchType2 = "all";
 			}

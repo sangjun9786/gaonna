@@ -38,6 +38,8 @@
 			    <option value="resell" ${condition == 'resell' ? 'selected' : ''}>Resell</option>
 			    <option value="location" ${condition == 'location' ? 'selected' : ''}>Location</option>
 			    <option value="notice" ${condition == 'notice' ? 'selected' : ''}>Notice</option>
+			    <option value="qna" ${condition == 'qna' ? 'selected' : ''}>QnA</option>
+			    <option value="report" ${condition == 'report' ? 'selected' : ''}>Report</option>
 			</select>
 		</div>
 		<input type="text" class="form-control form-control-lg"
@@ -64,6 +66,10 @@
 				url = '${root}/dongneMain.dn?keyword=' + encodedKeyword + '&condition=' + condition;
 			} else if (condition == 'notice') {
 				url = '${root}/notice/list?keyword=' + encodedKeyword + '&condition=' + condition;
+			} else if (condition == 'qna') {
+				location.href = '${root}/qnaSearch';
+			} else if (condition == 'report') {
+				location.href = '${root}/reportSearch';
 			}
 			if (url) {
 				location.href = url;
