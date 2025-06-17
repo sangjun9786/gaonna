@@ -371,7 +371,7 @@
 			    WHERE pb.STATUS = 'N'
 			    ORDER BY s.AVG_RATING DESC, pb.UPLOAD_DATE DESC
 		)
-		WHERE ROWNUM &lt;= 8
+		WHERE ROWNUM &lt;= 16
 	</select>
 	
 	<select id="searchBread" parameterType="string" resultType="int">
