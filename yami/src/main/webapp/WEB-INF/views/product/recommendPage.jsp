@@ -68,14 +68,18 @@
         }
 
         .photo-info {
-            margin-top: 8px;
-            font-size: 14px;
-            color: #555;
             display: flex;
-            flex-direction: column;
-            gap: 2px;
-            min-height: 65px;
+		    justify-content: space-between;
+		    font-size: 14px;
+		    color: #555;
+		    min-height: 65px;
         }
+        
+        .info-left, .info-right {
+		    display: flex;
+		    flex-direction: column;
+		    gap: 2px;
+		}
 
         .pagination .page-item.active .page-link {
             background-color: #fd7e14;
@@ -98,6 +102,45 @@
     
 
     <div class="content">
+        <h2>📸 가온나 인기 회원의 상품</h2>
+        <div class="photo-grid">
+            <c:forEach var="product" items="${list2}">
+                <div class="photo-item"
+                     onclick="location.href='${pageContext.request.contextPath}/productDetail.pro?productNo=${product.productNo}'">
+
+                    <c:if test="${not empty product.atList}">
+							<img src="${pageContext.request.contextPath}/resources/uploadFiles/${product.atList[0].changeName}" alt="${product.productTitle}" />
+                    </c:if>
+                    <c:if test="${empty product.atList}">
+                        <img src="${pageContext.request.contextPath}/resources/img/default.png" alt="기본 이미지">
+                    </c:if>
+
+                    <div class="photo-title">${product.productTitle}</div>
+                    <div class="photo-price">${product.price}원</div>
+
+                    
+                    <div class="photo-info d-flex justify-content-between">
+				    <!-- 왼쪽 정보 -->
+				    <div class="info-left">
+				        <div>${product.coordAddress}</div>
+				        <div>${product.userName}</div>
+				        <div>${product.categoryName}</div>
+				    </div>
+				
+				    <!-- 오른쪽 정보 -->
+				    <div class="info-right text-end">
+				        <div>👁️ ${product.productCount}</div>
+				        <div>
+				            <fmt:formatDate value="${product.uploadDate}" pattern="yy.MM.dd" />
+				        </div>
+				    </div>
+				</div>
+                </div>
+            </c:forEach>
+        </div>
+        <br>
+        <br>
+		<div class="content">
         <h2>📸 가온나 최고 인기 상품</h2>
         <div class="photo-grid">
             <c:forEach var="product" items="${list}">
@@ -114,38 +157,22 @@
                     <div class="photo-title">${product.productTitle}</div>
                     <div class="photo-price">${product.price}원</div>
 
-                    <div class="photo-info">
-                        <div>${product.coordAddress}</div>
-                        <div>${product.userId}</div>
-                        <div>${product.categoryName}</div>
-                    </div>
-                </div>
-            </c:forEach>
-        </div>
-        <br>
-        <br>
-		<div class="content">
-        <h2>📸 가온나 인기 회원의 상품</h2>
-        <div class="photo-grid">
-            <c:forEach var="product" items="${list}">
-                <div class="photo-item"
-                     onclick="location.href='${pageContext.request.contextPath}/productDetail.pro?productNo=${product.productNo}'">
-
-                    <c:if test="${not empty product.atList}">
-							<img src="${pageContext.request.contextPath}/resources/uploadFiles/${product.atList[0].changeName}" alt="${product.productTitle}" />
-                    </c:if>
-                    <c:if test="${empty product.atList}">
-                        <img src="${pageContext.request.contextPath}/resources/img/default.png" alt="기본 이미지">
-                    </c:if>
-
-                    <div class="photo-title">${product.productTitle}</div>
-                    <div class="photo-price">${product.price}원</div>
-
-                    <div class="photo-info">
-                        <div>${product.coordAddress}</div>
-                        <div>${product.userId}</div>
-                        <div>${product.categoryName}</div>
-                    </div>
+                    <div class="photo-info d-flex justify-content-between">
+				    <!-- 왼쪽 정보 -->
+				    <div class="info-left">
+				        <div>${product.coordAddress}</div>
+				        <div>${product.userName}</div>
+				        <div>${product.categoryName}</div>
+				    </div>
+				
+				    <!-- 오른쪽 정보 -->
+				    <div class="info-right text-end">
+				        <div>👁️ ${product.productCount}</div>
+				        <div>
+				            <fmt:formatDate value="${product.uploadDate}" pattern="yy.MM.dd" />
+				        </div>
+				    </div>
+				</div>
                 </div>
             </c:forEach>
         </div>
