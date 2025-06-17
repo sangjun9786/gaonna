@@ -456,13 +456,18 @@ public class ProductController {
             				   ,Model model
             				   ,HttpSession session
     						   ){
+    	Member m = (Member) session.getAttribute("loginUser");
+
+	    if (m == null) {
+	        model.addAttribute("msg", "로그인이 필요합니다.");
+	        return "common/errorPage";
+	    }
+    	
         // 1. 상품 정보 불러오기
         Product product = service.selectProductDetail(productNo);
         ArrayList<Attachment> atList = service.selectProductAttachments(productNo);
         product.setAtList(atList);
-
-        // 2. 로그인 유저 정보
-        Member m = (Member) session.getAttribute("loginUser");
+        
         // 3. 값 담기 
         o.setStatus("REQ"); // 거래중
         
@@ -474,7 +479,7 @@ public class ProductController {
             model.addAttribute("order", o);        
             model.addAttribute("loginUser", m);
             model.addAttribute("mainLocation", mainLocation);
-            return "product/productOrder";
+            return "redirect:/order/productOrder?orderNo=" + o.getOrderNo();
         } else {
         	model.addAttribute("msg", "결제 처리에 실패했습니다. 다시 시도해주세요.");
         	return "common/errorPage";
@@ -505,7 +510,7 @@ public class ProductController {
     				m.getUserId() != reply.getUserId()) {
     			return "fail";
     		}
-    		
+    		 
     		int result = replyService.updateReply(reply);
     		
     		if(result>0) {
