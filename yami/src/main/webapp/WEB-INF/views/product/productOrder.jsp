@@ -255,7 +255,7 @@
     				<input type="hidden" name="buyerId" value="${order.buyerId}">
                 <button type="submit" class="btn-main">구매확정</button>
             </form>
-            <form action="${contextPath}/cancelOrder" method="post" style="display:inline;">
+            <form action="${contextPath}/order/cancelOrder" method="post" style="display:inline;">
                 <input type="hidden" name="orderNo" value="${order.orderNo}">
                 <button type="submit" class="btn-cancel">취소하기</button>
             </form>

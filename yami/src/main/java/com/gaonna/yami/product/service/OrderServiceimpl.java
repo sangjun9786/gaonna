@@ -39,4 +39,19 @@ public class OrderServiceimpl implements OrderService {
 
 	    return r1 * r2 * r3; // 하나라도 실패하면 0 반환
 	}
+	
+	@Transactional
+	@Override
+	public int cancelOrder(int orderNo) {
+		// TODO Auto-generated method stub
+		Order o = dao.selectOrder(sqlSession, orderNo); 
+	    int r1 = dao.deleteOrder(sqlSession, orderNo); //주문테이블 삭제
+	    int r2 = dao.updateProductStatusN(sqlSession, o.getProductNo()); //게시판상태값
+	    int r3 = 1;
+	    if (o.getUsedPoint() > 0) {
+	        r3 = dao.refundPoint(sqlSession, o.getBuyerId(), o.getUsedPoint()); //포인트 환불
+	    }
+
+	    return (r1 > 0 && r2 > 0 && r3 > 0) ? 1 : 0; // 모두 성공했을때만 반환
+	}
 }

@@ -48,5 +48,27 @@ public class OrderDao {
 	    return sqlSession.update("productMapper.updateProductStatusY", productNo);
 
 	}
+	
+	//r1 = 주문테이블 삭제
+	public int deleteOrder(SqlSessionTemplate sqlSession, int orderNo) {
+		// TODO Auto-generated method stub
+		return sqlSession.delete("orderMapper.deleteOrder", orderNo);
+	}
+	
+	//r2 = 게시판 상태값 N
+	public int updateProductStatusN(SqlSessionTemplate sqlSession, int productNo) {
+		// TODO Auto-generated method stub
+		return sqlSession.update("orderMapper.updateProductStatusN", productNo);
+	}
+	
+	//r3 = 포인트 환불 
+	public int refundPoint(SqlSessionTemplate sqlSession, int buyerId, int usedPoint) {
+		// TODO Auto-generated method stub
+	    Map<String, Object> param = new HashMap<>();
+	    param.put("buyerId", buyerId);
+	    param.put("usedPoint", usedPoint);
+
+	    return sqlSession.update("orderMapper.refundPoint", param);
+	}
 
 }

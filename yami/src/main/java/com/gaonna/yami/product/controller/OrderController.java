@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import com.gaonna.yami.location.vo.Location;
 import com.gaonna.yami.member.model.vo.Member;
@@ -128,4 +129,32 @@ public class OrderController {
 	        return "common/errorPage";
 	    }
 	}
+	
+	//구매요청 시에 취소하기
+	@PostMapping("/cancelOrder")
+	public String cancelOrder(@RequestParam("orderNo") int orderNo,
+	                          HttpSession session,
+	                          RedirectAttributes ra) {
+	    
+	    Member m = (Member) session.getAttribute("loginUser");
+	    if (m == null) {
+	        ra.addFlashAttribute("alertMsg", "로그인이 필요합니다.");
+	        return "redirect:member/login";
+	    }
+
+	    int result = service.cancelOrder(orderNo);
+	    
+	    if (result > 0) {
+	        ra.addFlashAttribute("alertMsg", "거래가 취소되고 포인트가 환불되었습니다.");
+	    } else {
+	        ra.addFlashAttribute("alertMsg", "거래 취소에 실패했습니다. 관리자에게 문의해주세요.");
+	    }
+	    
+	    //상세리스트로
+	    return "redirect:/filter.bo?currentPage=1&location=all&category=0";
+	    
+	}
+
+	
+	
 }

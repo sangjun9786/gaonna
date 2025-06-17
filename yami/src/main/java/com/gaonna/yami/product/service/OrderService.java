@@ -14,6 +14,9 @@ public interface OrderService {
 	Order selectOrder(int orderNo);
 	
 	//판매 확정
-	int orderSuccess(Order o); 
+	int orderSuccess(Order o);
+	
+	//주문 취소
+	int cancelOrder(int orderNo);
 
 }
