@@ -268,11 +268,12 @@
 		<result property="userId" column="USER_ID"/>
 		<result property="userName" column="USER_NAME"/>
 		<result property="categoryName" column="CATEGORY_NAME"/>
+		<result property="wishCount" column="WISH_COUNT"/>
 	
 	    <!-- 첨부파일 atList 필드 매핑 -->
 	    <collection property="atList" ofType="Attachment">
 	        <id property="fileNo" column="FILE_NO"/>
-	        <result property="productBno" column="PRODUCT_NO"/>
+	        <result property="productBno" column="AT_PRODUCT_NO"/>
 	        <result property="originName" column="ORIGIN_NAME"/>
 	        <result property="changeName" column="CHANGE_NAME"/>
 	        <result property="filePath" column="FILE_PATH"/>
@@ -286,51 +287,45 @@
 	      SELECT *
 			FROM (
 			    SELECT 
-			        pb.PRODUCT_NO,
-			        pb.CATEGORY_NO,
-			        ct.CATEGORY_NAME, 
-			        pb.SCORE,
-			        pb.USER_NO,
-			        pb.PRICE,
-			        pb.UPLOAD_DATE,
-			        pb.PRODUCT_COUNT,
-			        pb.PRODUCT_TITLE,
-			        pb.PRODUCT_CONTENT,
-			        pb.STATUS AS PB_STATUS,
-			
-			        m.USER_ID,
-			        m.USER_NAME,
-			        m.MAIN_COORD,
-			
-			        c.COORD_ADDRESS,  
-			
-			        at.FILE_NO,
-			        at.PRODUCT_NO AS AT_PRODUCT_NO,
-			        at.ORIGIN_NAME,
-			        at.CHANGE_NAME,
-			        at.FILE_PATH,
-			        at.UPLOAD_DATE AS AT_UPLOAD_DATE,
-			        at.FILE_LEVEL,
-			        at.STATUS AS AT_STATUS
-			
-			    FROM PRODUCT_BOARD pb
-			    JOIN MEMBER m ON pb.USER_NO = m.USER_NO
-			    LEFT JOIN COORDS c ON m.MAIN_COORD = c.COORD_NO
-			    LEFT JOIN ATTATCHMENT at
-			        ON pb.PRODUCT_NO = at.PRODUCT_NO
-			        AND at.FILE_LEVEL = 1
-			        AND at.STATUS = 'Y'
-			    JOIN CATEGORY ct ON pb.CATEGORY_NO = ct.CATEGORY_NO
-			    JOIN WISHLIST w ON pb.PRODUCT_NO = w.PRODUCT_NO
-			    WHERE pb.STATUS = 'N'
-			    AND pb.PRODUCT_NO IN (
-				    SELECT PRODUCT_NO
-				    FROM WISHLIST
-				    GROUP BY PRODUCT_NO
-				    HAVING COUNT(*) > 0
-				)
+    pb.PRODUCT_NO,
+    pb.CATEGORY_NO,
+    ct.CATEGORY_NAME, 
+    pb.SCORE,
+    pb.USER_NO,
+    pb.PRICE,
+    pb.UPLOAD_DATE,
+    pb.PRODUCT_COUNT,
+    pb.PRODUCT_TITLE,
+    pb.PRODUCT_CONTENT,
+    pb.STATUS AS PB_STATUS,
+    m.USER_ID,
+    m.USER_NAME,
+    m.MAIN_COORD,
+    c.COORD_ADDRESS,  
+    at.FILE_NO,
+    at.PRODUCT_NO AS AT_PRODUCT_NO,
+    at.ORIGIN_NAME,
+    at.CHANGE_NAME,
+    at.FILE_PATH,
+    at.UPLOAD_DATE AS AT_UPLOAD_DATE,
+    at.FILE_LEVEL,
+    at.STATUS AS AT_STATUS,
+    NVL(wl.WISH_COUNT, 0) AS WISH_COUNT
+FROM PRODUCT_BOARD pb
+JOIN MEMBER m ON pb.USER_NO = m.USER_NO
+LEFT JOIN COORDS c ON m.MAIN_COORD = c.COORD_NO
+LEFT JOIN ATTATCHMENT at ON pb.PRODUCT_NO = at.PRODUCT_NO AND at.FILE_LEVEL = 1 AND at.STATUS = 'Y'
+JOIN CATEGORY ct ON pb.CATEGORY_NO = ct.CATEGORY_NO
+LEFT JOIN (
+    SELECT PRODUCT_NO, COUNT(*) AS WISH_COUNT
+    FROM WISHLIST
+    GROUP BY PRODUCT_NO
+) wl ON pb.PRODUCT_NO = wl.PRODUCT_NO
+WHERE pb.STATUS = 'N'
+ORDER BY wl.WISH_COUNT DESC, pb.UPLOAD_DATE DESC
+
 		)
-		WHERE ROWNUM &lt;= 12
+		WHERE ROWNUM &lt;= 4
 	</select>
 	
 	<select id="recommendMember" resultMap="productAttachmentMap">
@@ -374,9 +369,9 @@
 			    JOIN CATEGORY ct ON pb.CATEGORY_NO = ct.CATEGORY_NO
 			    JOIN SCORE s ON m.USER_NO = s.USER_NO
 			    WHERE pb.STATUS = 'N'
-			    ORDER BY s.AVG_RATING DESC
+			    ORDER BY s.AVG_RATING DESC, pb.UPLOAD_DATE DESC
 		)
-		WHERE ROWNUM &lt;= 12
+		WHERE ROWNUM &lt;= 4
 	</select>
 	
 	<select id="searchBread" parameterType="string" resultType="int">
