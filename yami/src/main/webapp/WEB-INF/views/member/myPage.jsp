@@ -70,7 +70,7 @@
 									</tr>
 									<tr>
 										<td class="fw-bold text-secondary">
-											<i class="bi bi-coin me-2"></i>포인트
+											<i class="bi bi-point me-2"></i>포인트
 										</td>
 										<td class="border-start ps-3">${pageScope.loginUser.point}</td>
 									</tr>
@@ -112,28 +112,23 @@
 					<div class="card-body">
 					  <div class="row row-cols-2 g-3">
 					    <div class="col">
-					      <a href='${root}/board.co' class="btn btn-outline-primary w-100 d-flex align-items-center justify-content-center">
-					        <i class="bi bi-journal-text me-2"></i>판매 목록
-					      </a>
-					    </div>
-					    <div class="col">
-					      <a href='${root}/doTest.me' class="btn btn-outline-primary w-100 d-flex align-items-center justify-content-center">
-					        <i class="bi bi-cart-check me-2"></i>구매 목록
-					      </a>
-					    </div>
-					    <div class="col">
 					      <a href='${root}/wishlist.co' class="btn btn-outline-primary w-100 d-flex align-items-center justify-content-center">
-					        <i class="bi bi-heart-fill me-2"></i>좋아요
+					        <i class="bi bi-file-text me-2"></i>좋아요
 					      </a>
 					    </div>
 					    <div class="col">
 					      <a href='${root}/chat/list' class="btn btn-outline-primary w-100 d-flex align-items-center justify-content-center">
-					        <i class="bi bi-chat-dots-fill me-2"></i>채팅
+					        <i class="bi bi-shield-x me-2"></i>채팅
+					      </a>
+					    </div>	
+					    <div class="col">
+					      <a href='${root}/board.co' class="btn btn-outline-primary w-100 d-flex align-items-center justify-content-center">
+					        <i class="bi bi-file-text me-2"></i>게시글
 					      </a>
 					    </div>
 					    <div class="col">
 					      <a href='${root}/reply.co' class="btn btn-outline-primary w-100 d-flex align-items-center justify-content-center">
-					        <i class="bi bi-chat-left-dots-fill me-2"></i>댓글
+					        <i class="bi bi-chat-dots me-2"></i>댓글
 					      </a>
 					    </div>
 					  </div>
