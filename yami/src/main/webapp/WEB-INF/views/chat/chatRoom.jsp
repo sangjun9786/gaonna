@@ -33,7 +33,6 @@
             max-width: 80%; background: #ff8700; color: #fff;
             padding: 9px 15px; border-radius: 20px 20px 3px 20px;
             font-size: 16px; font-weight: 500; word-break: break-word;
-            cursor: pointer;
         }
         .msg-other .msg-bubble { background: #e0e0e0; color: #333; border-radius: 20px 20px 20px 3px; }
         .chat-time { font-size: 12px; color: #ad793b; margin: 0 7px; }
@@ -74,9 +73,6 @@
                 <div class="msg-bubble"
                     <c:if test="${msg.senderNo eq sessionScope.loginUser.userNo}">
                         ondblclick="deleteMsgByBubble(this)"
-                    </c:if>
-                    <c:if test="${msg.senderNo ne sessionScope.loginUser.userNo}">
-                        ondblclick="reportMsgByBubble(this)"
                     </c:if>>
                     ${msg.content}
                 </div>
@@ -179,8 +175,6 @@ socket.onmessage = function(event) {
         bubble.textContent = data.content;
         if (whoIsMe) {
             bubble.ondblclick = function() { deleteMsgByBubble(bubble); };
-        } else {
-            bubble.ondblclick = function() { reportMsgByBubble(bubble); };
         }
         var time = document.createElement("span");
         time.className = "chat-time";
@@ -236,7 +230,6 @@ $("#chat-input").keyup(function(e) {
     if (e.key === "Enter") sendMsg();
 });
 
-// 내 메시지 더블클릭 → 삭제
 function deleteMsgByBubble(bubble) {
     var row = $(bubble).closest('.msg-row');
     var msgNo = row.data('msgno');
@@ -250,16 +243,7 @@ function deleteMsgByBubble(bubble) {
     }
 }
 
-// 상대 메시지 더블클릭 → 신고
-function reportMsgByBubble(bubble) {
-    var row = $(bubble).closest('.msg-row');
-    var msgNo = row.data('msgno');
-    if (!row.data('mine')) {
-        if (confirm('신고 페이지로 이동하시겠습니까?')) {
-            location.href = '/yami/report/insertForm?reportType=chat&targetNo=' + msgNo;
-        }
-    }
-}
+
 </script>
 <%@ include file="/WEB-INF/views/common/footer.jsp" %>
 </body>

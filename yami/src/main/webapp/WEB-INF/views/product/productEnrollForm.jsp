@@ -153,43 +153,54 @@
                 <label class="form-label">가격 (원)</label>
                 <input type="number" name="price" class="form-control" required min="0" step="100">
             </div>
-            <!-- 거래희망장소 -->
-			<div class="form-group">
-			    <label class="form-label">거래희망장소</label>
-			    <div class="d-flex mb-2">
-			        <button type="button" class="btn btn-outline-primary mr-2" id="openMapModal">지도에서 선택</button>
-			        <input type="hidden" name="dealLat" id="dealLat">
-			        <input type="hidden" name="dealLng" id="dealLng">
-			        <input type="hidden" name="dealAddress" id="dealAddress">
-			        <input type="hidden" name="dealStaticMapUrl" id="dealStaticMapUrl">
-			    </div>
-			    <!-- 지도 이미지 미리보기 -->
-			    <div id="deal-map-preview" style="width: 300px; height: 200px; border-radius: 8px; border:1px solid #ccc; overflow: hidden; margin-bottom:8px; display: none;">
-			        <img id="deal-map-img" src="" style="width:100%;height:100%;object-fit:cover;">
-			    </div>
-			    <!-- 선택한 주소(텍스트) -->
-			    <div id="deal-address-text" class="text-muted small"></div>
-			</div>
-			<!-- 지도 모달 (네이버 지도 API 사용 예시) -->
-			<div class="modal fade" id="dealMapModal" tabindex="-1" aria-hidden="true">
-			    <div class="modal-dialog modal-dialog-centered">
-			        <div class="modal-content">
-			        <div class="modal-header">
-			            <h5 class="modal-title">거래 희망 장소 선택</h5>
-			            <button type="button" class="close" data-dismiss="modal" aria-label="닫기">
-			                <span aria-hidden="true">&times;</span>
-			            </button>
-			        </div>
-			        <div class="modal-body" style="height:400px; position:relative;">
-			            <div id="dealMap" style="width:100%;height:100%;"></div>
-			            <img src="https://cdn-icons-png.flaticon.com/512/684/684908.png" class="center-marker" style="position:absolute;top:50%;left:50%;transform:translate(-50%,-100%);z-index:10;width:32px;">
-			        </div>
-			        <div class="modal-footer">
-			            <button type="button" class="btn btn-primary" id="selectDealLocation">선택 완료</button>
-			        </div>
-			        </div>
-			    </div>
-			</div>
+		    <c:if test="${not empty mainLocation}">
+		    <div class="form-group">
+		        <label class="form-label">거래 희망 장소</label>
+		        <input type="text" class="form-control" 
+		               value="${mainLocation.roadAddress} ${mainLocation.detailAddress}" readonly>
+		    </div>
+			</c:if>
+<!-- <!--             거래희망장소 --> 
+<!-- <!-- 			<div class="form-group"> --> 
+<!-- <!-- 			    <label class="form-label">거래희망장소</label> -->
+<!-- <!-- 			     기존 주소 출력 --> 
+<!-- <!-- 			    <div id="deal-address-text" class="text-muted small" style="padding: 8px 12px; background-color: #f1f1f1; border-radius: 5px;"> --> 
+<%-- <%-- 			        ${product.coordAddress} --%> 
+<!-- 			    </div> -->
+<!-- <!-- 			    <div class="d-flex mb-2"> --> 
+<!-- <!-- 			        <button type="button" class="btn btn-outline-primary mr-2" id="openMapModal">지도에서 선택</button> --> 
+<!-- <!-- 						   <input type="hidden" name="latitude" id="dealLat"> --> 
+<!-- <!-- 					<input type="hidden" name="longitude" id="dealLng"> --> 
+<!-- <!-- 					<input type="hidden" name="coordAddress" id="dealAddress"> -->
+<!-- <!-- 					<input type="hidden" name="dealStaticMapUrl" id="dealStaticMapUrl"> --> 
+<!-- <!-- 			    </div> --> 
+<!-- 			    지도 이미지 미리보기 -->
+<!-- 			    <div id="deal-map-preview" style="width: 300px; height: 200px; border-radius: 8px; border:1px solid #ccc; overflow: hidden; margin-bottom:8px; display: none;"> -->
+<!-- 			        <img id="deal-map-img" src="" style="width:100%;height:100%;object-fit:cover;"> -->
+<!-- 			    </div> -->
+<!-- 			    선택한 주소(텍스트) -->
+<!-- 			    <div id="deal-address-text" class="text-muted small"></div> -->
+<!-- 			</div> -->
+<!-- 			<!-- 지도 모달 (네이버 지도 API 사용 예시) -->
+<!-- 			<div class="modal fade" id="dealMapModal" tabindex="-1" aria-hidden="true"> -->
+<!-- 			    <div class="modal-dialog modal-dialog-centered"> -->
+<!-- 			        <div class="modal-content"> -->
+<!-- 			        <div class="modal-header"> -->
+<!-- 			            <h5 class="modal-title">거래 희망 장소 선택</h5> -->
+<!-- 			            <button type="button" class="close" data-dismiss="modal" aria-label="닫기"> -->
+<!-- 			                <span aria-hidden="true">&times;</span> -->
+<!-- 			            </button> -->
+<!-- 			        </div> -->
+<!-- 			        <div class="modal-body" style="height:400px; position:relative;"> -->
+<!-- 			            <div id="dealMap" style="width:100%;height:100%;"></div> -->
+<!-- 			            <img src="https://cdn-icons-png.flaticon.com/512/684/684908.png" class="center-marker" style="position:absolute;top:50%;left:50%;transform:translate(-50%,-100%);z-index:10;width:32px;"> -->
+<!-- 			        </div> -->
+<!-- 			        <div class="modal-footer"> -->
+<!-- 			            <button type="button" class="btn btn-primary" id="selectDealLocation">선택 완료</button> -->
+<!-- 			        </div> -->
+<!-- 			        </div> -->
+<!-- 			    </div> -->
+<!-- 			</div> -->
 			
 			
             <div class="form-group">

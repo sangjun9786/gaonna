@@ -4,7 +4,7 @@
 <html>
 <head>
 <meta charset="UTF-8">
-<title>오류</title>
+<title>오류 페이지</title>
 </head>
 <body>
 	<%@include file="header.jsp" %>

@@ -1,16 +1,16 @@
 package com.gaonna.yami.member.controller;
 
-import java.util.List;
-
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
+import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Controller;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.CookieValue;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -18,6 +18,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.gaonna.yami.admin.service.AdminService;
 import com.gaonna.yami.cookie.service.CookieService;
+import com.gaonna.yami.cookie.vo.CookieToken;
 import com.gaonna.yami.location.service.LocationService;
 import com.gaonna.yami.location.vo.Coord;
 import com.gaonna.yami.location.vo.Location;
@@ -25,7 +26,6 @@ import com.gaonna.yami.member.common.TokenGenerator;
 import com.gaonna.yami.member.model.service.MemberService;
 import com.gaonna.yami.member.model.vo.Member;
 import com.gaonna.yami.rating.model.service.RatingService;
-import com.gaonna.yami.report.model.service.ReportService;
 
 @Controller
 public class MemberController {
@@ -43,8 +43,6 @@ public class MemberController {
 	public RatingService ratingService;
 	@Autowired
 	private BCryptPasswordEncoder bcrypt;
-	@Autowired
-	private ReportService reportService;
 	
 	//메인 페이지 이동
 	@RequestMapping("/main")
@@ -193,13 +191,6 @@ public class MemberController {
 		    
 			Member loginUser = service.loginMember(userId, domain, userPwd);
 			if(loginUser != null) {
-				
-				// 1. 신고 누적 로그인 차단
-			    int reportCount = reportService.countHandledReportsByUser(loginUser.getUserNo());
-			    if (reportCount >= 5) {
-			        model.addAttribute("errorMsg", "신고 누적으로 로그인 차단된 계정입니다.");
-			        return "common/errorPage";
-			    }
 				
 				switch(loginUser.getStatus()) {
 				//유저 꼬라지에 따라 작동
