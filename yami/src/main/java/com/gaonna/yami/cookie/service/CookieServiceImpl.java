@@ -105,6 +105,16 @@ public class CookieServiceImpl implements CookieService{
 	public void deleteAutoLogin(HttpServletResponse response,HttpSession session) {
 		CookieToken cookieToken = new CookieToken();
 		
+		//달디달고 달디단 쿠키 지우기
+		ResponseCookie cookie = ResponseCookie.from("autoLogin", "")
+				.httpOnly(true)
+				.secure(true)
+				.path("/")
+				.maxAge(0)
+				.build();
+		response.addHeader("Set-Cookie", cookie.toString());
+		
+		//cookie_token 삭제
 		Member m = ((Member)session.getAttribute("loginUser"));
 		if(m==null) return;
 		int userNo = m.getUserNo();
@@ -112,13 +122,5 @@ public class CookieServiceImpl implements CookieService{
 		
 		dao.deleteAutoLoginToken(sqlSession,cookieToken);
 		
-		//달디달고 달디단 쿠키 지우기
-		ResponseCookie cookie = ResponseCookie.from("autoLogin", "")
-		        .httpOnly(true)
-		        .secure(true)
-		        .path("/")
-		        .maxAge(0)
-		        .build();
-		response.addHeader("Set-Cookie", cookie.toString());
 	}
 }

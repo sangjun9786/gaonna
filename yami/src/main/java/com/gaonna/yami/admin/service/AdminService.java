@@ -3,7 +3,6 @@ package com.gaonna.yami.admin.service;
 import java.util.List;
 import java.util.Map;
 
-import com.gaonna.yami.composite.vo.BoardCo;
 import com.gaonna.yami.composite.vo.SearchForm;
 import com.gaonna.yami.location.vo.Coord;
 import com.gaonna.yami.location.vo.Location;

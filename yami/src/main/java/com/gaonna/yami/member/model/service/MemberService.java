@@ -2,7 +2,6 @@ package com.gaonna.yami.member.model.service;
 
 import javax.servlet.http.HttpSession;
 
-import com.gaonna.yami.cookie.vo.CookieToken;
 import com.gaonna.yami.member.model.vo.Member;
 
 public interface MemberService {
