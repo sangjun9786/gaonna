@@ -129,7 +129,6 @@
 				    <!-- 오른쪽 정보 -->
 				    <div class="info-right text-end">
 				        <div>👁️ ${product.productCount}</div>
-				        <div>❤️ ${product.wishCount}</div>
 				        <div>
 				            <fmt:formatDate value="${product.uploadDate}" pattern="yy.MM.dd" />
 				        </div>
