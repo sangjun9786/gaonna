@@ -104,7 +104,10 @@ public class CookieServiceImpl implements CookieService{
 	@Override
 	public void deleteAutoLogin(HttpServletResponse response,HttpSession session) {
 		CookieToken cookieToken = new CookieToken();
-		int userNo = ((Member)session.getAttribute("loginUser")).getUserNo();
+		
+		Member m = ((Member)session.getAttribute("loginUser"));
+		if(m==null) return;
+		int userNo = m.getUserNo();
 		cookieToken.setUserNo(userNo);
 		
 		dao.deleteAutoLoginToken(sqlSession,cookieToken);
