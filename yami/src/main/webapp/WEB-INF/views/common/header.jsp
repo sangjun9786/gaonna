@@ -183,10 +183,10 @@ function fetchAlarmCount() {
         }
     });
 }
-$(document).ready(function(){
-    fetchAlarmCount();
-    setInterval(fetchAlarmCount, 500);
-});
+// $(document).ready(function(){
+//     fetchAlarmCount();
+//     setInterval(fetchAlarmCount, 500);
+// });
 </c:if>
 </script>
 </body>

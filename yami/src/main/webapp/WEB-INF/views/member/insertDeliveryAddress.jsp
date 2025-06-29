@@ -4,7 +4,7 @@
 <html>
 <head>
 	<script type="text/javascript" 
-		src="https://oapi.map.naver.com/openapi/v3/maps.js?ncpKeyId=85oq183idp">
+		src="https://oapi.map.naver.com/openapi/v3/maps.js?ncpKeyId=ufa66cpcjz">
 	</script>
 	<script src="https://cdn.jsdelivr.net/npm/lodash@4.17.21/lodash.min.js"></script>
 <meta charset="UTF-8">

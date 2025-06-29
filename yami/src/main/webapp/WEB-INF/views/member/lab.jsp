@@ -5,7 +5,7 @@ pageEncoding="UTF-8"%>
 <html>
   <head>
 	<script type="text/javascript" 
-		src="https://oapi.map.naver.com/openapi/v3/maps.js?ncpKeyId=85oq183idp">
+		src="https://oapi.map.naver.com/openapi/v3/maps.js?ncpKeyId=ufa66cpcjz">
 	</script>
     <meta charset="UTF-8"/>
     <title>YAMI</title>
